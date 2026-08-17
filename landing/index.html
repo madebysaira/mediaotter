@@ -4,28 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MediaOtter — Media Downloader for Premiere Pro &amp; After Effects</title>
-<meta name="description" content="MediaOtter is open source media downloader for Premiere Pro &amp; After Effects — search YouTube, paste any link, import MP4 or WAV up to 4K into your project.">
-<meta name="keywords" content="MediaOtter, Premiere Pro, After Effects, YouTube downloader, yt-dlp, CEP extension, video downloader, media downloader, Adobe Premiere, Adobe After Effects">
+<meta name="description" content="MediaOtter is the open-source media downloader for Premiere Pro &amp; After Effects — search YouTube or paste any link from 1,000+ sites (Vimeo, SoundCloud, Twitch, TikTok, X, Instagram, Facebook), import MP4 or WAV up to 4K into your project.">
+<meta name="keywords" content="MediaOtter, Premiere Pro, After Effects, YouTube downloader, yt-dlp, CEP extension, video downloader, media downloader, Vimeo downloader, SoundCloud downloader, Twitch downloader, TikTok downloader, Instagram downloader, Adobe Premiere, Adobe After Effects">
 <meta name="author" content="Sagarika Sultana">
-<link rel="canonical" href="https://mediaotter.madebysaira.com/">
+<link rel="canonical" href="https://mediaotter.madebysaira.me/">
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#0c1015">
 <meta property="og:title" content="MediaOtter — Media Downloader for Premiere Pro &amp; After Effects">
 <meta property="og:description" content="MediaOtter is open source media downloader for Premiere Pro &amp; After Effects — search YouTube, paste any link, import MP4 or WAV up to 4K into your project.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://mediaotter.madebysaira.com/">
-<meta property="og:image" content="https://mediaotter.madebysaira.com/screenshots/app-search.png">
+<meta property="og:url" content="https://mediaotter.madebysaira.me/">
+<meta property="og:image" content="https://mediaotter.madebysaira.me/screenshots/app-search.png">
 <meta property="og:site_name" content="MediaOtter">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="MediaOtter — Media Downloader for Premiere Pro &amp; After Effects">
 <meta name="twitter:description" content="MediaOtter is open source media downloader for Premiere Pro &amp; After Effects — search YouTube, paste any link, import MP4 or WAV up to 4K into your project.">
-<meta name="twitter:image" content="https://mediaotter.madebysaira.com/screenshots/app-search.png">
+<meta name="twitter:image" content="https://mediaotter.madebysaira.me/screenshots/app-search.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦦</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"MediaOtter","url":"https://mediaotter.madebysaira.com/","applicationCategory":"MultimediaApplication","operatingSystem":"macOS","description":"Open-source media downloader for Premiere Pro and After Effects. Search YouTube, paste any link, and import MP4 or WAV up to 4K directly into your project.","author":{"@type":"Person","name":"Sagarika Sultana"},"license":"https://github.com/madebysaira/mediaotter/blob/main/LICENSE","softwareVersion":"1.0.0-alpha","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"isAccessibleForFree":true}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"MediaOtter","url":"https://mediaotter.madebysaira.me/","applicationCategory":"MultimediaApplication","operatingSystem":"macOS","description":"Open-source media downloader for Premiere Pro and After Effects. Search YouTube, paste any link, and import MP4 or WAV up to 4K directly into your project.","author":{"@type":"Person","name":"Sagarika Sultana"},"license":"https://github.com/madebysaira/mediaotter/blob/main/LICENSE","softwareVersion":"1.0.0-alpha","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"isAccessibleForFree":true}</script>
 <style>
   :root{
     --bg:#0c1015;
@@ -275,6 +275,7 @@
   .format-pill i{color:var(--accent);font-size:13px}
   .format-pill:hover{border-color:var(--border-strong);transform:translateY(-1px)}
   .format-pill strong{color:var(--text);font-weight:600}
+  .platform-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:26px;max-width:760px;margin-left:auto;margin-right:auto}
   /* youtube section */
   .yt-grid{display:grid;grid-template-columns:0.92fr 1.08fr;gap:48px;align-items:center}
   .yt-media{border-radius:var(--radius);overflow:hidden;background:var(--bg-soft);border:1px solid var(--border);box-shadow:0 20px 50px rgba(0,0,0,0.42)}
@@ -447,13 +448,17 @@
         <article class="bento-card span-4 reveal" style="transition-delay:60ms">
           <div class="bento-icon"><i class="fa-solid fa-link" aria-hidden="true"></i></div>
           <h3>Paste URL — 1000+ sites</h3>
-          <p>Paste any link. YouTube, Vimeo, SoundCloud, Twitch, TikTok, X, Instagram, Facebook, Bandcamp, Archive.org — powered by yt-dlp.</p>
+          <p>Paste any link and MediaOtter figures out the rest — powered by yt-dlp with all its extractors built in.</p>
           <div class="bento-chip"><i class="fa-solid fa-earth-americas" aria-hidden="true"></i> yt-dlp inside</div>
           <div style="margin-top:18px;display:flex;flex-wrap:wrap;gap:8px">
             <span class="format-pill" style="padding:6px 10px;font-size:12px"><i class="fa-brands fa-youtube"></i> YouTube</span>
             <span class="format-pill" style="padding:6px 10px;font-size:12px"><i class="fa-brands fa-vimeo"></i> Vimeo</span>
-            <span class="format-pill" style="padding:6px 10px;font-size:12px"><i class="fa-brands fa-soundcloud"></i> SC</span>
-            <span class="format-pill" style="padding:6px 10px;font-size:12px"><i class="fa-solid fa-plus"></i> 1k+</span>
+            <span class="format-pill" style="padding:6px 10px;font-size:12px"><i class="fa-brands fa-soundcloud"></i> SoundCloud</span>
+            <span class="format-pill" style="padding:6px 10px;font-size:12px"><i class="fa-brands fa-twitch"></i> Twitch</span>
+            <span class="format-pill" style="padding:6px 10px;font-size:12px"><i class="fa-brands fa-tiktok"></i> TikTok</span>
+            <span class="format-pill" style="padding:6px 10px;font-size:12px"><i class="fa-brands fa-x-twitter"></i> X</span>
+            <span class="format-pill" style="padding:6px 10px;font-size:12px"><i class="fa-brands fa-instagram"></i> Instagram</span>
+            <span class="format-pill" style="padding:6px 10px;font-size:12px"><i class="fa-solid fa-plus"></i> 1k+ more</span>
           </div>
         </article>
         <!-- Best video+audio -->
@@ -490,6 +495,32 @@
           </div>
           <div class="bento-shot" style="margin-top:0"><img src="screenshots/app-downloads.png" alt="Completed downloads in MediaOtter with draggable history items and Import to project control" width="840" height="1520" loading="lazy"></div>
         </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Platform strip -->
+  <section class="section" aria-labelledby="platforms-heading" style="padding-top:0">
+    <div class="wrap" style="text-align:center">
+      <div class="reveal">
+        <h2 id="platforms-heading" style="margin:0;font-size:22px;font-weight:700;letter-spacing:-0.02em">Any platform, one panel</h2>
+        <p style="margin:8px auto 0;color:var(--dim);font-size:14px;max-width:620px">Just paste the link. MediaOtter pulls from 1,000+ sites and services — video, audio, playlists, live streams, and private content you're signed into.</p>
+      </div>
+      <div class="platform-grid reveal" style="transition-delay:60ms">
+        <span class="format-pill"><i class="fa-brands fa-youtube"></i> YouTube</span>
+        <span class="format-pill"><i class="fa-brands fa-vimeo"></i> Vimeo</span>
+        <span class="format-pill"><i class="fa-brands fa-soundcloud"></i> SoundCloud</span>
+        <span class="format-pill"><i class="fa-brands fa-twitch"></i> Twitch</span>
+        <span class="format-pill"><i class="fa-brands fa-tiktok"></i> TikTok</span>
+        <span class="format-pill"><i class="fa-brands fa-x-twitter"></i> X / Twitter</span>
+        <span class="format-pill"><i class="fa-brands fa-instagram"></i> Instagram</span>
+        <span class="format-pill"><i class="fa-brands fa-facebook"></i> Facebook</span>
+        <span class="format-pill"><i class="fa-brands fa-bandcamp"></i> Bandcamp</span>
+        <span class="format-pill"><i class="fa-brands fa-reddit"></i> Reddit</span>
+        <span class="format-pill"><i class="fa-brands fa-dailymotion"></i> Dailymotion</span>
+        <span class="format-pill"><i class="fa-brands fa-vk"></i> VK</span>
+        <span class="format-pill"><i class="fa-solid fa-tower-broadcast"></i> Archive.org</span>
+        <span class="format-pill"><i class="fa-solid fa-globe"></i> 1,000+ more</span>
       </div>
     </div>
   </section>
@@ -593,13 +624,13 @@
           <h3>Links</h3>
           <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">GitHub</a>
           <a href="https://github.com/madebysaira" target="_blank" rel="noopener noreferrer">madebysaira</a>
-          <a href="mailto:saira@madebysaira.com">Contact</a>
+          <a href="mailto:hi@madebysaira.me">Contact</a>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
       <span>© 2026 madebysaira · Sagarika Sultana · MediaOtter is open source under MIT.</span>
-      <span>Made by <a href="https://github.com/madebysaira" target="_blank" rel="noopener noreferrer">Sagarika Sultana (madebysaira)</a> · <a href="mailto:saira@madebysaira.com">saira@madebysaira.com</a></span>
+      <span>Made by <a href="https://github.com/madebysaira" target="_blank" rel="noopener noreferrer">Sagarika Sultana (madebysaira)</a> · <a href="mailto:hi@madebysaira.me">hi@madebysaira.me</a></span>
     </div>
   </div>
 </footer>
