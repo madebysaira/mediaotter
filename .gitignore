@@ -20,3 +20,4 @@ Thumbs.db
 *.tmp
 .cache/
 landing/screenshots/src/
+.pkg/

@@ -352,6 +352,7 @@
       <div class="nav-links" role="navigation">
         <a href="#features">Features</a>
         <a href="#screenshots">Screenshots</a>
+        <a href="#install">Install</a>
         <a href="privacy.html">Privacy</a>
         <a href="terms.html">Terms</a>
       </div>
@@ -365,6 +366,7 @@
 <div class="mobile-panel" id="mobilePanel" hidden>
   <a href="#features">Features</a>
   <a href="#screenshots">Screenshots</a>
+  <a href="#install">Install</a>
   <a href="privacy.html">Privacy Policy</a>
   <a href="terms.html">Terms of Service</a>
   <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">GitHub — madebysaira/mediaotter</a>
@@ -380,6 +382,7 @@
         <p class="sub">Search YouTube, paste any link, and import MP4 or WAV straight into Premiere Pro and After Effects.</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="https://github.com/madebysaira/mediaotter/releases" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-download" aria-hidden="true"></i> Download for macOS</a>
+          <a class="btn btn-ghost" href="#install"><i class="fa-solid fa-terminal" aria-hidden="true"></i> One-line install</a>
           <a class="btn btn-ghost" href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> View on GitHub</a>
         </div>
         <div class="hero-meta">
@@ -562,6 +565,31 @@
           <div class="yt-note"><strong>Scope is minimal:</strong> <code>youtube.readonly</code> only. MediaOtter can read your playlists and liked videos — it cannot upload, comment, or modify your account. Revoke anytime in Google Account permissions.</div>
           <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
             <a class="btn btn-ghost" href="privacy.html">How we handle data <i class="fa-solid fa-arrow-right" style="font-size:11px"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- One-line install -->
+  <section class="section" id="install" aria-labelledby="install-heading">
+    <div class="wrap">
+      <div class="oss-panel reveal">
+        <div class="oss-grid">
+          <div class="oss-copy">
+            <div class="kicker"><i class="fa-solid fa-terminal" aria-hidden="true"></i> macOS · one line</div>
+            <h2 id="install-heading">Install from your terminal.</h2>
+            <p>Paste this into Terminal. It downloads the right build for your Mac (Apple Silicon or Intel), installs it into the Adobe CEP extensions folder, and enables unsigned-extension loading — no admin password, no Java, no signing tools.</p>
+            <pre style="background:#07090d;border:1px solid var(--border);border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.6;color:#c9d6ea;margin:18px 0 8px;white-space:pre-wrap;word-break:break-all"><code>curl -fsSL https://github.com/madebysaira/mediaotter/releases/latest/download/install.sh | sh</code></pre>
+            <p style="font-size:13px;color:var(--faint)">Then restart Premiere Pro / After Effects and open <strong style="color:var(--text)">Window → Extensions → MediaOtter</strong>.</p>
+          </div>
+          <div class="oss-cta">
+            <a class="btn btn-primary" href="https://github.com/madebysaira/mediaotter/releases" target="_blank" rel="noopener noreferrer" style="width:100%"><i class="fa-solid fa-download" aria-hidden="true"></i> Manual download (.zip)</a>
+            <a class="btn btn-ghost" href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer" style="width:100%"><i class="fa-brands fa-github" aria-hidden="true"></i> Release notes</a>
+            <div class="oss-stats">
+              <div class="oss-stat"><strong>sh</strong><span>No dependencies</span></div>
+              <div class="oss-stat"><strong>0</strong><span>Files outside CEP folder</span></div>
+            </div>
           </div>
         </div>
       </div>
