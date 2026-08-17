@@ -45,13 +45,15 @@ function getCredentials() {
     var data = JSON.parse(raw);
     var clientId = data && data.clientId ? String(data.clientId).trim() : "";
     var apiKey = data && data.apiKey ? String(data.apiKey).trim() : "";
-    if (!clientId || !apiKey) {
+    var clientSecret = data && data.clientSecret ? String(data.clientSecret).trim() : "";
+    if (!clientId) {
       return null;
     }
-    if (isPlaceholder(clientId) || isPlaceholder(apiKey)) {
+    // apiKey is OPTIONAL: authenticated Data API calls use a Bearer token only.
+    if (isPlaceholder(clientId)) {
       return null;
     }
-    return { clientId: clientId, apiKey: apiKey };
+    return { clientId: clientId, apiKey: apiKey, clientSecret: clientSecret };
   } catch (error) {
     return null;
   }
@@ -329,10 +331,10 @@ function waitForCode(expectedState, timeoutMs) {
   });
 }
 
-// True when credentials.json has real clientId and apiKey
+// True when credentials.json has a real clientId (apiKey optional)
 function isConfigured() {
   var creds = getCredentials();
-  return Boolean(creds && creds.clientId && creds.apiKey);
+  return Boolean(creds && creds.clientId);
 }
 
 // True when an unexpired-usable token set exists; refresh lazily at next API call
@@ -411,6 +413,9 @@ async function refreshFor401(oldToken) {
       refresh_token: data.refreshToken,
       client_id: creds.clientId
     };
+    if (creds.clientSecret) {
+      form.client_secret = creds.clientSecret;
+    }
     var res = await postForm(TOKEN_URL, form, 10000);
     var body = res.data;
     if (!body || !body.access_token) { return null; }
@@ -478,6 +483,11 @@ async function signIn() {
       client_id: creds.clientId,
       code_verifier: verifier
     };
+    // Google requires the client secret at the token endpoint for desktop
+    // clients (PKCE protects the code exchange; the secret never ships).
+    if (creds.clientSecret) {
+      form.client_secret = creds.clientSecret;
+    }
 
     var tokenRes;
     try {
@@ -573,6 +583,9 @@ async function getAccessToken() {
       refresh_token: data.refreshToken,
       client_id: creds.clientId
     };
+    if (creds.clientSecret) {
+      form.client_secret = creds.clientSecret;
+    }
     var res = await postForm(TOKEN_URL, form, 10000);
     var body = res.data;
     if (!body || !body.access_token) {

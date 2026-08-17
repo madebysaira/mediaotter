@@ -78,7 +78,12 @@ async function main() {
   if (fileExists) {
     var cred = JSON.parse(fs.readFileSync(credPath, "utf8"));
     ok("clientId looks like a Google ID", /^[A-Za-z0-9-]+\.apps\.googleusercontent\.com$/.test(cred.clientId || ""), String(cred.clientId || "").slice(0, 14) + "…");
-    ok("apiKey looks like a Google key", /^AIza[0-9A-Za-z_-]{30,}$/.test(cred.apiKey || ""), "length " + String(cred.apiKey || "").length);
+    ok("clientSecret looks like a Google secret", /^GOCSPX-/.test(cred.clientSecret || ""), "length " + String(cred.clientSecret || "").length);
+    if (cred.apiKey) {
+      ok("apiKey looks like a Google key", /^AIza[0-9A-Za-z_-]{30,}$/.test(cred.apiKey), "length " + String(cred.apiKey).length);
+    } else {
+      ok("apiKey absent — OK (Bearer token suffices for authenticated calls)", true);
+    }
     ok("isConfigured() agrees", configured === true, "isConfigured()=" + configured);
   } else {
     ok("isConfigured() false without file", configured === false);
@@ -98,8 +103,11 @@ async function main() {
 
   section("Token endpoint reachability (expect clean invalid_grant)");
   var clientId = "";
+  var clientSecret = "";
   if (fileExists) {
-    clientId = JSON.parse(fs.readFileSync(credPath, "utf8")).clientId || "";
+    var cred2 = JSON.parse(fs.readFileSync(credPath, "utf8"));
+    clientId = cred2.clientId || "";
+    clientSecret = cred2.clientSecret || "";
   }
   try {
     var result = await postJson("https://oauth2.googleapis.com/token", {
@@ -107,6 +115,7 @@ async function main() {
       code: "FAKE_CODE_FOR_SELFTEST",
       redirect_uri: "http://127.0.0.1:8787/",
       client_id: clientId || "selftest.apps.googleusercontent.com",
+      client_secret: clientSecret || "GOCSPX-SELFTEST",
       code_verifier: "x".repeat(64)
     });
     var parsed = JSON.parse(result.body);

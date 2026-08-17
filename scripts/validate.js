@@ -63,11 +63,20 @@ if (!fs.existsSync(manifestPath)) {
 console.log("[3/4] Secret scan");
 var gitFiles = childProcess.spawnSync("git", ["-C", ROOT, "ls-files"], { encoding: "utf8" }).stdout.split("\n").filter(Boolean);
 var secretPatterns = [
-  /AIza[0-9A-Za-z_-]{35}/,                              // Google API key
+  // Google API key. Negative lookahead excludes the PUBLIC innertube
+  // WEB-client key: YouTube embeds it in the JS of every page load (yt-dlp
+  // ships the same key in its source). It grants no user access and is not
+  // a credential — downloader.js needs it for search-continuation calls.
+  /AIza(?!SyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8)[0-9A-Za-z_-]{35}/,
   /[0-9]{12}-[0-9a-z]{32}\.apps\.googleusercontent\.com/, // Google OAuth client ID
-  /ya29\.[0-9A-Za-z_-]+/,                               // Google access token
-  /sk-[0-9A-Za-z]{20,}/,                                // OpenAI-style keys
-  /AKIA[0-9A-Z]{16}/                                    // AWS keys
+  /ya29\.[0-9A-Za-z_-]+/,                                // Google OAuth access token
+  /sk-[0-9A-Za-z]{20,}/,                                  // OpenAI-style keys
+  /AKIA[0-9A-Z]{16}/,                                     // AWS keys
+  // Real Google client secrets are always "GOCSPX-" + 28 chars. Matching the
+  // VALUE format (not the field name) catches genuine leaks while ignoring
+  // field references, empty strings, and "GOCSPX-SELFTEST"-style placeholders.
+  /GOCSPX-[0-9A-Za-z_-]{20,}/,
+  /-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----/
 ];
 var secretHits = 0;
 gitFiles.forEach(function (file) {
