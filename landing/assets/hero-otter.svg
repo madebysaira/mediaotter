@@ -37,6 +37,11 @@
     <stop offset="48%" stop-color="#4a5a8a"/>
     <stop offset="100%" stop-color="#4a5a8a"/>
   </linearGradient>
+  <radialGradient id="softShade" cx="30%" cy="55%" r="70%">
+    <stop offset="0%" stop-color="#232c4e" stop-opacity="0.45"/>
+    <stop offset="62%" stop-color="#232c4e" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="#232c4e" stop-opacity="0"/>
+  </radialGradient>
 </defs>
 
 <!-- grounded anchor — soft wide shadow under shoulders -->
@@ -55,6 +60,9 @@
 <!-- HEADPHONES cups — behind head, ~30% overlap (head drawn on top of inner edge) -->
 <ellipse cx="296" cy="506" rx="54" ry="78" fill="#4a5a8a"/>
 <ellipse cx="612" cy="506" rx="58" ry="82" fill="#4a5a8a"/>
+<!-- driver depth — subtle inner ellipses -->
+<ellipse cx="296" cy="508" rx="27" ry="40" fill="#232c4e" opacity="0.5"/>
+<ellipse cx="612" cy="508" rx="30" ry="44" fill="#232c4e" opacity="0.5"/>
 <path d="M 254 438 C 240 462 236 492 242 524 C 246 496 254 470 268 448 C 280 428 296 416 316 410 C 282 410 262 418 254 438 Z" fill="#dce6f7" opacity="0.96"/>
 <path d="M 564 428 C 548 452 544 484 552 518 C 556 490 566 464 582 442 C 596 422 616 410 640 404 C 602 404 574 410 564 428 Z" fill="#dce6f7" opacity="0.98"/>
 
@@ -62,14 +70,41 @@
 <path d="M 312 468 C 284 414 316 352 384 324 C 438 302 522 312 568 352 C 612 390 626 452 612 516 C 598 580 554 628 484 652 C 412 672 332 634 310 562 C 302 524 304 492 312 468 Z" fill="#4a5a8a"/>
 <!-- jaw / neck shadow — lower-left falloff -->
 <path d="M 312 468 C 298 492 298 534 320 574 C 344 612 392 644 452 660 C 484 652 516 634 544 606 C 502 612 462 604 430 578 C 374 534 348 492 360 452 C 336 452 318 460 312 468 Z" fill="url(#shadowPlane)"/>
+<!-- deepen shading — extra lower-left head/neck plane for roundness (soft, gradient) -->
+<ellipse cx="356" cy="614" rx="96" ry="68" fill="url(#softShade)" opacity="0.95"/>
+<path d="M 318 544 C 302 570 306 604 328 634 C 352 658 388 668 418 668 C 392 650 368 624 350 588 C 336 562 324 538 318 544 Z" fill="#232c4e" opacity="0.28"/>
 <!-- lit forehead — upper-right -->
 <path d="M 384 324 C 438 302 522 312 568 352 C 552 384 508 408 458 412 C 412 412 376 390 368 348 C 372 334 376 328 384 324 Z" fill="url(#litPlane)" opacity="0.98"/>
 <!-- cheek plane — large smooth -->
 <path d="M 368 452 C 408 438 476 436 528 462 C 542 490 534 526 508 558 C 462 580 404 578 364 548 C 332 524 340 474 368 452 Z" fill="url(#midPlane)" opacity="0.98"/>
+<!-- cheek/muzzle sheen — soft #dce6f7 blush on lit upper-right cheek -->
+<ellipse cx="512" cy="496" rx="38" ry="22" fill="#dce6f7" opacity="0.30"/>
+<ellipse cx="504" cy="506" rx="22" ry="12" fill="#dce6f7" opacity="0.18"/>
 <!-- muzzle — lighter -->
 <path d="M 298 504 C 270 518 262 552 278 582 C 294 612 332 630 376 626 C 410 620 430 596 430 564 C 430 528 398 504 352 500 C 326 498 306 500 298 504 Z" fill="url(#muzzleFill)"/>
 <ellipse cx="302" cy="546" rx="16" ry="12.5" fill="#232c4e"/>
 <ellipse cx="298" cy="542" rx="6.5" ry="4.5" fill="#dce6f7" opacity="0.92"/>
+
+<!-- FUR TEXTURE — 4 restrained tapered stroke groups, #dce6f7 low-opacity, suggesting fur direction -->
+<g opacity="0.16">
+  <path d="M 490 842 C 493 856 496 870 499 884" stroke="#dce6f7" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <path d="M 508 848 C 511 862 514 876 517 890" stroke="#dce6f7" stroke-width="1.9" stroke-linecap="round" fill="none"/>
+  <path d="M 527 852 C 530 866 533 880 536 894" stroke="#dce6f7" stroke-width="1.7" stroke-linecap="round" fill="none"/>
+  <path d="M 546 860 C 549 872 552 884 554 896" stroke="#dce6f7" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+</g>
+<g opacity="0.14">
+  <path d="M 334 564 C 340 578 346 592 350 606" stroke="#dce6f7" stroke-width="1.9" stroke-linecap="round" fill="none"/>
+  <path d="M 350 558 C 356 572 362 586 366 600" stroke="#dce6f7" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+  <path d="M 364 552 C 368 564 372 576 376 588" stroke="#dce6f7" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+</g>
+<g opacity="0.12">
+  <path d="M 412 836 C 415 850 418 864 420 878" stroke="#dce6f7" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+  <path d="M 428 844 C 431 857 433 870 436 883" stroke="#dce6f7" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+</g>
+<g opacity="0.18">
+  <path d="M 468 512 C 474 522 480 534 484 546" stroke="#dce6f7" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+  <path d="M 482 506 C 488 516 494 528 498 540" stroke="#dce6f7" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+</g>
 
 <!-- EARS — small rounded triangles tucked near headphone band -->
 <path d="M 364 344 C 352 324 332 314 322 328 C 312 342 320 362 342 372 C 356 374 366 360 364 344 Z" fill="#4a5a8a"/>
@@ -93,6 +128,9 @@
 <circle cx="620" cy="300" r="132" fill="url(#orbHalo)"/>
 <circle cx="620" cy="300" r="62" fill="url(#orbCore)"/>
 <ellipse cx="604" cy="278" rx="26" ry="20" fill="white" opacity="0.20"/>
+<!-- orbiting motion arcs around orb — 2 short arcs, #edff45, stroke-width 3, opacity .35 -->
+<path d="M 548 252 A 88 88 0 0 1 572 216" fill="none" stroke="#edff45" stroke-width="3" stroke-linecap="round" opacity="0.35"/>
+<path d="M 668 372 A 88 88 0 0 1 696 346" fill="none" stroke="#edff45" stroke-width="3" stroke-linecap="round" opacity="0.35" stroke-dasharray="12 7"/>
 <path d="M 600 272 L 644 300 L 600 328 Z" fill="#0b0e1a" opacity="0.98"/>
 <circle cx="684" cy="242" r="4.2" fill="#edff45" opacity="0.95"/>
 <circle cx="694" cy="268" r="2.6" fill="#edff45" opacity="0.88"/>
