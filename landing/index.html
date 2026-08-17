@@ -338,6 +338,21 @@
   /* utilities */
   .muted{color:var(--dim)}
   .hairline{height:1px;background:rgba(255,255,255,0.06);margin:0}
+  /* mobile polish */
+  .import-card{display:grid;grid-template-columns:1.1fr 0.9fr;gap:22px;align-items:center}
+  @media(max-width:640px){.import-card{grid-template-columns:1fr}}
+  @media(max-width:480px){
+    .wrap{padding:0 18px}
+    .section{padding:56px 0}
+    .section-head h2{font-size:24px}
+    .hero{padding-top:14px}
+    .hero h1{font-size:30px}
+    .hero-frame-wrap{width:min(300px,calc(100vw - 40px))}
+    .cta-row .btn{flex:1 1 auto;white-space:normal;padding:12px 14px}
+    .oss-panel{padding:22px 18px}
+    .oss-stats{flex-direction:column}
+    pre{font-size:12px!important;padding:14px 14px!important}
+  }
 </style>
 </head>
 <body>
@@ -486,7 +501,7 @@
           <span class="bento-chip"><i class="fa-solid fa-stopwatch" aria-hidden="true"></i> Start–end range</span>
         </article>
         <!-- Import to project — large with downloads screenshot -->
-        <article class="bento-card span-12 reveal" style="display:grid;grid-template-columns:1.1fr 0.9fr;gap:22px;align-items:center">
+        <article class="bento-card span-12 reveal import-card">
           <div>
             <div class="bento-icon"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i></div>
             <h3>Import to project</h3>
@@ -582,6 +597,10 @@
             <p>Paste this into Terminal. It downloads the right build for your Mac (Apple Silicon or Intel), installs it into the Adobe CEP extensions folder, and enables unsigned-extension loading — no admin password, no Java, no signing tools.</p>
             <pre style="background:#07090d;border:1px solid var(--border);border-radius:12px;padding:16px 18px;overflow-x:auto;font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.6;color:#c9d6ea;margin:18px 0 8px;white-space:pre-wrap;word-break:break-all"><code>curl -fsSL https://github.com/madebysaira/mediaotter/releases/latest/download/install.sh | sh</code></pre>
             <p style="font-size:13px;color:var(--faint)">Then restart Premiere Pro / After Effects and open <strong style="color:var(--text)">Window → Extensions → MediaOtter</strong>.</p>
+            <figure style="margin:16px 0 0">
+              <img src="screenshots/install-demo.gif" alt="Animated demo: open Terminal, paste the one-line install command, press Enter, and MediaOtter installs itself" width="460" height="340" loading="lazy" style="width:100%;max-width:460px;border:1px solid var(--border);border-radius:12px;background:#0b0f15">
+              <figcaption style="font-size:12px;color:var(--faint);margin-top:8px"><i class="fa-solid fa-circle-play" aria-hidden="true"></i> How to run it: open <strong style="color:var(--text)">Terminal</strong> (Cmd+Space → “Terminal”), paste the line, press <strong style="color:var(--text)">Enter</strong> — it installs in about a minute.</figcaption>
+            </figure>
           </div>
           <div class="oss-cta">
             <a class="btn btn-primary" href="https://github.com/madebysaira/mediaotter/releases" target="_blank" rel="noopener noreferrer" style="width:100%"><i class="fa-solid fa-download" aria-hidden="true"></i> Manual download (.zip)</a>
@@ -667,6 +686,10 @@
 
 <script>
 (function(){
+  // Phone visitors get the handoff page (email / WhatsApp / open on desktop) unless ?desktop=1
+  if (window.innerWidth < 768 && !/desktop=1/.test(location.search)) {
+    location.replace('phone.html');
+  }
   var header=document.getElementById('siteHeader');
   function onScroll(){ if(window.scrollY>24) header.classList.add('scrolled'); else header.classList.remove('scrolled'); }
   onScroll(); window.addEventListener('scroll',onScroll,{passive:true});
