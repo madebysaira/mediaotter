@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terms of Service — MediaOtter</title>
+<meta name="description" content="Terms of Service for MediaOtter — MIT-licensed open-source extension for Premiere Pro & After Effects. Acceptable use, license, disclaimer, and governing law.">
+<meta name="author" content="Sagarika Sultana">
+<link rel="canonical" href="https://mediaotter.madebysaira.com/terms.html">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Terms of Service — MediaOtter">
+<meta property="og:description" content="Terms for MediaOtter — open-source, MIT-licensed media downloader for Premiere Pro & After Effects.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mediaotter.madebysaira.com/terms.html">
+<meta property="og:site_name" content="MediaOtter">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Terms of Service — MediaOtter">
+<meta name="twitter:description" content="Terms for MediaOtter — open-source, MIT-licensed media downloader for Premiere Pro & After Effects.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+<style>
+  :root{
+    --bg:#0c1015;--bg-soft:#11161d;
+    --card:rgba(255,255,255,0.045);--card-hover:rgba(255,255,255,0.07);
+    --border:rgba(255,255,255,0.08);--border-strong:rgba(255,255,255,0.14);
+    --text:#e9eff8;--dim:#93a1b5;--faint:#5c6b80;
+    --accent:#4f8cff;--accent-soft:rgba(79,140,255,0.13);--accent-border:rgba(79,140,255,0.22);
+    --radius:16px;--max:1120px;--content:760px;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline;text-underline-offset:3px}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  .skip-link{position:absolute;left:-9999px;top:8px;z-index:999;background:var(--accent);color:#fff;padding:10px 16px;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none}
+  .skip-link:focus{left:12px}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:999px;border:1px solid transparent;font-family:inherit;font-size:14px;font-weight:600;line-height:1;text-decoration:none;cursor:pointer;white-space:nowrap;transition:transform 200ms ease-out,box-shadow 200ms ease-out,background 200ms ease-out,border-color 200ms ease-out,filter 200ms ease-out}
+  .btn:active{transform:scale(0.98)}
+  .btn-primary{background:var(--accent);color:#0c1015;border-color:var(--accent);box-shadow:0 6px 20px rgba(79,140,255,0.28)}
+  .btn-primary:hover{filter:brightness(1.07);box-shadow:0 10px 28px rgba(79,140,255,0.38);text-decoration:none}
+  .btn-ghost{background:var(--card);color:var(--text);border-color:var(--border);backdrop-filter:blur(10px)}
+  .btn-ghost:hover{background:var(--card-hover);border-color:var(--border-strong);text-decoration:none}
+  .btn-sm{padding:9px 16px;font-size:13px}
+  .site-header{position:sticky;top:0;z-index:50;height:64px;display:flex;align-items:center;border-bottom:1px solid transparent;background:transparent;transition:background 200ms ease-out,border-color 200ms ease-out,backdrop-filter 200ms ease-out}
+  .site-header.scrolled{background:rgba(12,16,21,0.78);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border-color:var(--border)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-0.02em;text-decoration:none;color:var(--text)}
+  .brand-mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--accent-soft);border:1px solid var(--accent-border);color:var(--accent);font-size:14px;flex-shrink:0}
+  .nav-links{display:flex;align-items:center;gap:22px}
+  .nav-links a{font-size:13.5px;font-weight:500;color:var(--dim);text-decoration:none;transition:color 200ms ease-out}
+  .nav-links a:hover{color:var(--text);text-decoration:none}
+  .nav-links a[aria-current="page"]{color:var(--text)}
+  .nav-actions{display:flex;align-items:center;gap:12px}
+  .menu-toggle{display:none;appearance:none;background:var(--card);border:1px solid var(--border);color:var(--text);width:40px;height:40px;border-radius:10px;align-items:center;justify-content:center;cursor:pointer;transition:transform 200ms ease-out}
+  .menu-toggle:active{transform:scale(0.98)}
+  .mobile-panel{display:none;position:fixed;inset:64px 0 auto 0;background:rgba(12,16,21,0.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:16px 24px 20px;z-index:49}
+  .mobile-panel.open{display:block}
+  .mobile-panel a{display:block;padding:12px 0;font-size:15px;font-weight:500;color:var(--dim);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.06)}
+  .mobile-panel a:last-child{border-bottom:0}
+  .mobile-panel a:hover{color:var(--text)}
+  @media(max-width:780px){.nav-links{display:none}.menu-toggle{display:inline-flex}}
+  .page-hero{padding:32px 0 20px;border-bottom:1px solid rgba(255,255,255,0.06)}
+  .page-hero h1{margin:0;font-size:32px;font-weight:700;letter-spacing:-0.025em;line-height:1.15}
+  .page-hero .meta{margin-top:10px;font-size:13px;color:var(--dim);display:flex;gap:16px;flex-wrap:wrap}
+  .page-hero .meta span{display:inline-flex;gap:6px;align-items:center}
+  .breadcrumb{margin-bottom:14px;font-size:13px;color:var(--faint)}
+  .breadcrumb a{color:var(--dim);text-decoration:none}
+  .breadcrumb a:hover{color:var(--text)}
+  .content{max-width:var(--content);margin:0 auto}
+  .legal{padding:36px 0 64px}
+  .legal h2{margin:32px 0 10px;font-size:18px;font-weight:600;letter-spacing:-0.015em;line-height:1.3;color:var(--text)}
+  .legal h3{margin:22px 0 8px;font-size:15px;font-weight:600;color:var(--text)}
+  .legal p{margin:0 0 14px;font-size:14px;line-height:1.75;color:var(--dim)}
+  .legal ul,.legal ol{margin:0 0 14px;padding-left:22px;color:var(--dim);font-size:14px;line-height:1.75}
+  .legal li{margin:6px 0}
+  .legal strong{color:var(--text);font-weight:600}
+  .callout{background:var(--bg-soft);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin:18px 0}
+  .callout p{margin:0;font-size:13.5px}
+  .callout code{background:var(--card);border:1px solid var(--border);padding:2px 6px;border-radius:6px;font-size:12.5px;color:var(--text)}
+  .toc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin:20px 0 28px;backdrop-filter:blur(10px)}
+  .toc h2{margin:0 0 10px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint)}
+  .toc ol{margin:0;padding-left:18px;font-size:13px;color:var(--dim);line-height:1.9}
+  .toc a{color:var(--dim);text-decoration:none}
+  .toc a:hover{color:var(--text);text-decoration:underline}
+  .site-footer{border-top:1px solid rgba(255,255,255,0.06);padding:32px 0 40px}
+  .footer-grid{display:flex;flex-wrap:wrap;gap:28px;justify-content:space-between;align-items:flex-start}
+  .footer-brand{max-width:360px}
+  .footer-brand p{margin:10px 0 0;color:var(--dim);font-size:13px;line-height:1.6}
+  .footer-links{display:flex;gap:28px;flex-wrap:wrap}
+  .footer-col h3{margin:0 0 10px;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint)}
+  .footer-col a{display:block;font-size:13px;color:var(--dim);text-decoration:none;padding:5px 0;transition:color 200ms ease-out}
+  .footer-col a:hover{color:var(--text)}
+  .footer-bottom{margin-top:28px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.06);display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;font-size:12px;color:var(--faint)}
+  .footer-bottom a{color:var(--dim);text-decoration:none}
+  .footer-bottom a:hover{color:var(--text)}
+  @media(prefers-reduced-motion:no-preference){.reveal{opacity:0;transform:translateY(8px);transition:opacity 520ms cubic-bezier(0.16,1,0.3,1),transform 520ms cubic-bezier(0.16,1,0.3,1)}.reveal.in{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header" id="siteHeader">
+  <div class="wrap">
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html" class="brand" aria-label="MediaOtter home">
+        <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-otter"></i></span>
+        <span>Media<span style="font-weight:600;opacity:0.9">Otter</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html#features">Features</a>
+        <a href="index.html#screenshots">Screenshots</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html" aria-current="page">Terms</a>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-primary btn-sm" href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> GitHub</a>
+        <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobilePanel"><i class="fa-solid fa-bars"></i></button>
+      </div>
+    </nav>
+  </div>
+</header>
+<div class="mobile-panel" id="mobilePanel" hidden>
+  <a href="index.html#features">Features</a>
+  <a href="index.html#screenshots">Screenshots</a>
+  <a href="privacy.html">Privacy Policy</a>
+  <a href="terms.html" aria-current="page">Terms of Service</a>
+  <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">GitHub — madebysaira/mediaotter</a>
+</div>
+
+<main id="main">
+  <div class="page-hero">
+    <div class="wrap content">
+      <div class="breadcrumb"><a href="index.html">MediaOtter</a> · Terms of Service</div>
+      <h1>Terms of Service</h1>
+      <div class="meta">
+        <span><i class="fa-regular fa-calendar" aria-hidden="true"></i> Effective date: August 17, 2026</span>
+        <span><i class="fa-solid fa-user" aria-hidden="true"></i> madebysaira — Sagarika Sultana</span>
+        <span><i class="fa-solid fa-envelope" aria-hidden="true"></i> <a href="mailto:saira@madebysaira.com">saira@madebysaira.com</a></span>
+      </div>
+    </div>
+  </div>
+
+  <section class="legal">
+    <div class="wrap content">
+      <div class="callout reveal">
+        <p><strong>In short:</strong> MediaOtter is free, open-source software provided “as is.” You are responsible for how you use it — respect copyright, platform terms, and your local law. If that sounds reasonable, you will get along with these terms just fine.</p>
+      </div>
+
+      <nav class="toc reveal" aria-label="Table of contents">
+        <h2>Contents</h2>
+        <ol>
+          <li><a href="#acceptance">Acceptance of terms</a></li>
+          <li><a href="#who">Who we are</a></li>
+          <li><a href="#license">Open-source license (MIT)</a></li>
+          <li><a href="#acceptable-use">Acceptable use &amp; copyright</a></li>
+          <li><a href="#accounts">Accounts &amp; credentials</a></li>
+          <li><a href="#third-party">Third-party services &amp; content</a></li>
+          <li><a href="#ip">Intellectual property &amp; trademarks</a></li>
+          <li><a href="#warranty">No warranty</a></li>
+          <li><a href="#liability">Limitation of liability</a></li>
+          <li><a href="#changes">Changes to the service &amp; terms</a></li>
+          <li><a href="#termination">Termination</a></li>
+          <li><a href="#law">Governing law</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ol>
+      </nav>
+
+      <h2 id="acceptance">1. Acceptance of these Terms</h2>
+      <p>By downloading, installing, or using MediaOtter (the “Software”), you agree to these Terms of Service (the “Terms”) and to our <a href="privacy.html">Privacy Policy</a>. If you do not agree, do not use the Software.</p>
+      <p>If you use MediaOtter on behalf of an organization, you represent that you have authority to bind that organization to these Terms.</p>
+
+      <h2 id="who">2. Who operates MediaOtter</h2>
+      <p>MediaOtter is built and maintained by <strong>madebysaira — Sagarika Sultana</strong>, an independent open-source project based in Tripura, India. Contact: <a href="mailto:saira@madebysaira.com">saira@madebysaira.com</a>. The project's source and releases are at <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">github.com/madebysaira/mediaotter</a>.</p>
+
+      <h2 id="license">3. Open-source license (MIT)</h2>
+      <p>MediaOtter is released under the <strong>MIT License</strong>. A copy of the license is included in the repository at <a href="https://github.com/madebysaira/mediaotter/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">github.com/madebysaira/mediaotter/blob/main/LICENSE</a> and reproduced below for convenience:</p>
+      <div class="callout" style="font-size:13px;line-height:1.7;color:var(--dim);white-space:pre-wrap;word-break:break-word">MIT License — Copyright (c) 2026 MediaOtter contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</div>
+      <p>In short: you may use, copy, modify, and distribute MediaOtter for any purpose, subject to including the copyright and permission notices. For the full text, see the LICENSE file in the repository.</p>
+
+      <h2 id="acceptable-use">4. Acceptable use &amp; copyright</h2>
+      <p>MediaOtter is a <strong>neutral download tool</strong> — like a browser, it retrieves publicly available streams and saves them to your computer in a Premiere-compatible format. How you use the content you download is your responsibility.</p>
+      <p>You agree to:</p>
+      <ul>
+        <li>Comply with <strong>YouTube's Terms of Service</strong> (<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">youtube.com/t/terms</a>), the <a href="https://developers.google.com/youtube/terms/api-services-terms-of-service" target="_blank" rel="noopener noreferrer">YouTube API Services Terms</a> (when signed in), and the terms of any other site you access via the Software.</li>
+        <li>Comply with <strong>applicable copyright law</strong> in your jurisdiction. Only download content that you own, have licensed, have permission to use, or that is in the public domain / under a permissive license.</li>
+        <li>Not use MediaOtter to infringe copyright, trademarks, or other intellectual property rights, or to download content for redistribution in violation of law.</li>
+        <li>Not use the Software for any unlawful, harmful, harassing, or deceptive purpose, or to circumvent access controls where prohibited by law.</li>
+      </ul>
+      <p>We do not monitor your downloads, we do not host content, and we do not induce infringement. If you are unsure whether you have rights to a particular video or track, consult a qualified advisor before downloading or publishing it.</p>
+
+      <h2 id="accounts">5. Accounts &amp; credentials</h2>
+      <p>MediaOtter requires <strong>no account</strong> for core features. The optional “Sign in with Google” feature uses your own Google Cloud OAuth credentials (you create them, or use the build-time client ID). You are responsible for keeping those credentials and your local token file (<code>~/.mediaotter/auth.json</code>) secure on your machine. See the <a href="privacy.html#google-oauth">Privacy Policy</a> for how tokens are stored.</p>
+      <p>Similarly, the optional “Use browser session” feature reads cookies from your own browser locally. You are responsible for ensuring you have the right to access any private or age-restricted content you retrieve.</p>
+
+      <h2 id="third-party">6. Third-party services &amp; content</h2>
+      <p>MediaOtter interacts with third-party services only on your behalf and on your machine:</p>
+      <ul>
+        <li><strong>Adobe Premiere Pro and After Effects</strong> — the hosts for the CEP 10 extension. Your use of Adobe software is governed by Adobe's own terms.</li>
+        <li><strong>YouTube / YouTube Data API v3</strong> — governed by Google's and YouTube's terms. MediaOtter accesses YouTube only through the public web streams your browser would play and, when signed in, through the official Data API with the <code>youtube.readonly</code> scope.</li>
+        <li><strong>yt-dlp and ffmpeg</strong> — bundled open-source binaries that perform the actual download and muxing. They are separate projects under their own licenses.</li>
+        <li><strong>Other video/audio sites</strong> — accessed via yt-dlp when you paste a URL. Each site has its own terms and copyrights.</li>
+      </ul>
+      <p>We do not control third-party sites or their content, and we are not responsible for their availability, accuracy, or legality. A site may change or block the download method at any time — MediaOtter attempts to stay compatible via yt-dlp updates but makes no guarantee.</p>
+
+      <h2 id="ip">7. Intellectual property &amp; trademarks</h2>
+      <ul>
+        <li><strong>MediaOtter</strong> — the name, logo (otter mark), and original code are part of the MIT-licensed project. You may fork and adapt them under the license terms.</li>
+        <li><strong>Third-party trademarks</strong> — Adobe, Premiere Pro, After Effects, and the Adobe logo are trademarks or registered trademarks of Adobe Inc. YouTube, Google, and related marks are trademarks of Google LLC. Vimeo, SoundCloud, Twitch, TikTok, and other site names are property of their respective owners. All trademarks are used nominatively to describe compatibility. <strong>MediaOtter is not affiliated with, sponsored by, or endorsed by Adobe or Google.</strong></li>
+      </ul>
+
+      <h2 id="warranty">8. No warranty — provided “as is”</h2>
+      <p><strong>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</strong></p>
+      <p>We do not warrant that MediaOtter will be error-free, uninterrupted, secure, or compatible with every version of Premiere Pro, After Effects, macOS, or any third-party site. Video sites change their delivery formats frequently; downloads may fail or require an update.</p>
+      <p>This disclaimer matches the MIT License warranty disclaimer and applies to the maximum extent permitted by law.</p>
+
+      <h2 id="liability">9. Limitation of liability</h2>
+      <p><strong>IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</strong></p>
+      <p>This includes, without limitation, damages for lost profits, lost data, business interruption, or claims arising from your use of downloaded content. Some jurisdictions do not allow the exclusion of implied warranties or limitation of liability, so the above may not apply to you — in that case, liability is limited to the minimum extent permitted by law.</p>
+
+      <h2 id="changes">10. Changes to the service &amp; these Terms</h2>
+      <p>MediaOtter is an evolving open-source project. We may release updates, add or remove features, or correct bugs at any time. We may also update these Terms. When we do, we will post the revised Terms at <code>https://mediaotter.madebysaira.com/terms.html</code> with a new effective date and note the change in the GitHub repository's release notes. Your continued use of the Software after an update constitutes acceptance of the revised Terms. If you disagree, stop using the Software.</p>
+
+      <h2 id="termination">11. Termination</h2>
+      <p>You may stop using MediaOtter at any time by uninstalling the extension and deleting <code>~/.mediaotter/</code> and the extension folder at <code>~/Library/Application Support/Adobe/CEP/extensions/MediaOtter</code>. These Terms remain in effect with respect to any prior use. We reserve the right to stop distributing or supporting the Software at any time, for any reason, without notice — it is open source, so the code will remain available on GitHub under the MIT License.</p>
+
+      <h2 id="law">12. Governing law</h2>
+      <p>These Terms are governed by the laws of <strong>India</strong>, without regard to conflict-of-laws principles. Any dispute arising out of or relating to the Software or these Terms shall be subject to the jurisdiction of the courts of <strong>Tripura, India</strong>, and you consent to that jurisdiction. This does not limit any mandatory consumer rights you may have under the laws of your own jurisdiction.</p>
+
+      <h2 id="contact">13. Contact</h2>
+      <p>Questions about these Terms? Contact:</p>
+      <p><strong>madebysaira — Sagarika Sultana</strong><br>Email: <a href="mailto:saira@madebysaira.com">saira@madebysaira.com</a><br>GitHub: <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">github.com/madebysaira/mediaotter</a></p>
+
+      <p style="margin-top:28px;font-size:12px;color:var(--faint)">Effective date: August 17, 2026 · Last updated: August 17, 2026 · These terms incorporate the MIT License warranty and liability disclaimers verbatim.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" aria-label="Footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="brand" style="text-decoration:none"><span class="brand-mark"><i class="fa-solid fa-otter"></i></span> MediaOtter</a>
+        <p>The media downloader for Premiere Pro &amp; After Effects. Open-source, offline-capable, and yours to keep.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h3>Product</h3>
+          <a href="index.html#features">Features</a>
+          <a href="index.html#screenshots">Screenshots</a>
+          <a href="https://github.com/madebysaira/mediaotter/releases" target="_blank" rel="noopener noreferrer">Download</a>
+        </div>
+        <div class="footer-col">
+          <h3>Legal</h3>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html" aria-current="page">Terms of Service</a>
+          <a href="https://github.com/madebysaira/mediaotter/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>
+        </div>
+        <div class="footer-col">
+          <h3>Links</h3>
+          <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://github.com/madebysaira" target="_blank" rel="noopener noreferrer">madebysaira</a>
+          <a href="mailto:saira@madebysaira.com">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 madebysaira · Sagarika Sultana · MIT licensed.</span>
+      <span>Made by <a href="https://github.com/madebysaira" target="_blank" rel="noopener noreferrer">Sagarika Sultana (madebysaira)</a> · <a href="mailto:saira@madebysaira.com">saira@madebysaira.com</a></span>
+    </div>
+  </div>
+</footer>
+
+<noscript><div style="max-width:760px;margin:12px auto;padding:12px 16px;background:rgba(255,176,32,0.12);border:1px solid rgba(255,176,32,0.24);color:#ffcf7a;border-radius:12px;font-size:13px;text-align:center">JavaScript is not required to read these terms — all content is visible without it.</div></noscript>
+<script>
+(function(){
+  var header=document.getElementById('siteHeader');
+  function onScroll(){ if(window.scrollY>24) header.classList.add('scrolled'); else header.classList.remove('scrolled'); }
+  onScroll(); window.addEventListener('scroll',onScroll,{passive:true});
+  var toggle=document.getElementById('menuToggle');
+  var panel=document.getElementById('mobilePanel');
+  if(toggle&&panel){
+    toggle.addEventListener('click',function(){
+      var open=panel.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open?'Close menu':'Open menu');
+      panel.hidden=!open;
+      toggle.innerHTML=open?'<i class="fa-solid fa-xmark"></i>':'<i class="fa-solid fa-bars"></i>';
+    });
+    panel.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){panel.classList.remove('open');panel.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.innerHTML='<i class="fa-solid fa-bars"></i>';});});
+  }
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in')});return;}
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:0.12});
+    document.querySelectorAll('.reveal').forEach(function(el,i){if(!el.style.transitionDelay) el.style.transitionDelay=(Math.min(i*40,140))+'ms';io.observe(el);});
+  } else {document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in')});}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — MediaOtter</title>
+<meta name="description" content="Privacy Policy for MediaOtter — open-source Adobe CEP extension. No telemetry, no tracking; all processing is local. Read how we handle YouTube OAuth and local data.">
+<meta name="author" content="Sagarika Sultana">
+<link rel="canonical" href="https://mediaotter.madebysaira.com/privacy.html">
+<meta name="robots" content="index,follow">
+<meta property="og:title" content="Privacy Policy — MediaOtter">
+<meta property="og:description" content="How MediaOtter handles data: local-only by default, no telemetry, YouTube OAuth only if you opt in.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mediaotter.madebysaira.com/privacy.html">
+<meta property="og:site_name" content="MediaOtter">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Privacy Policy — MediaOtter">
+<meta name="twitter:description" content="How MediaOtter handles data: local-only by default, no telemetry, YouTube OAuth only if you opt in.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+<style>
+  :root{
+    --bg:#0c1015;--bg-soft:#11161d;
+    --card:rgba(255,255,255,0.045);--card-hover:rgba(255,255,255,0.07);
+    --border:rgba(255,255,255,0.08);--border-strong:rgba(255,255,255,0.14);
+    --text:#e9eff8;--dim:#93a1b5;--faint:#5c6b80;
+    --accent:#4f8cff;--accent-soft:rgba(79,140,255,0.13);--accent-border:rgba(79,140,255,0.22);
+    --radius:16px;--max:1120px;--content:760px;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline;text-underline-offset:3px}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  .skip-link{position:absolute;left:-9999px;top:8px;z-index:999;background:var(--accent);color:#fff;padding:10px 16px;border-radius:999px;font-size:13px;font-weight:600;text-decoration:none}
+  .skip-link:focus{left:12px}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:999px;border:1px solid transparent;font-family:inherit;font-size:14px;font-weight:600;line-height:1;text-decoration:none;cursor:pointer;white-space:nowrap;transition:transform 200ms ease-out,box-shadow 200ms ease-out,background 200ms ease-out,border-color 200ms ease-out,filter 200ms ease-out}
+  .btn:active{transform:scale(0.98)}
+  .btn-primary{background:var(--accent);color:#0c1015;border-color:var(--accent);box-shadow:0 6px 20px rgba(79,140,255,0.28)}
+  .btn-primary:hover{filter:brightness(1.07);box-shadow:0 10px 28px rgba(79,140,255,0.38);text-decoration:none}
+  .btn-ghost{background:var(--card);color:var(--text);border-color:var(--border);backdrop-filter:blur(10px)}
+  .btn-ghost:hover{background:var(--card-hover);border-color:var(--border-strong);text-decoration:none}
+  .btn-sm{padding:9px 16px;font-size:13px}
+  .site-header{position:sticky;top:0;z-index:50;height:64px;display:flex;align-items:center;border-bottom:1px solid transparent;background:transparent;transition:background 200ms ease-out,border-color 200ms ease-out,backdrop-filter 200ms ease-out}
+  .site-header.scrolled{background:rgba(12,16,21,0.78);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border-color:var(--border)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-0.02em;text-decoration:none;color:var(--text)}
+  .brand-mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--accent-soft);border:1px solid var(--accent-border);color:var(--accent);font-size:14px;flex-shrink:0}
+  .nav-links{display:flex;align-items:center;gap:22px}
+  .nav-links a{font-size:13.5px;font-weight:500;color:var(--dim);text-decoration:none;transition:color 200ms ease-out}
+  .nav-links a:hover{color:var(--text);text-decoration:none}
+  .nav-links a[aria-current="page"]{color:var(--text);text-decoration:none}
+  .nav-actions{display:flex;align-items:center;gap:12px}
+  .menu-toggle{display:none;appearance:none;background:var(--card);border:1px solid var(--border);color:var(--text);width:40px;height:40px;border-radius:10px;align-items:center;justify-content:center;cursor:pointer;transition:transform 200ms ease-out}
+  .menu-toggle:active{transform:scale(0.98)}
+  .mobile-panel{display:none;position:fixed;inset:64px 0 auto 0;background:rgba(12,16,21,0.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:16px 24px 20px;z-index:49}
+  .mobile-panel.open{display:block}
+  .mobile-panel a{display:block;padding:12px 0;font-size:15px;font-weight:500;color:var(--dim);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.06)}
+  .mobile-panel a:last-child{border-bottom:0}
+  .mobile-panel a:hover{color:var(--text)}
+  @media(max-width:780px){.nav-links{display:none}.menu-toggle{display:inline-flex}}
+  /* article */
+  .page-hero{padding:32px 0 20px;border-bottom:1px solid rgba(255,255,255,0.06)}
+  .page-hero h1{margin:0;font-size:32px;font-weight:700;letter-spacing:-0.025em;line-height:1.15}
+  .page-hero .meta{margin-top:10px;font-size:13px;color:var(--dim);display:flex;gap:16px;flex-wrap:wrap}
+  .page-hero .meta span{display:inline-flex;gap:6px;align-items:center}
+  .breadcrumb{margin-bottom:14px;font-size:13px;color:var(--faint)}
+  .breadcrumb a{color:var(--dim);text-decoration:none}
+  .breadcrumb a:hover{color:var(--text)}
+  .content{max-width:var(--content);margin:0 auto}
+  .legal{padding:36px 0 64px}
+  .legal h2{margin:32px 0 10px;font-size:18px;font-weight:600;letter-spacing:-0.015em;line-height:1.3;color:var(--text)}
+  .legal h3{margin:22px 0 8px;font-size:15px;font-weight:600;color:var(--text)}
+  .legal p{margin:0 0 14px;font-size:14px;line-height:1.75;color:var(--dim)}
+  .legal ul,.legal ol{margin:0 0 14px;padding-left:22px;color:var(--dim);font-size:14px;line-height:1.75}
+  .legal li{margin:6px 0}
+  .legal strong{color:var(--text);font-weight:600}
+  .callout{background:var(--bg-soft);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin:18px 0}
+  .callout p{margin:0;font-size:13.5px}
+  .callout code{background:var(--card);border:1px solid var(--border);padding:2px 6px;border-radius:6px;font-size:12.5px;color:var(--text)}
+  .toc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin:20px 0 28px;backdrop-filter:blur(10px)}
+  .toc h2{margin:0 0 10px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint)}
+  .toc ol{margin:0;padding-left:18px;font-size:13px;color:var(--dim);line-height:1.9}
+  .toc a{color:var(--dim);text-decoration:none}
+  .toc a:hover{color:var(--text);text-decoration:underline}
+  .site-footer{border-top:1px solid rgba(255,255,255,0.06);padding:32px 0 40px}
+  .footer-grid{display:flex;flex-wrap:wrap;gap:28px;justify-content:space-between;align-items:flex-start}
+  .footer-brand{max-width:360px}
+  .footer-brand p{margin:10px 0 0;color:var(--dim);font-size:13px;line-height:1.6}
+  .footer-links{display:flex;gap:28px;flex-wrap:wrap}
+  .footer-col h3{margin:0 0 10px;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint)}
+  .footer-col a{display:block;font-size:13px;color:var(--dim);text-decoration:none;padding:5px 0;transition:color 200ms ease-out}
+  .footer-col a:hover{color:var(--text)}
+  .footer-bottom{margin-top:28px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.06);display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;font-size:12px;color:var(--faint)}
+  .footer-bottom a{color:var(--dim);text-decoration:none}
+  .footer-bottom a:hover{color:var(--text)}
+  @media(prefers-reduced-motion:no-preference){.reveal{opacity:0;transform:translateY(8px);transition:opacity 520ms cubic-bezier(0.16,1,0.3,1),transform 520ms cubic-bezier(0.16,1,0.3,1)}.reveal.in{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header" id="siteHeader">
+  <div class="wrap">
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html" class="brand" aria-label="MediaOtter home">
+        <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-otter"></i></span>
+        <span>Media<span style="font-weight:600;opacity:0.9">Otter</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html#features">Features</a>
+        <a href="index.html#screenshots">Screenshots</a>
+        <a href="privacy.html" aria-current="page">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-primary btn-sm" href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> GitHub</a>
+        <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobilePanel"><i class="fa-solid fa-bars"></i></button>
+      </div>
+    </nav>
+  </div>
+</header>
+<div class="mobile-panel" id="mobilePanel" hidden>
+  <a href="index.html#features">Features</a>
+  <a href="index.html#screenshots">Screenshots</a>
+  <a href="privacy.html" aria-current="page">Privacy Policy</a>
+  <a href="terms.html">Terms of Service</a>
+  <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">GitHub — madebysaira/mediaotter</a>
+</div>
+
+<main id="main">
+  <div class="page-hero">
+    <div class="wrap content">
+      <div class="breadcrumb"><a href="index.html">MediaOtter</a> · Privacy Policy</div>
+      <h1>Privacy Policy</h1>
+      <div class="meta">
+        <span><i class="fa-regular fa-calendar" aria-hidden="true"></i> Effective date: August 17, 2026</span>
+        <span><i class="fa-solid fa-user" aria-hidden="true"></i> madebysaira — Sagarika Sultana</span>
+        <span><i class="fa-solid fa-envelope" aria-hidden="true"></i> <a href="mailto:saira@madebysaira.com">saira@madebysaira.com</a></span>
+      </div>
+    </div>
+  </div>
+
+  <section class="legal">
+    <div class="wrap content">
+      <div class="callout reveal">
+        <p><strong>Summary:</strong> MediaOtter is a local, open-source Adobe CEP extension. By default it collects nothing, contacts no servers, and works offline. The only data that ever leaves your machine is a direct request to Google's YouTube Data API — and only if you explicitly choose “Sign in with Google.”</p>
+      </div>
+
+      <nav class="toc reveal" aria-label="Table of contents">
+        <h2>Contents</h2>
+        <ol>
+          <li><a href="#who">Who we are</a></li>
+          <li><a href="#scope">Scope</a></li>
+          <li><a href="#no-collection">No data collected by default</a></li>
+          <li><a href="#local-storage">What is stored locally</a></li>
+          <li><a href="#google-oauth">Sign in with Google (optional)</a></li>
+          <li><a href="#cookies">Browser cookies (optional)</a></li>
+          <li><a href="#no-tracking">No telemetry, analytics, or ads</a></li>
+          <li><a href="#third-parties">Third-party services</a></li>
+          <li><a href="#website">Website privacy</a></li>
+          <li><a href="#sharing">Data sharing</a></li>
+          <li><a href="#retention">Retention &amp; deletion</a></li>
+          <li><a href="#rights">Your rights</a></li>
+          <li><a href="#children">Children</a></li>
+          <li><a href="#changes">Changes to this policy</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ol>
+      </nav>
+
+      <h2 id="who">1. Who we are</h2>
+      <p>MediaOtter is an open-source desktop extension for Adobe Premiere Pro and After Effects (CEP 10, macOS) built and maintained by <strong>madebysaira — Sagarika Sultana</strong>. The software is distributed under the MIT License at <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">github.com/madebysaira/mediaotter</a>. For privacy questions, contact <a href="mailto:saira@madebysaira.com">saira@madebysaira.com</a>.</p>
+
+      <h2 id="scope">2. Scope</h2>
+      <p>This policy covers two things:</p>
+      <ul>
+        <li><strong>The MediaOtter desktop extension</strong> — the CEP panel you install in Premiere Pro / After Effects.</li>
+        <li><strong>The MediaOtter website</strong> — <a href="https://mediaotter.madebysaira.com/">mediaotter.madebysaira.com</a>, which serves this landing page, Privacy Policy, and Terms of Service.</li>
+      </ul>
+
+      <h2 id="no-collection">3. No data collected by default</h2>
+      <p>By default, MediaOtter collects <strong>nothing</strong>. All processing — search, suggestions, metadata lookup, format planning, download, muxing, and import — runs <strong>locally on your machine</strong> using bundled binaries (yt-dlp and ffmpeg). No account is required to search or download, no data is sent to madebysaira, and no remote server operated by us receives your queries or download history.</p>
+      <p>If you never use “Sign in with Google” or “Use browser session,” the app makes zero authenticated requests and stores nothing except local settings and download history that you can delete at any time (see §11).</p>
+
+      <h2 id="local-storage">4. What is stored locally</h2>
+      <p>MediaOtter stores the following <strong>only on your machine</strong>, in standard application storage and in your home directory. Nothing is uploaded.</p>
+      <ul>
+        <li><strong>Settings</strong> — your preferences (quality cap, format preference, download folder, theme) stored in the extension's local storage.</li>
+        <li><strong>Download history</strong> — a local list of completed downloads (title, URL, file path, time) so you can re-import or drag items to your timeline.</li>
+        <li><strong>Auth token — only if you opt in</strong> (see §5) — an OAuth access token and refresh token for the YouTube Data API, stored at <code>~/.mediaotter/auth.json</code> with filesystem permissions <code>0600</code> (read/write for you only).</li>
+      </ul>
+      <p>All of these files remain on your computer. Uninstalling the extension and deleting <code>~/.mediaotter/</code> removes them.</p>
+
+      <h2 id="google-oauth">5. Sign in with Google (optional, opt-in only)</h2>
+      <p>MediaOtter offers an optional <strong>“Sign in with your own Google account”</strong> feature so you can browse your private YouTube playlists and liked videos inside the panel.</p>
+      <ul>
+        <li><strong>Scope:</strong> <code>youtube.readonly</code> only — read-only access to your YouTube playlists and liked videos. The app cannot upload, edit, delete, comment, or manage your account.</li>
+        <li><strong>OAuth flow:</strong> Standard Google OAuth 2.0 with PKCE via a local loopback redirect. You create your own Google Cloud OAuth client (a 5-minute setup) or use the build-time client ID included in packaged releases. The consent screen is Google's; we never see your password.</li>
+        <li><strong>Where tokens live:</strong> The access and refresh tokens are stored <strong>only</strong> at <code>~/.mediaotter/auth.json</code> on your machine, with restricted permissions. They are used solely to call the YouTube Data API v3 on your behalf to read your playlists/liked videos.</li>
+        <li><strong>What is transmitted:</strong> Only direct HTTPS requests from your machine to <code>googleapis.com</code> / <code>youtube.googleapis.com</code> to fetch your playlists. No token or watch history is sent to madebysaira or any other third party.</li>
+        <li><strong>Revocation:</strong> You can disconnect at any time inside MediaOtter (Settings → Sign out) which deletes <code>~/.mediaotter/auth.json</code>, or revoke access in your <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">Google Account permissions</a>.</li>
+      </ul>
+      <p>If you do not sign in, this entire section does not apply and no Google API is contacted.</p>
+
+      <h2 id="cookies">6. Browser cookies (optional, local only)</h2>
+      <p>MediaOtter includes an optional <strong>“Use browser session”</strong> toggle for private, age-restricted, or member-only videos. When enabled, the app reads cookies <strong>directly from your own browser's local cookie store</strong> (Chrome, Edge, Brave, or Firefox) on your machine and passes them to the local yt-dlp process so it can fetch the same content your browser can see.</p>
+      <ul>
+        <li>Cookies are read <strong>locally</strong> and are never transmitted to madebysaira or any other server.</li>
+        <li>They are used only for the duration of that download and are not stored by MediaOtter after the request.</li>
+        <li>You can disable this feature at any time in Settings.</li>
+      </ul>
+
+      <h2 id="no-tracking">7. No telemetry, no analytics, no ads, no tracking</h2>
+      <p>MediaOtter contains:</p>
+      <ul>
+        <li>No telemetry or usage analytics.</li>
+        <li>No crash reporting.</li>
+        <li>No advertising, ad SDKs, or affiliate links.</li>
+        <li>No fingerprinting, no cross-site tracking, no marketing cookies.</li>
+      </ul>
+      <p>The code is open source — you can verify this at <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">github.com/madebysaira/mediaotter</a>.</p>
+
+      <h2 id="third-parties">8. Third-party services</h2>
+      <p>When you use optional features, your machine communicates directly with these third parties under their own policies:</p>
+      <ul>
+        <li><strong>YouTube Data API v3 (Google LLC)</strong> — only when you sign in. Governed by <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google's Privacy Policy</a> and the <a href="https://developers.google.com/youtube/terms/api-services-terms-of-service" target="_blank" rel="noopener noreferrer">YouTube API Services Terms</a>. Data fetched is your own YouTube playlists/liked videos.</li>
+        <li><strong>yt-dlp and ffmpeg</strong> — local, bundled open-source binaries that run entirely on your machine. They make direct HTTPS requests to the video site you choose to download from (e.g., youtube.com, vimeo.com) — the same request your browser would make.</li>
+      </ul>
+      <p>No other third-party SDKs are bundled.</p>
+
+      <h2 id="website">9. Website privacy (mediaotter.madebysaira.com)</h2>
+      <p>The marketing site is a static site served by <strong>Cloudflare Pages</strong>.</p>
+      <ul>
+        <li>The site itself sets <strong>no cookies</strong> and runs no analytics of its own.</li>
+        <li>Cloudflare, as the hosting/CDN provider, may collect standard web-server logs (IP address, user-agent, requested path) for security and performance purposes under <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare's Privacy Policy</a>. We do not have access to individual identifiers beyond aggregated logs.</li>
+        <li>Fonts are loaded from Google Fonts and icons from cdnjs (Cloudflare) when you visit the site — those providers may receive your IP and user-agent as part of a normal web request. Where possible, system fonts are used as fallback.</li>
+      </ul>
+
+      <h2 id="sharing">10. Data sharing</h2>
+      <p>We do not sell, rent, or share any personal data. Because we do not collect personal data in the first place (see §3), there is nothing to share — except for the direct, user-initiated requests to Google's YouTube API and to video sites via yt-dlp described above, which happen on your machine and under your control.</p>
+
+      <h2 id="retention">11. Retention &amp; deletion</h2>
+      <p>All app data is stored locally and retained until you delete it:</p>
+      <ul>
+        <li><strong>OAuth tokens:</strong> Delete <code>~/.mediaotter/auth.json</code> or click <em>Sign out</em> in MediaOtter Settings. Also revoke at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a>.</li>
+        <li><strong>Settings &amp; download history:</strong> Stored in the extension's local application storage. Clear them in Settings or remove the extension; to fully wipe, delete <code>~/.mediaotter/</code> and the CEP extension folder at <code>~/Library/Application Support/Adobe/CEP/extensions/MediaOtter</code> (macOS).</li>
+        <li><strong>Website logs:</strong> Managed by Cloudflare per their retention policy; we do not retain additional copies.</li>
+      </ul>
+
+      <h2 id="rights">12. Your rights</h2>
+      <p>Depending on your jurisdiction (including the EEA, UK, and India), you may have rights to access, correct, delete, or restrict processing of personal data. Because MediaOtter stores data only on your device, you can exercise these rights directly by deleting the local files described above. For any request or question, contact <a href="mailto:saira@madebysaira.com">saira@madebysaira.com</a> — we will respond within 30 days.</p>
+
+      <h2 id="children">13. Children</h2>
+      <p>MediaOtter is not directed to children under 13 and we do not knowingly collect data from children. The extension is a professional tool for video editors.</p>
+
+      <h2 id="changes">14. Changes to this policy</h2>
+      <p>We may update this Privacy Policy from time to time. Any changes will be posted on this page at <code>https://mediaotter.madebysaira.com/privacy.html</code> with a revised effective date. Material changes will also be noted in the GitHub repository's release notes. Your continued use of the software after an update constitutes acceptance of the revised policy.</p>
+
+      <h2 id="contact">15. Contact</h2>
+      <p>If you have questions about this Privacy Policy or how MediaOtter handles data, contact:</p>
+      <p><strong>madebysaira — Sagarika Sultana</strong><br>Email: <a href="mailto:saira@madebysaira.com">saira@madebysaira.com</a><br>GitHub: <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">github.com/madebysaira/mediaotter</a></p>
+
+      <div class="callout" style="margin-top:28px">
+        <p style="font-size:13px;color:var(--faint)"><strong style="color:var(--dim)">Google API disclosure:</strong> MediaOtter's use and transfer of information received from Google APIs will adhere to the <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">Google API Services User Data Policy</a>, including the Limited Use requirements. Access is restricted to the <code>youtube.readonly</code> scope for reading your own content.</p>
+      </div>
+
+      <p style="margin-top:28px;font-size:12px;color:var(--faint)">Effective date: August 17, 2026 · Last updated: August 17, 2026</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" aria-label="Footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="brand" style="text-decoration:none"><span class="brand-mark"><i class="fa-solid fa-otter"></i></span> MediaOtter</a>
+        <p>The media downloader for Premiere Pro &amp; After Effects. Open-source, offline-capable, and yours to keep.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h3>Product</h3>
+          <a href="index.html#features">Features</a>
+          <a href="index.html#screenshots">Screenshots</a>
+          <a href="https://github.com/madebysaira/mediaotter/releases" target="_blank" rel="noopener noreferrer">Download</a>
+        </div>
+        <div class="footer-col">
+          <h3>Legal</h3>
+          <a href="privacy.html" aria-current="page">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="https://github.com/madebysaira/mediaotter/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>
+        </div>
+        <div class="footer-col">
+          <h3>Links</h3>
+          <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://github.com/madebysaira" target="_blank" rel="noopener noreferrer">madebysaira</a>
+          <a href="mailto:saira@madebysaira.com">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 madebysaira · Sagarika Sultana · MIT licensed.</span>
+      <span>Made by <a href="https://github.com/madebysaira" target="_blank" rel="noopener noreferrer">Sagarika Sultana (madebysaira)</a> · <a href="mailto:saira@madebysaira.com">saira@madebysaira.com</a></span>
+    </div>
+  </div>
+</footer>
+
+<noscript><div style="max-width:760px;margin:12px auto;padding:12px 16px;background:rgba(255,176,32,0.12);border:1px solid rgba(255,176,32,0.24);color:#ffcf7a;border-radius:12px;font-size:13px;text-align:center">JavaScript is not required to read this policy — all content is visible without it.</div></noscript>
+<script>
+(function(){
+  var header=document.getElementById('siteHeader');
+  function onScroll(){ if(window.scrollY>24) header.classList.add('scrolled'); else header.classList.remove('scrolled'); }
+  onScroll(); window.addEventListener('scroll',onScroll,{passive:true});
+  var toggle=document.getElementById('menuToggle');
+  var panel=document.getElementById('mobilePanel');
+  if(toggle&&panel){
+    toggle.addEventListener('click',function(){
+      var open=panel.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open?'Close menu':'Open menu');
+      panel.hidden=!open;
+      toggle.innerHTML=open?'<i class="fa-solid fa-xmark"></i>':'<i class="fa-solid fa-bars"></i>';
+    });
+    panel.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){panel.classList.remove('open');panel.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.innerHTML='<i class="fa-solid fa-bars"></i>';});});
+  }
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in')});return;}
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:0.12});
+    document.querySelectorAll('.reveal').forEach(function(el,i){if(!el.style.transitionDelay) el.style.transitionDelay=(Math.min(i*40,140))+'ms';io.observe(el);});
+  } else {document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in')});}
+})();
+</script>
+</body>
+</html>

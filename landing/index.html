@@ -1,223 +1,648 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MediaOtter — Search &amp; download video straight into Premiere Pro &amp; After Effects</title>
-  <meta name="description" content="MediaOtter is a free, open-source Adobe CEP panel that searches YouTube, signs into your account, and downloads video or audio — at up to 4K — straight into Premiere Pro and After Effects. 1000+ sites supported via yt-dlp." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦦</text></svg>" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-  <style>
-    :root {
-      --bg: #0c1015; --bg-soft: #11161d; --card: rgba(255,255,255,.045);
-      --border: rgba(255,255,255,.09); --text: #e8eef7; --dim: #8b98ab;
-      --accent: #4f8cff; --accent-2: #7c5cff; --success: #3ddc84; --warn: #ffb020;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: var(--bg); color: var(--text); font-family: 'Poppins', system-ui, sans-serif; line-height: 1.6; overflow-x: hidden; }
-    .bg-glow { position: fixed; inset: 0; z-index: -1; background:
-      radial-gradient(600px 400px at 15% 10%, rgba(79,140,255,.14), transparent 60%),
-      radial-gradient(700px 500px at 85% 20%, rgba(124,92,255,.12), transparent 60%),
-      radial-gradient(600px 600px at 50% 100%, rgba(61,220,132,.06), transparent 60%);
-    }
-    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
-    header { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
-    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; letter-spacing: .2px; }
-    .logo .otter { font-size: 26px; }
-    .logo em { font-style: normal; color: var(--accent); }
-    nav a { color: var(--dim); text-decoration: none; margin-left: 22px; font-size: 14px; font-weight: 500; transition: color .2s; }
-    nav a:hover { color: var(--text); }
-    .btn { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #fff; font-family: inherit; font-weight: 600; font-size: 14px; border: 0; border-radius: 10px; padding: 12px 22px; cursor: pointer; text-decoration: none; transition: transform .15s, box-shadow .2s; }
-    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(79,140,255,.35); }
-    .btn.ghost { background: var(--card); color: var(--text); border: 1px solid var(--border); }
-    .btn.ghost:hover { box-shadow: 0 8px 24px rgba(255,255,255,.08); }
-    .hero { padding: 90px 0 70px; text-align: center; }
-    .hero .badge { display: inline-flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: 7px 16px; font-size: 12.5px; color: var(--dim); margin-bottom: 26px; }
-    .hero .badge i { color: var(--success); }
-    .hero h1 { font-size: clamp(34px, 5.5vw, 58px); font-weight: 800; line-height: 1.15; letter-spacing: -.5px; }
-    .hero h1 span { color: var(--accent); }
-    .hero p.sub { max-width: 620px; margin: 22px auto 0; color: var(--dim); font-size: 17px; }
-    .hero .cta { margin-top: 36px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-    .hero .hint { margin-top: 18px; font-size: 12.5px; color: #5c6a7d; }
-    .hero .hint i { margin-right: 6px; }
-    .shot { margin: 60px auto 0; max-width: 860px; border-radius: 16px; border: 1px solid var(--border); overflow: hidden; background: var(--bg-soft); box-shadow: 0 30px 80px rgba(0,0,0,.5); }
-    .shot .bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
-    .shot .dot { width: 11px; height: 11px; border-radius: 50%; }
-    .shot .dot.r { background: #ff5f57; } .shot .dot.y { background: #febc2e; } .shot .dot.g { background: #28c840; }
-    .shot .bar span { margin-left: 10px; font-size: 12px; color: var(--dim); }
-    .shot .panel { display: grid; grid-template-columns: 1fr 1.2fr; min-height: 300px; }
-    .shot .left { padding: 20px; border-right: 1px solid var(--border); }
-    .shot .right { padding: 20px; }
-    .search-pill { display: flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; font-size: 13px; color: var(--dim); }
-    .search-pill i { color: var(--accent); }
-    .row { display: flex; gap: 10px; margin-top: 14px; }
-    .thumb { width: 62px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, #1c2430, #222c3b); flex-shrink: 0; }
-    .line { height: 9px; border-radius: 5px; background: rgba(255,255,255,.08); margin-bottom: 8px; }
-    .line.w50 { width: 50%; } .line.w80 { width: 80%; }
-    .chip { display: inline-block; font-size: 11px; padding: 4px 10px; border-radius: 999px; background: rgba(79,140,255,.14); color: var(--accent); margin: 10px 8px 0 0; }
-    .features { padding: 70px 0; }
-    .features h2, .how h2, .sites h2, .faq h2 { font-size: 30px; font-weight: 700; text-align: center; margin-bottom: 14px; letter-spacing: -.3px; }
-    .features > p, .how > p, .sites > p { text-align: center; color: var(--dim); max-width: 560px; margin: 0 auto 44px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; transition: transform .2s, border-color .2s; }
-    .card:hover { transform: translateY(-3px); border-color: rgba(79,140,255,.35); }
-    .card .ic { width: 44px; height: 44px; border-radius: 11px; display: grid; place-items: center; font-size: 19px; margin-bottom: 16px; color: var(--accent); background: rgba(79,140,255,.12); }
-    .card .ic.g { color: var(--success); background: rgba(61,220,132,.1); }
-    .card .ic.v { color: var(--accent-2); background: rgba(124,92,255,.12); }
-    .card h3 { font-size: 16.5px; font-weight: 600; margin-bottom: 8px; }
-    .card p { font-size: 13.5px; color: var(--dim); }
-    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; counter-reset: step; }
-    .step { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; position: relative; }
-    .step::before { counter-increment: step; content: counter(step); position: absolute; top: 18px; right: 20px; font-size: 34px; font-weight: 800; color: rgba(79,140,255,.18); }
-    .step h3 { font-size: 15px; margin-bottom: 8px; }
-    .step p { font-size: 13.5px; color: var(--dim); }
-    .sites { padding: 30px 0 70px; }
-    .sites .pill-list { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 780px; margin: 0 auto; }
-    .sites .pill { background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: 8px 16px; font-size: 13px; color: var(--dim); }
-    .sites .pill i { margin-right: 6px; color: var(--accent); }
-    .faq { padding-bottom: 80px; max-width: 720px; margin: 0 auto; }
-    .faq details { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 12px; }
-    .faq summary { font-weight: 600; font-size: 14.5px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
-    .faq summary::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 12px; color: var(--dim); transition: transform .2s; }
-    .faq details[open] summary::after { transform: rotate(180deg); }
-    .faq p { margin-top: 12px; font-size: 13.5px; color: var(--dim); }
-    footer { border-top: 1px solid var(--border); padding: 34px 0 50px; text-align: center; color: var(--dim); font-size: 13px; }
-    footer .fa-heart { color: var(--warn); }
-    footer a { color: var(--accent); text-decoration: none; }
-    @media (max-width: 720px) { .shot .panel { grid-template-columns: 1fr; } .shot .left { border-right: 0; border-bottom: 1px solid var(--border); } nav { display: none; } }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MediaOtter — Media Downloader for Premiere Pro &amp; After Effects</title>
+<meta name="description" content="MediaOtter is open source media downloader for Premiere Pro &amp; After Effects — search YouTube, paste any link, import MP4 or WAV up to 4K into your project.">
+<meta name="keywords" content="MediaOtter, Premiere Pro, After Effects, YouTube downloader, yt-dlp, CEP extension, video downloader, media downloader, Adobe Premiere, Adobe After Effects">
+<meta name="author" content="Sagarika Sultana">
+<link rel="canonical" href="https://mediaotter.madebysaira.com/">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#0c1015">
+<meta property="og:title" content="MediaOtter — Media Downloader for Premiere Pro &amp; After Effects">
+<meta property="og:description" content="MediaOtter is open source media downloader for Premiere Pro &amp; After Effects — search YouTube, paste any link, import MP4 or WAV up to 4K into your project.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mediaotter.madebysaira.com/">
+<meta property="og:image" content="https://mediaotter.madebysaira.com/screenshots/app-search.png">
+<meta property="og:site_name" content="MediaOtter">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MediaOtter — Media Downloader for Premiere Pro &amp; After Effects">
+<meta name="twitter:description" content="MediaOtter is open source media downloader for Premiere Pro &amp; After Effects — search YouTube, paste any link, import MP4 or WAV up to 4K into your project.">
+<meta name="twitter:image" content="https://mediaotter.madebysaira.com/screenshots/app-search.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"MediaOtter","url":"https://mediaotter.madebysaira.com/","applicationCategory":"MultimediaApplication","operatingSystem":"macOS","description":"Open-source media downloader for Premiere Pro and After Effects. Search YouTube, paste any link, and import MP4 or WAV up to 4K directly into your project.","author":{"@type":"Person","name":"Sagarika Sultana"},"license":"https://github.com/madebysaira/mediaotter/blob/main/LICENSE","softwareVersion":"1.0.0-alpha","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"isAccessibleForFree":true}</script>
+<style>
+  :root{
+    --bg:#0c1015;
+    --bg-soft:#11161d;
+    --card:rgba(255,255,255,0.045);
+    --card-hover:rgba(255,255,255,0.07);
+    --border:rgba(255,255,255,0.08);
+    --border-strong:rgba(255,255,255,0.14);
+    --text:#e9eff8;
+    --dim:#93a1b5;
+    --faint:#5c6b80;
+    --accent:#4f8cff;
+    --accent-soft:rgba(79,140,255,0.13);
+    --accent-border:rgba(79,140,255,0.22);
+    --radius:16px;
+    --radius-sm:12px;
+    --max:1120px;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  img{max-width:100%;display:block}
+  a{color:inherit}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  @media(min-width:1180px){.wrap{padding:0 28px}}
+  /* skip */
+  .skip-link{
+    position:absolute;left:-9999px;top:8px;z-index:999;
+    background:var(--accent);color:#fff;padding:10px 16px;border-radius:999px;
+    font-size:13px;font-weight:600;text-decoration:none;
+  }
+  .skip-link:focus{left:12px}
+  /* focus */
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  /* buttons */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:12px 22px;border-radius:999px;border:1px solid transparent;
+    font-family:inherit;font-size:14px;font-weight:600;line-height:1;
+    text-decoration:none;cursor:pointer;white-space:nowrap;
+    transition:transform 200ms ease-out,box-shadow 200ms ease-out,background 200ms ease-out,border-color 200ms ease-out,filter 200ms ease-out;
+  }
+  .btn:active{transform:scale(0.98)}
+  .btn-primary{background:var(--accent);color:#0c1015;border-color:var(--accent);box-shadow:0 6px 20px rgba(79,140,255,0.28)}
+  .btn-primary:hover{filter:brightness(1.07);box-shadow:0 10px 28px rgba(79,140,255,0.38)}
+  .btn-ghost{background:var(--card);color:var(--text);border-color:var(--border);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .btn-ghost:hover{background:var(--card-hover);border-color:var(--border-strong)}
+  .btn-sm{padding:9px 16px;font-size:13px}
+  /* header */
+  .site-header{
+    position:sticky;top:0;z-index:50;
+    height:64px;display:flex;align-items:center;
+    border-bottom:1px solid transparent;
+    background:transparent;
+    transition:background 200ms ease-out,border-color 200ms ease-out,backdrop-filter 200ms ease-out;
+  }
+  .site-header.scrolled{
+    background:rgba(12,16,21,0.78);
+    backdrop-filter:blur(14px) saturate(1.2);
+    -webkit-backdrop-filter:blur(14px) saturate(1.2);
+    border-color:var(--border);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;height:64px}
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    font-weight:700;font-size:17px;letter-spacing:-0.02em;text-decoration:none;color:var(--text);
+  }
+  .brand-mark{
+    width:30px;height:30px;border-radius:9px;
+    display:grid;place-items:center;
+    background:var(--accent-soft);border:1px solid var(--accent-border);
+    color:var(--accent);font-size:14px;flex-shrink:0;
+  }
+  .brand em{font-style:normal;color:var(--text)}
+  .brand b{font-weight:700}
+  .nav-links{display:flex;align-items:center;gap:22px}
+  .nav-links a{
+    font-size:13.5px;font-weight:500;color:var(--dim);text-decoration:none;
+    transition:color 200ms ease-out;
+  }
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a[aria-current="page"]{color:var(--text)}
+  .nav-actions{display:flex;align-items:center;gap:12px}
+  .menu-toggle{
+    display:none;appearance:none;background:var(--card);border:1px solid var(--border);
+    color:var(--text);width:40px;height:40px;border-radius:10px;align-items:center;justify-content:center;
+    cursor:pointer;transition:transform 200ms ease-out,border-color 200ms ease-out;
+  }
+  .menu-toggle:active{transform:scale(0.98)}
+  /* mobile nav */
+  .mobile-panel{
+    display:none;position:fixed;inset:64px 0 auto 0;background:rgba(12,16,21,0.96);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border);padding:16px 24px 20px;z-index:49;
+  }
+  .mobile-panel.open{display:block}
+  .mobile-panel a{display:block;padding:12px 0;font-size:15px;font-weight:500;color:var(--dim);text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.06)}
+  .mobile-panel a:last-child{border-bottom:0}
+  .mobile-panel a:hover{color:var(--text)}
+  @media(max-width:780px){
+    .nav-links{display:none}
+    .menu-toggle{display:inline-flex}
+  }
+  /* hero */
+  .hero{padding:28px 0 48px;min-height:calc(100vh - 64px);display:flex;align-items:center}
+  .hero-grid{display:grid;grid-template-columns:1.02fr 0.92fr;gap:48px;align-items:center;width:100%}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:11px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:var(--dim);
+    background:var(--card);border:1px solid var(--border);padding:7px 12px;border-radius:999px;backdrop-filter:blur(8px);
+  }
+  .eyebrow i{color:var(--accent);font-size:7px}
+  .hero h1{
+    margin:18px 0 0;font-size:clamp(30px,4.2vw,46px);font-weight:700;line-height:1.05;letter-spacing:-0.025em;max-width:560px;
+  }
+  .hero h1 span{color:var(--accent)}
+  .hero .sub{
+    margin:16px 0 0;max-width:520px;font-size:16px;line-height:1.6;color:var(--dim);font-weight:400;
+  }
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+  .hero-meta{margin-top:14px;font-size:12px;color:var(--faint);display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .hero-meta i{color:var(--dim);font-size:11px}
+  .hero-visual{position:relative;display:flex;justify-content:center;align-items:center}
+  .hero-frame-wrap{position:relative;width:min(360px,100%);height:560px}
+  .hero-peek{
+    position:absolute;inset:0;
+    transform:translate(18px,14px) rotate(1.4deg) scale(0.97);
+    border-radius:var(--radius);overflow:hidden;
+    border:1px solid var(--border);background:var(--bg-soft);
+    box-shadow:0 20px 60px rgba(0,0,0,0.45);
+    opacity:0.55;
+  }
+  .hero-peek img{width:100%;height:100%;object-fit:cover;object-position:top}
+  .hero-frame{
+    position:absolute;inset:0;
+    border-radius:var(--radius);overflow:hidden;
+    background:var(--bg-soft);border:1px solid rgba(255,255,255,0.10);
+    box-shadow:0 24px 64px rgba(0,0,0,0.58),0 0 0 1px rgba(255,255,255,0.04) inset;
+    animation:float 6s ease-in-out infinite;
+  }
+  .hero-frame::after{
+    content:"";position:absolute;inset:0;border-radius:inherit;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);pointer-events:none;
+  }
+  .hero-frame img{width:100%;height:100%;object-fit:cover;object-position:top}
+  .hero-glow{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-45%);
+    width:480px;height:480px;background:radial-gradient(closest-side,rgba(79,140,255,0.10),transparent 70%);
+    pointer-events:none;z-index:-1;
+  }
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  @media(prefers-reduced-motion:reduce){.hero-frame{animation:none}}
+  @media(max-width:980px){
+    .hero-grid{grid-template-columns:1fr;gap:36px}
+    .hero{padding-top:18px;min-height:auto}
+    .hero-visual{order:2}
+    .hero h1{max-width:640px}
+    .hero-frame-wrap{height:500px;width:340px;margin:0 auto}
+  }
+  @media(max-width:480px){
+    .hero-frame-wrap{height:460px;width:300px}
+    .hero-peek{transform:translate(12px,10px) rotate(1deg) scale(0.97)}
+  }
+  /* sections common */
+  .section{padding:80px 0;border-top:1px solid rgba(255,255,255,0.06)}
+  .section-head{max-width:640px;margin:0 auto 40px;text-align:center}
+  .section-head h2{margin:0;font-size:28px;font-weight:700;letter-spacing:-0.02em;line-height:1.2}
+  .section-head p{margin:10px auto 0;color:var(--dim);font-size:15px;line-height:1.6;max-width:560px}
+  .kicker{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);
+    background:var(--accent-soft);border:1px solid var(--accent-border);padding:6px 10px;border-radius:999px;margin-bottom:14px;
+  }
+  /* editors split */
+  .editors-grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:48px;align-items:center}
+  .editors-copy h2{margin:0;font-size:28px;font-weight:700;letter-spacing:-0.02em;line-height:1.2}
+  .editors-copy>p{margin:12px 0 0;color:var(--dim);font-size:15px;line-height:1.7;max-width:520px}
+  .editors-list{margin:22px 0 0;padding:0;list-style:none;display:grid;gap:14px}
+  .editors-list li{display:flex;gap:12px;align-items:flex-start}
+  .editors-list .li-icon{
+    width:34px;height:34px;border-radius:10px;background:var(--accent-soft);border:1px solid var(--accent-border);
+    display:grid;place-items:center;color:var(--accent);font-size:13px;flex-shrink:0;margin-top:1px;
+  }
+  .editors-list h3{margin:0;font-size:14px;font-weight:600;line-height:1.3}
+  .editors-list p{margin:4px 0 0;font-size:13px;color:var(--dim);line-height:1.6}
+  .editors-media{
+    position:relative;border-radius:var(--radius);overflow:hidden;
+    background:var(--bg-soft);border:1px solid var(--border);
+    box-shadow:0 20px 50px rgba(0,0,0,0.45);
+  }
+  .editors-media img{width:100%;height:auto;aspect-ratio:840/900;object-fit:cover;object-position:top}
+  .editors-media::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);pointer-events:none}
+  @media(max-width:900px){.editors-grid{grid-template-columns:1fr;gap:32px}.editors-media{max-width:520px;margin:0 auto;width:100%}}
+  /* bento */
+  .bento{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .bento-card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:22px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    transition:transform 200ms ease-out,box-shadow 200ms ease-out,border-color 200ms ease-out;
+  }
+  .bento-card:hover{transform:translateY(-2px);border-color:var(--border-strong);box-shadow:0 14px 36px rgba(0,0,0,0.28)}
+  .bento-card h3{margin:0;font-size:15px;font-weight:600;letter-spacing:-0.01em}
+  .bento-card p{margin:8px 0 0;font-size:13.5px;line-height:1.65;color:var(--dim)}
+  .bento-icon{
+    width:38px;height:38px;border-radius:10px;display:grid;place-items:center;
+    background:var(--accent-soft);border:1px solid var(--accent-border);color:var(--accent);font-size:15px;margin-bottom:14px;
+  }
+  .bento-shot{margin-top:16px;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:var(--bg-soft)}
+  .bento-shot img{width:100%;height:220px;object-fit:cover;object-position:top}
+  .bento-chip{
+    display:inline-flex;align-items:center;gap:6px;margin-top:14px;
+    font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--dim);
+    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);padding:6px 10px;border-radius:999px;
+  }
+  .span-8{grid-column:span 8}
+  .span-4{grid-column:span 4}
+  .span-5{grid-column:span 5}
+  .span-7{grid-column:span 7}
+  .span-6{grid-column:span 6}
+  .span-12{grid-column:span 12}
+  @media(max-width:900px){
+    .span-8,.span-4,.span-5,.span-7,.span-6{grid-column:span 12}
+    .bento-shot img{height:260px}
+  }
+  @media(max-width:640px){
+    .bento-shot img{height:220px}
+  }
+  /* format strip */
+  .format-strip{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:28px}
+  .format-pill{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 16px;border-radius:999px;
+    background:var(--card);border:1px solid var(--border);backdrop-filter:blur(8px);
+    font-size:13px;font-weight:500;color:var(--dim);
+    transition:transform 200ms ease-out,border-color 200ms ease-out;
+  }
+  .format-pill i{color:var(--accent);font-size:13px}
+  .format-pill:hover{border-color:var(--border-strong);transform:translateY(-1px)}
+  .format-pill strong{color:var(--text);font-weight:600}
+  /* youtube section */
+  .yt-grid{display:grid;grid-template-columns:0.92fr 1.08fr;gap:48px;align-items:center}
+  .yt-media{border-radius:var(--radius);overflow:hidden;background:var(--bg-soft);border:1px solid var(--border);box-shadow:0 20px 50px rgba(0,0,0,0.42)}
+  .yt-media img{width:100%;height:auto;aspect-ratio:840/980;object-fit:cover;object-position:top}
+  .yt-copy h2{margin:0;font-size:28px;font-weight:700;letter-spacing:-0.02em;line-height:1.2}
+  .yt-copy>p{margin:12px 0 0;color:var(--dim);font-size:15px;line-height:1.7}
+  .yt-features{margin:20px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+  .yt-features li{display:flex;gap:10px;align-items:center;font-size:13.5px;color:var(--dim)}
+  .yt-features li i{color:var(--accent);font-size:12px;width:20px;text-align:center}
+  .yt-note{
+    margin-top:20px;padding:12px 14px;border-radius:12px;
+    background:rgba(79,140,255,0.08);border:1px solid rgba(79,140,255,0.18);
+    font-size:12.5px;color:var(--dim);line-height:1.6;
+  }
+  .yt-note strong{color:var(--text);font-weight:600}
+  @media(max-width:900px){.yt-grid{grid-template-columns:1fr;gap:32px}.yt-media{max-width:520px;margin:0 auto;width:100%;order:2}.yt-copy{order:1}}
+  /* open source */
+  .oss-panel{
+    background:var(--bg-soft);border:1px solid var(--border);border-radius:20px;
+    padding:36px;position:relative;overflow:hidden;
+  }
+  .oss-panel::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(600px 280px at 85% 0%,rgba(79,140,255,0.08),transparent 60%);
+    pointer-events:none;
+  }
+  .oss-grid{display:grid;grid-template-columns:1.2fr 0.8fr;gap:32px;align-items:center;position:relative}
+  .oss-copy h2{margin:0;font-size:26px;font-weight:700;letter-spacing:-0.02em}
+  .oss-copy>p{margin:10px 0 0;color:var(--dim);font-size:14.5px;line-height:1.7;max-width:520px}
+  .oss-points{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+  .oss-point{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--dim);background:var(--card);border:1px solid var(--border);padding:10px 12px;border-radius:12px}
+  .oss-point i{color:var(--accent);font-size:13px}
+  .oss-cta{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+  .oss-stats{display:flex;gap:12px;margin-top:14px}
+  .oss-stat{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+  .oss-stat strong{display:block;font-size:16px;font-weight:700;letter-spacing:-0.01em}
+  .oss-stat span{font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--faint);font-weight:600}
+  @media(max-width:900px){.oss-grid{grid-template-columns:1fr}.oss-panel{padding:26px}.oss-points{grid-template-columns:1fr}}
+  /* footer */
+  .site-footer{border-top:1px solid rgba(255,255,255,0.06);padding:32px 0 40px;margin-top:0}
+  .footer-grid{display:flex;flex-wrap:wrap;gap:28px;justify-content:space-between;align-items:flex-start}
+  .footer-brand{max-width:360px}
+  .footer-brand .brand{margin-bottom:10px}
+  .footer-brand p{margin:0;color:var(--dim);font-size:13px;line-height:1.6}
+  .footer-links{display:flex;gap:28px;flex-wrap:wrap}
+  .footer-col h3{margin:0 0 10px;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--faint)}
+  .footer-col a{display:block;font-size:13px;color:var(--dim);text-decoration:none;padding:5px 0;transition:color 200ms ease-out}
+  .footer-col a:hover{color:var(--text)}
+  .footer-bottom{margin-top:28px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.06);display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;font-size:12px;color:var(--faint)}
+  .footer-bottom a{color:var(--dim);text-decoration:none}
+  .footer-bottom a:hover{color:var(--text)}
+  /* reveal */
+  @media(prefers-reduced-motion:no-preference){
+    .reveal{opacity:0;transform:translateY(8px);transition:opacity 520ms cubic-bezier(0.16,1,0.3,1),transform 520ms cubic-bezier(0.16,1,0.3,1)}
+    .reveal.in{opacity:1;transform:none}
+  }
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
+  /* noscript */
+  .noscript{max-width:var(--max);margin:12px auto;padding:12px 16px;background:rgba(255,176,32,0.12);border:1px solid rgba(255,176,32,0.24);color:#ffcf7a;border-radius:12px;font-size:13px;text-align:center}
+  /* utilities */
+  .muted{color:var(--dim)}
+  .hairline{height:1px;background:rgba(255,255,255,0.06);margin:0}
+</style>
 </head>
 <body>
-  <div class="bg-glow"></div>
-
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header" id="siteHeader">
   <div class="wrap">
-    <header>
-      <div class="logo"><span class="otter">🦦</span> Media<em>Otter</em></div>
-      <nav>
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html" class="brand" aria-label="MediaOtter home">
+        <span class="brand-mark" aria-hidden="true"><i class="fa-solid fa-otter"></i></span>
+        <span>Media<span style="font-weight:600;opacity:0.9">Otter</span></span>
+      </a>
+      <div class="nav-links" role="navigation">
         <a href="#features">Features</a>
-        <a href="#how">Install</a>
-        <a href="#faq">FAQ</a>
-        <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener">GitHub</a>
-      </nav>
-    </header>
-
-    <section class="hero">
-      <div class="badge"><i class="fa-solid fa-circle-check"></i> Free · Open source · No watermarks · No quotas</div>
-      <h1>Bring the internet<br />into your <span>timeline</span>.</h1>
-      <p class="sub">Search YouTube, sign in with your own account, and download video or audio — up to 4K, in Premiere-compatible formats — straight into <strong>Premiere Pro</strong> and <strong>After Effects</strong>.</p>
-      <div class="cta">
-        <a class="btn" href="#how"><i class="fa-solid fa-download"></i> Get MediaOtter</a>
-        <a class="btn ghost" href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> View source</a>
+        <a href="#screenshots">Screenshots</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
       </div>
-      <div class="hint"><i class="fa-solid fa-shield-halved"></i> Your Google credentials live on your machine. Nothing is ever uploaded.</div>
+      <div class="nav-actions">
+        <a class="btn btn-primary btn-sm" href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> GitHub</a>
+        <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobilePanel"><i class="fa-solid fa-bars"></i></button>
+      </div>
+    </nav>
+  </div>
+</header>
+<div class="mobile-panel" id="mobilePanel" hidden>
+  <a href="#features">Features</a>
+  <a href="#screenshots">Screenshots</a>
+  <a href="privacy.html">Privacy Policy</a>
+  <a href="terms.html">Terms of Service</a>
+  <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">GitHub — madebysaira/mediaotter</a>
+</div>
 
-      <div class="shot">
-        <div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span>MediaOtter — Adobe CEP panel</span></div>
-        <div class="panel">
-          <div class="left">
-            <div class="search-pill"><i class="fa-solid fa-magnifying-glass"></i> premiere pro tutorial&nbsp;…</div>
-            <div class="row"><div class="thumb"></div><div><div class="line w80"></div><div class="line w50"></div></div></div>
-            <div class="row"><div class="thumb"></div><div><div class="line w80"></div><div class="line w50"></div></div></div>
-            <div class="row"><div class="thumb"></div><div><div class="line w80"></div><div class="line w50"></div></div></div>
+<main id="main">
+  <!-- Hero -->
+  <section class="hero wrap" aria-labelledby="hero-heading">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow"><i class="fa-solid fa-circle" aria-hidden="true"></i> For Premiere Pro &amp; After Effects · CEP 10 · macOS</div>
+        <h1 id="hero-heading">Media for your timeline, <span>without leaving Premiere.</span></h1>
+        <p class="sub">Search YouTube, paste any link, and import MP4 or WAV straight into Premiere Pro and After Effects.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://github.com/madebysaira/mediaotter/releases" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-download" aria-hidden="true"></i> Download for macOS</a>
+          <a class="btn btn-ghost" href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> View on GitHub</a>
+        </div>
+        <div class="hero-meta">
+          <span><i class="fa-solid fa-tag" aria-hidden="true"></i> v1.0.0-alpha</span>
+          <span><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> MIT License</span>
+          <span><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> No telemetry</span>
+          <span><i class="fa-solid fa-wifi" aria-hidden="true"></i> Offline capable</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="false">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-frame-wrap">
+          <div class="hero-peek" aria-hidden="true"><img src="screenshots/app-downloads.png" alt="MediaOtter downloads screen peek behind the search panel" width="840" height="1520" loading="eager"></div>
+          <div class="hero-frame"><img src="screenshots/app-search.png" alt="MediaOtter search panel inside Premiere Pro showing YouTube search with autocomplete suggestions and video results" width="840" height="1520" loading="eager" fetchpriority="high"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Built for editors -->
+  <section class="section" id="screenshots" aria-labelledby="editors-heading">
+    <div class="wrap">
+      <div class="editors-grid">
+        <div class="editors-copy reveal">
+          <h2 id="editors-heading">Your downloads, with the feedback editors expect.</h2>
+          <p>Real progress bars, speeds, ETA, and file sizes — plus one-click import into your Premiere or After Effects project. No browser juggling.</p>
+          <ul class="editors-list">
+            <li>
+              <span class="li-icon"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i></span>
+              <div><h3>Live progress</h3><p>Percent, speed, ETA, and size for every download — exactly like a proper download manager.</p></div>
+            </li>
+            <li>
+              <span class="li-icon"><i class="fa-solid fa-file-import" aria-hidden="true"></i></span>
+              <div><h3>Import to project</h3><p>One click imports the finished MP4 or WAV into a dedicated MediaOtter bin. Drag any history item straight to timeline.</p></div>
+            </li>
+            <li>
+              <span class="li-icon"><i class="fa-solid fa-scissors" aria-hidden="true"></i></span>
+              <div><h3>Section trim</h3><p>Set a start and end time (e.g. 1:20–3:45) and grab only the B-roll you need — no extra trimming.</p></div>
+            </li>
+          </ul>
+        </div>
+        <div class="editors-media reveal" style="transition-delay:80ms">
+          <img src="screenshots/app-downloads.png" alt="MediaOtter downloads screen showing active downloads with progress bars, speeds, ETA, and Import to project button" width="840" height="1520" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature grid (bento) -->
+  <section class="section" id="features" aria-labelledby="features-heading">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2 id="features-heading">Everything you actually need</h2>
+        <p>Six focused tools — no bloat, no watermarks, no quotas. The workflows editors use daily, inside the panel.</p>
+      </div>
+      <div class="bento">
+        <!-- Search — large with youtube screenshot -->
+        <article class="bento-card span-8 reveal">
+          <div class="bento-icon"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></div>
+          <h3>Search YouTube</h3>
+          <p>Search suggestions as you type, results inline in the panel. Preview before you download — no tab switching.</p>
+          <div class="bento-shot"><img src="screenshots/app-youtube.png" alt="MediaOtter YouTube screen showing signed-in playlists and liked videos" width="840" height="1520" loading="lazy"></div>
+          <span class="bento-chip"><i class="fa-solid fa-at" aria-hidden="true"></i> Suggestions + endless scroll</span>
+        </article>
+        <!-- Paste URL -->
+        <article class="bento-card span-4 reveal" style="transition-delay:60ms">
+          <div class="bento-icon"><i class="fa-solid fa-link" aria-hidden="true"></i></div>
+          <h3>Paste URL — 1000+ sites</h3>
+          <p>Paste any link. YouTube, Vimeo, SoundCloud, Twitch, TikTok, X, Instagram, Facebook, Bandcamp, Archive.org — powered by yt-dlp.</p>
+          <div class="bento-chip"><i class="fa-solid fa-earth-americas" aria-hidden="true"></i> yt-dlp inside</div>
+          <div style="margin-top:18px;display:flex;flex-wrap:wrap;gap:8px">
+            <span class="format-pill" style="padding:6px 10px;font-size:12px"><i class="fa-brands fa-youtube"></i> YouTube</span>
+            <span class="format-pill" style="padding:6px 10px;font-size:12px"><i class="fa-brands fa-vimeo"></i> Vimeo</span>
+            <span class="format-pill" style="padding:6px 10px;font-size:12px"><i class="fa-brands fa-soundcloud"></i> SC</span>
+            <span class="format-pill" style="padding:6px 10px;font-size:12px"><i class="fa-solid fa-plus"></i> 1k+</span>
           </div>
-          <div class="right">
-            <div class="line w80" style="height:12px;margin-bottom:14px"></div>
-            <div class="line w50" style="margin-bottom:6px"></div>
-            <div class="line" style="width:35%"></div>
-            <div style="margin-top:16px">
-              <span class="chip">4K · H.264</span><span class="chip">1080p · H.264</span><span class="chip">720p</span><span class="chip">Audio · WAV</span>
+        </article>
+        <!-- Best video+audio -->
+        <article class="bento-card span-4 reveal">
+          <div class="bento-icon"><i class="fa-solid fa-film" aria-hidden="true"></i></div>
+          <h3>Best video + audio</h3>
+          <p>Automatically picks the best video track and best audio track, muxed to MP4 H.264/AAC. Quality cap up to 4K.</p>
+          <span class="bento-chip"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Auto mux</span>
+        </article>
+        <!-- WAV -->
+        <article class="bento-card span-4 reveal" style="transition-delay:60ms">
+          <div class="bento-icon"><i class="fa-solid fa-music" aria-hidden="true"></i></div>
+          <h3>Studio-grade audio</h3>
+          <p>Extract WAV — PCM 48kHz stereo — ready for sound-design and sample workflows in Premiere.</p>
+          <span class="bento-chip"><i class="fa-solid fa-wave-square" aria-hidden="true"></i> PCM 48kHz</span>
+        </article>
+        <!-- Section trim -->
+        <article class="bento-card span-4 reveal" style="transition-delay:110ms">
+          <div class="bento-icon"><i class="fa-solid fa-scissors" aria-hidden="true"></i></div>
+          <h3>Section trim</h3>
+          <p>Download only a range of a video — e.g. 1:20–3:45 — for precise B-roll extraction without re-encoding the whole file.</p>
+          <span class="bento-chip"><i class="fa-solid fa-stopwatch" aria-hidden="true"></i> Start–end range</span>
+        </article>
+        <!-- Import to project — large with downloads screenshot -->
+        <article class="bento-card span-12 reveal" style="display:grid;grid-template-columns:1.1fr 0.9fr;gap:22px;align-items:center">
+          <div>
+            <div class="bento-icon"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i></div>
+            <h3>Import to project</h3>
+            <p>Finished files land in your project instantly. Completed chips are draggable straight onto your sequence or comp.</p>
+            <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+              <span class="format-pill" style="padding:7px 12px"><i class="fa-solid fa-box-archive"></i> MediaOtter bin</span>
+              <span class="format-pill" style="padding:7px 12px"><i class="fa-solid fa-up-right-from-square"></i> Drag to timeline</span>
             </div>
-            <div style="margin-top:22px;display:flex;gap:10px;align-items:center">
-              <div class="btn" style="padding:10px 18px;font-size:13px"><i class="fa-solid fa-download"></i> Download</div>
-              <div class="btn ghost" style="padding:10px 18px;font-size:13px"><i class="fa-solid fa-scissors"></i> Section 0:00 – 1:30</div>
-            </div>
-            <div style="margin-top:26px">
-              <div class="line w80"></div>
-              <div class="line w50" style="margin-top:8px"></div>
-            </div>
+          </div>
+          <div class="bento-shot" style="margin-top:0"><img src="screenshots/app-downloads.png" alt="Completed downloads in MediaOtter with draggable history items and Import to project control" width="840" height="1520" loading="lazy"></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Format strip -->
+  <section class="section" aria-labelledby="format-heading">
+    <div class="wrap" style="text-align:center">
+      <div class="reveal">
+        <h2 id="format-heading" style="margin:0;font-size:22px;font-weight:700;letter-spacing:-0.02em">Premiere-ready formats</h2>
+        <p style="margin:8px auto 0;color:var(--dim);font-size:14px;max-width:560px">No surprise codecs. Files are muxed and ready to cut — or extracted as clean WAV for audio work.</p>
+      </div>
+      <div class="format-strip reveal" style="transition-delay:60ms">
+        <span class="format-pill"><i class="fa-solid fa-file-video" aria-hidden="true"></i> <strong>MP4</strong> · H.264 + AAC</span>
+        <span class="format-pill"><i class="fa-solid fa-music" aria-hidden="true"></i> <strong>WAV</strong> · PCM 48kHz stereo</span>
+        <span class="format-pill"><i class="fa-solid fa-expand" aria-hidden="true"></i> <strong>Up to 4K</strong> resolution</span>
+        <span class="format-pill"><i class="fa-solid fa-cookie-bite" aria-hidden="true"></i> Cookies support</span>
+        <span class="format-pill"><i class="fa-solid fa-clone" aria-hidden="true"></i> CEP 10</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Your YouTube, signed in -->
+  <section class="section" aria-labelledby="yt-heading" style="background:var(--bg-soft);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+    <div class="wrap">
+      <div class="yt-grid">
+        <div class="yt-media reveal">
+          <img src="screenshots/app-youtube.png" alt="MediaOtter YouTube tab showing signed-in user's playlists and liked videos" width="840" height="1520" loading="lazy">
+        </div>
+        <div class="yt-copy reveal" style="transition-delay:80ms">
+          <div class="kicker"><i class="fa-brands fa-youtube" aria-hidden="true"></i> Your YouTube, signed in</div>
+          <h2 id="yt-heading">Sign in with your own Google account.</h2>
+          <p>Browse your own playlists and liked videos without leaving Premiere. OAuth is strictly <code style="background:var(--card);padding:2px 6px;border-radius:6px;border:1px solid var(--border);font-size:12px">youtube.readonly</code> — view-only access to your content.</p>
+          <ul class="yt-features">
+            <li><i class="fa-solid fa-list" aria-hidden="true"></i> Your playlists, liked videos, and subscriptions</li>
+            <li><i class="fa-solid fa-lock" aria-hidden="true"></i> Token stored locally at <code style="font-size:12px;color:var(--text)">~/.mediaotter/auth.json</code></li>
+            <li><i class="fa-solid fa-cookie" aria-hidden="true"></i> Optional browser session for private / age-restricted videos</li>
+            <li><i class="fa-solid fa-eye-slash" aria-hidden="true"></i> Nothing ever touches our servers — there are none</li>
+          </ul>
+          <div class="yt-note"><strong>Scope is minimal:</strong> <code>youtube.readonly</code> only. MediaOtter can read your playlists and liked videos — it cannot upload, comment, or modify your account. Revoke anytime in Google Account permissions.</div>
+          <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
+            <a class="btn btn-ghost" href="privacy.html">How we handle data <i class="fa-solid fa-arrow-right" style="font-size:11px"></i></a>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="features" id="features">
-      <h2>Everything, in your editor</h2>
-      <p>Built for editors, by editors — the exact workflows that slow you down, fixed.</p>
-      <div class="grid">
-        <div class="card"><div class="ic"><i class="fa-solid fa-magnifying-glass"></i></div><h3>Search with suggestions</h3><p>Type and get live autocomplete, filters, and endless scrolling results — no browser tab required.</p></div>
-        <div class="card"><div class="ic v"><i class="fa-solid fa-user"></i></div><h3>Your YouTube account</h3><p>Sign in with Google to open your playlists, liked videos, subscriptions and watch-later — all inside the panel.</p></div>
-        <div class="card"><div class="ic g"><i class="fa-solid fa-earth-americas"></i></div><h3>1,000+ sites</h3><p>Paste any link — Vimeo, SoundCloud, Twitch, X, TikTok and hundreds more — powered by yt-dlp.</p></div>
-        <div class="card"><div class="ic"><i class="fa-solid fa-film"></i></div><h3>Premiere-ready formats</h3><p>Muxed H.264 MP4 for video, PCM 48 kHz WAV for audio. No re-compression, no surprise codecs.</p></div>
-        <div class="card"><div class="ic v"><i class="fa-solid fa-scissors"></i></div><h3>Download only the section</h3><p>Set a start and end time and grab just the clip you need — perfect for B-roll and sound bites.</p></div>
-        <div class="card"><div class="ic g"><i class="fa-solid fa-arrow-pointer"></i></div><h3>Straight to the timeline</h3><p>Files import into a dedicated bin, and done-chips drag straight onto your sequence or comp.</p></div>
-        <div class="card"><div class="ic"><i class="fa-solid fa-gauge-high"></i></div><h3>Up to 4K, smartly</h3><p>Quality caps and a smart format planner pick the best compatible stream — with optional H.264 transcode.</p></div>
-        <div class="card"><div class="ic v"><i class="fa-solid fa-shield-halved"></i></div><h3>Private by design</h3><p>No accounts, no telemetry, no servers. Everything runs locally; your Google credentials never leave your machine.</p></div>
-        <div class="card"><div class="ic g"><i class="fa-brands fa-github"></i></div><h3>Open source</h3><p>MIT licensed on GitHub. Audit every line, fork it, improve it — this is your tool.</p></div>
+  <!-- Open source -->
+  <section class="section" aria-labelledby="oss-heading">
+    <div class="wrap">
+      <div class="oss-panel reveal">
+        <div class="oss-grid">
+          <div class="oss-copy">
+            <h2 id="oss-heading">Free forever. No quotas. No telemetry.</h2>
+            <p>MediaOtter is MIT-licensed and fully offline-capable. No accounts required for downloads, no servers, no tracking. If you can read code, you can verify every claim.</p>
+            <div class="oss-points">
+              <div class="oss-point"><i class="fa-solid fa-infinity" aria-hidden="true"></i> Free forever — no quotas</div>
+              <div class="oss-point"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> No telemetry, no ads</div>
+              <div class="oss-point"><i class="fa-solid fa-plug-circle-xmark" aria-hidden="true"></i> Fully offline-capable</div>
+              <div class="oss-point"><i class="fa-brands fa-github" aria-hidden="true"></i> MIT on GitHub</div>
+            </div>
+            <p style="margin-top:18px;font-size:13px;color:var(--faint)">For Adobe Premiere Pro &amp; After Effects · macOS · CEP 10 · v1.0.0-alpha</p>
+          </div>
+          <div class="oss-cta">
+            <a class="btn btn-primary" href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer" style="width:100%"><i class="fa-brands fa-github" aria-hidden="true"></i> View source on GitHub</a>
+            <a class="btn btn-ghost" href="https://github.com/madebysaira/mediaotter/releases" target="_blank" rel="noopener noreferrer" style="width:100%"><i class="fa-solid fa-download" aria-hidden="true"></i> Download for macOS</a>
+            <div class="oss-stats">
+              <div class="oss-stat"><strong>MIT</strong><span>License</span></div>
+              <div class="oss-stat"><strong>1000+</strong><span>Sites</span></div>
+              <div class="oss-stat"><strong>4K</strong><span>Max</span></div>
+            </div>
+            <p style="margin:0;font-size:12px;color:var(--faint);text-align:center">Audit every line. Fork it. Improve it.</p>
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
+  </section>
+</main>
 
-    <section class="how" id="how">
-      <h2>Install in three steps</h2>
-      <p>No admin rights, no Creative Cloud changes, no registration.</p>
-      <div class="steps">
-        <div class="step"><h3>Download the binaries</h3><p>Run one script that fetches yt-dlp, ffmpeg and Deno for your platform — verified by SHA-256.</p></div>
-        <div class="step"><h3>Install the panel</h3><p>Copy the extension into your Adobe CEP extensions folder. Works with Premiere Pro &amp; After Effects 2021+.</p></div>
-        <div class="step"><h3>Optional: connect YouTube</h3><p>Create your own free Google credentials (5-minute guide included) to unlock playlists and account features.</p></div>
+<footer class="site-footer" aria-label="Footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="brand" style="text-decoration:none"><span class="brand-mark"><i class="fa-solid fa-otter"></i></span> MediaOtter</a>
+        <p>The media downloader for Premiere Pro &amp; After Effects. Open-source, offline-capable, and yours to keep.</p>
       </div>
-      <div class="cta" style="display:flex;gap:14px;justify-content:center;margin-top:40px">
-        <a class="btn ghost" href="https://github.com/madebysaira/mediaotter/blob/main/docs/INSTALL.md" target="_blank" rel="noopener"><i class="fa-solid fa-book-open"></i> Full install guide</a>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h3>Product</h3>
+          <a href="#features">Features</a>
+          <a href="#screenshots">Screenshots</a>
+          <a href="https://github.com/madebysaira/mediaotter/releases" target="_blank" rel="noopener noreferrer">Download</a>
+        </div>
+        <div class="footer-col">
+          <h3>Legal</h3>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
+          <a href="https://github.com/madebysaira/mediaotter/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>
+        </div>
+        <div class="footer-col">
+          <h3>Links</h3>
+          <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://github.com/madebysaira" target="_blank" rel="noopener noreferrer">madebysaira</a>
+          <a href="mailto:saira@madebysaira.com">Contact</a>
+        </div>
       </div>
-    </section>
-
-    <section class="sites">
-      <h2>One panel, the whole web</h2>
-      <p>A few of the 1,000+ sites you can drop into your edits:</p>
-      <div class="pill-list">
-        <span class="pill"><i class="fa-brands fa-youtube"></i>YouTube</span>
-        <span class="pill"><i class="fa-brands fa-vimeo"></i>Vimeo</span>
-        <span class="pill"><i class="fa-brands fa-soundcloud"></i>SoundCloud</span>
-        <span class="pill"><i class="fa-brands fa-twitch"></i>Twitch</span>
-        <span class="pill"><i class="fa-brands fa-tiktok"></i>TikTok</span>
-        <span class="pill"><i class="fa-brands fa-x-twitter"></i>X / Twitter</span>
-        <span class="pill"><i class="fa-brands fa-instagram"></i>Instagram</span>
-        <span class="pill"><i class="fa-brands fa-facebook"></i>Facebook</span>
-        <span class="pill"><i class="fa-solid fa-music"></i>Bandcamp</span>
-        <span class="pill"><i class="fa-solid fa-video"></i>Streamable</span>
-        <span class="pill"><i class="fa-solid fa-cloud"></i>Archive.org</span>
-        <span class="pill"><i class="fa-solid fa-plus"></i>1,000+ more</span>
-      </div>
-    </section>
-
-    <section class="faq" id="faq">
-      <h2>Questions</h2>
-      <details open>
-        <summary>Is this legal / will my account get flagged?</summary>
-        <p>MediaOtter downloads content for your own editing projects — the same way any downloader works. It uses the same public streams your browser plays; nothing is broken. Always respect content licenses and platform terms for anything you publish.</p>
-      </details>
-      <details>
-        <summary>Why do I need my own Google credentials?</summary>
-        <p>So nothing is shared. Instead of trusting a third party with one shared key, you create a free Google Cloud project (5 minutes) and the panel uses <em>your</em> Client ID and API key, stored only on your machine. This is what lets you sign into <em>your own</em> YouTube account for playlists.</p>
-      </details>
-      <details>
-        <summary>Does it work in both Premiere Pro and After Effects?</summary>
-        <p>Yes — one panel, both hosts. Premiere imports into a bin (and can add to the active sequence); After Effects imports footage and can add it to the active comp.</p>
-      </details>
-      <details>
-        <summary>What about age-restricted or private videos?</summary>
-        <p>Enable the browser session in Settings and MediaOtter borrows cookies from your own browser (Chrome, Edge, Brave or Firefox) — nothing is stored or uploaded.</p>
-      </details>
-      <details>
-        <summary>Will you ever charge or add telemetry?</summary>
-        <p>No, and the code proves it. MIT licensed — you can read every line. There is no server, no analytics, no account on our side.</p>
-      </details>
-    </section>
-
-    <footer>
-      Made with <i class="fa-solid fa-heart"></i> by <a href="https://github.com/madebysaira" target="_blank" rel="noopener">madebysaira</a> · MIT licensed · Powered by <a href="https://github.com/yt-dlp/yt-dlp" target="_blank" rel="noopener">yt-dlp</a> &amp; <a href="https://ffmpeg.org" target="_blank" rel="noopener">ffmpeg</a>
-    </footer>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 madebysaira · Sagarika Sultana · MediaOtter is open source under MIT.</span>
+      <span>Made by <a href="https://github.com/madebysaira" target="_blank" rel="noopener noreferrer">Sagarika Sultana (madebysaira)</a> · <a href="mailto:saira@madebysaira.com">saira@madebysaira.com</a></span>
+    </div>
   </div>
+</footer>
+
+<noscript><div class="noscript">JavaScript is not required — all content is visible without it. Animations and the sticky navigation enhance the experience when JS is available.</div></noscript>
+
+<script>
+(function(){
+  var header=document.getElementById('siteHeader');
+  function onScroll(){ if(window.scrollY>24) header.classList.add('scrolled'); else header.classList.remove('scrolled'); }
+  onScroll(); window.addEventListener('scroll',onScroll,{passive:true});
+  // mobile toggle
+  var toggle=document.getElementById('menuToggle');
+  var panel=document.getElementById('mobilePanel');
+  if(toggle&&panel){
+    toggle.addEventListener('click',function(){
+      var open=panel.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open?'Close menu':'Open menu');
+      panel.hidden=!open;
+      toggle.innerHTML=open?'<i class="fa-solid fa-xmark"></i>':'<i class="fa-solid fa-bars"></i>';
+    });
+    panel.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){panel.classList.remove('open');panel.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.innerHTML='<i class="fa-solid fa-bars"></i>';});});
+  }
+  // reveal observer
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in')});
+    return;
+  }
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    },{threshold:0.12,rootMargin:'0px 0px -40px 0px'});
+    document.querySelectorAll('.reveal').forEach(function(el,i){
+      if(!el.style.transitionDelay) el.style.transitionDelay=(Math.min(i*40,160))+'ms';
+      io.observe(el);
+    });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in')});
+  }
+})();
+</script>
 </body>
 </html>
