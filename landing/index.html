@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MediaOtter — Media downloader for Premiere Pro & After Effects | madebysaira</title>
 <meta name="description" content="MediaOtter is a free, open-source macOS extension for Premiere Pro and After Effects. Search YouTube, paste any link, and import MP4 or WAV straight into your timeline. Install with one line.">
-<meta name="theme-color" content="#0000f2">
+<meta name="theme-color" content="#141040">
 <link rel="canonical" href="https://mediaotter.madebysaira.me/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="MediaOtter — Media for your timeline, without leaving Premiere">
 <meta property="og:description" content="Search YouTube, paste any link, and import MP4 or WAV straight into Premiere Pro and After Effects. Free, open source, one-line install.">
 <meta property="og:url" content="https://mediaotter.madebysaira.me/">
-<meta property="og:image" content="https://mediaotter.madebysaira.me/screenshots/app-downloads.png">
+<meta property="og:image" content="https://mediaotter.madebysaira.me/screenshots/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="MediaOtter — Media for your timeline, without leaving Premiere">
 <meta name="twitter:description" content="Search YouTube, paste any link, import MP4 or WAV straight into Premiere Pro and After Effects. Free, open source, one-line install.">
-<meta name="twitter:image" content="https://mediaotter.madebysaira.me/screenshots/app-downloads.png">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230000f2'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='38' text-anchor='middle' fill='%23edff45'%3E%E2%9E%A4%3C/text%3E%3C/svg%3E">
+<meta name="twitter:image" content="https://mediaotter.madebysaira.me/screenshots/og-image.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23141040'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='38' text-anchor='middle' fill='%23edff45'%3E%E2%9E%A4%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +26,7 @@
 </script>
 <style>
   :root{
-    --bg:#0000f2; --fg:#f5f5f5; --accent:#edff45;
+    --bg:#141040; --bg-deep:#0e0a2e; --panel:#1a1446; --fg:#f5f5f5; --accent:#edff45;
     --border:rgba(245,245,245,.16);
     --dim:rgba(245,245,245,.78);
     --faint:rgba(245,245,245,.55);
@@ -81,6 +81,11 @@
 
   /* ---- hero ---- */
   .hero{padding:calc(clamp(30px,6vw,84px) + 8px) 0 0}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(28px,5vw,64px);align-items:center}
+  .hero-art{position:relative}
+  .hero-art img{width:100%;filter:drop-shadow(0 30px 70px rgba(0,0,0,.5))}
+  .hero-art::before{content:"";position:absolute;inset:8% 4%;border-radius:50%;z-index:-1;
+    background:radial-gradient(closest-side,rgba(237,255,69,.14),transparent 70%)}
   .hero .eyebrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .hero h1{margin-top:22px;font-size:clamp(2.5rem,7.2vw,5.6rem)}
   .hero h1 em{font-style:italic;font-weight:400;color:var(--fg)}
@@ -144,6 +149,9 @@
   .gif-fig{margin-top:22px;border:1px solid var(--border);border-radius:4px;overflow:hidden;background:rgba(245,245,245,.04);max-width:560px}
   .gif-fig img{width:100%}
   .gif-fig figcaption{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:12px 16px;border-top:1px solid var(--border)}
+  .demo-fig{margin-top:38px;border:1px solid var(--border);border-radius:6px;overflow:hidden;background:var(--panel);max-width:820px}
+  .demo-fig img{width:100%}
+  .demo-fig figcaption{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);padding:12px 16px;border-top:1px solid var(--border)}
   .install-two{margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:900px}
   .mini{border:1px solid var(--border);border-radius:4px;padding:20px;background:rgba(245,245,245,.035)}
   .mini .mt{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
@@ -182,6 +190,8 @@
     .feat-grid{grid-template-columns:1fr}
     .showcase{grid-template-columns:1fr}
     .install-two{grid-template-columns:1fr}
+    .hero-grid{grid-template-columns:1fr}
+    .hero-art{max-width:440px;margin:0 auto}
     .hero h1{font-size:clamp(2.1rem,9.6vw,3rem)}
   }
 </style>
@@ -211,9 +221,16 @@
 <main>
   <!-- HERO -->
   <section class="hero wrap">
-    <p class="eyebrow">Open Source <span class="dot">•</span> MIT License <span class="dot">•</span> For Premiere Pro &amp; After Effects <span class="dot">•</span> macOS · CEP 10</p>
-    <h1 class="serif">Media for your<br><em>timeline.</em> <span class="acc">Without</span><br>leaving Premiere.</h1>
-    <p class="hero-sub">MediaOtter is a free desktop extension that searches <b>YouTube</b>, pastes <b>any link</b>, and imports <b>MP4 or WAV</b> straight into your Premiere Pro and After Effects timeline. <b>No browser. No exports. No accounts.</b></p>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Open Source <span class="dot">•</span> MIT License <span class="dot">•</span> For Premiere Pro &amp; After Effects <span class="dot">•</span> macOS · CEP 10</p>
+        <h1 class="serif">Media for your<br><em>timeline.</em> <span class="acc">Without</span><br>leaving Premiere.</h1>
+        <p class="hero-sub">MediaOtter is a free desktop extension that searches <b>YouTube</b>, pastes <b>any link</b>, and imports <b>MP4 or WAV</b> straight into your Premiere Pro and After Effects timeline. <b>No browser. No exports. No accounts.</b></p>
+      </div>
+      <div class="hero-art reveal in">
+        <img src="assets/hero-otter.svg" alt="Illustration of the MediaOtter otter wearing headphones, holding a glowing play-button orb, surrounded by floating YouTube, Twitch, download, film, music and waveform icons" width="900" height="1100" fetchpriority="high">
+      </div>
+    </div>
 
     <div class="install-panel">
       <div class="install-tabs">
@@ -313,6 +330,19 @@
       <figure class="shot reveal"><img src="screenshots/app-youtube.png" alt="MediaOtter YouTube playlists" width="840" height="1520" loading="lazy"><figcaption>YouTube</figcaption></figure>
       <figure class="shot reveal"><img src="screenshots/app-playlists.png" alt="MediaOtter playlists view" width="840" height="1520" loading="lazy"><figcaption>Playlists</figcaption></figure>
     </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="block wrap" id="how">
+    <div class="sec-head reveal">
+      <p class="eyebrow">Demo <span class="dot">•</span> How it works</p>
+      <h2 class="serif">Paste. Download.<br>On your timeline.</h2>
+      <p>That's the whole workflow — no browser round-trip, no export dialogs, no file hunting.</p>
+    </div>
+    <figure class="demo-fig reveal">
+      <img src="screenshots/workflow-demo.gif" alt="Animated demo of MediaOtter: paste a YouTube link into the Premiere Pro panel, watch the download progress with speed and ETA, and the finished MP4 appears in the project bin and on the timeline" width="760" height="535" loading="lazy">
+      <figcaption><i class="fa-solid fa-circle-play" aria-hidden="true"></i>&nbsp; Paste a link → live progress → clip lands in your MediaOtter bin, ready on the timeline</figcaption>
+    </figure>
   </section>
 
   <!-- INSTALL -->

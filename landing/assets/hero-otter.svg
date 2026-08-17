@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" role="img" aria-label="MediaOtter hero illustration: an otter wearing headphones holding a glowing play-button orb, surrounded by floating media icons">
+  <defs>
+    <!-- soft glow -->
+    <radialGradient id="orbGlow" cx="50%" cy="42%" r="55%">
+      <stop offset="0%" stop-color="#edff45" stop-opacity=".95"/>
+      <stop offset="45%" stop-color="#d4e03a" stop-opacity=".55"/>
+      <stop offset="100%" stop-color="#edff45" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="orbCore" cx="42%" cy="38%" r="70%">
+      <stop offset="0%" stop-color="#fbffd8"/>
+      <stop offset="60%" stop-color="#edff45"/>
+      <stop offset="100%" stop-color="#b9c62e"/>
+    </radialGradient>
+    <linearGradient id="fur" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8c9a0"/>
+      <stop offset="100%" stop-color="#c99e6b"/>
+    </linearGradient>
+    <linearGradient id="furDark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b98a55"/>
+      <stop offset="100%" stop-color="#8f6236"/>
+    </linearGradient>
+    <linearGradient id="cream" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#faf3e3"/>
+      <stop offset="100%" stop-color="#ecd9b8"/>
+    </linearGradient>
+    <linearGradient id="phone" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f5f5f5"/>
+      <stop offset="100%" stop-color="#c9cfe0"/>
+    </linearGradient>
+    <style>
+      .stroke{stroke:#0e0a2e;stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
+      .stroke-sm{stroke:#0e0a2e;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+      .deco{fill:none;stroke:#f5f5f5;stroke-opacity:.22;stroke-linecap:round}
+      .deco-lime{fill:none;stroke:#edff45;stroke-opacity:.55;stroke-linecap:round}
+      .icon{fill:none;stroke:#f5f5f5;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+      .icon-fill{fill:#f5f5f5}
+      .icon-lime{fill:none;stroke:#edff45;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+    </style>
+  </defs>
+
+  <!-- ============ DECORATIVE FIELD (radiating lines, dots, rings) ============ -->
+  <g id="deco">
+    <!-- radiating strokes -->
+    <path class="deco" stroke-width="7" d="M450 520 L450 120"/>
+    <path class="deco" stroke-width="6" d="M450 520 L760 220"/>
+    <path class="deco" stroke-width="7" d="M450 520 L860 520"/>
+    <path class="deco" stroke-width="5" d="M450 520 L780 830"/>
+    <path class="deco" stroke-width="6" d="M450 520 L450 1000"/>
+    <path class="deco" stroke-width="5" d="M450 520 L120 850"/>
+    <path class="deco" stroke-width="7" d="M450 520 L40 520"/>
+    <path class="deco" stroke-width="5" d="M450 520 L130 210"/>
+    <path class="deco" stroke-width="4" d="M450 520 L620 130"/>
+    <path class="deco" stroke-width="4" d="M450 520 L270 140"/>
+    <path class="deco" stroke-width="4" d="M450 520 L700 920"/>
+    <path class="deco" stroke-width="4" d="M450 520 L210 930"/>
+    <!-- concentric rings -->
+    <circle class="deco" stroke-width="4" cx="450" cy="520" r="150"/>
+    <circle class="deco" stroke-width="3" cx="450" cy="520" r="250"/>
+    <circle class="deco" stroke-width="3" cx="450" cy="520" r="360" stroke-dasharray="4 26"/>
+    <circle class="deco-lime" stroke-width="3" cx="450" cy="520" r="470" stroke-dasharray="2 34"/>
+    <!-- dots -->
+    <g fill="#f5f5f5" opacity=".3">
+      <circle cx="200" cy="160" r="6"/><circle cx="720" cy="150" r="5"/>
+      <circle cx="830" cy="340" r="6"/><circle cx="90" cy="370" r="5"/>
+      <circle cx="150" cy="700" r="6"/><circle cx="790" cy="720" r="5"/>
+      <circle cx="330" cy="80" r="5"/><circle cx="580" cy="90" r="6"/>
+      <circle cx="450" cy="1010" r="5"/>
+    </g>
+    <!-- sparkle crosses -->
+    <g stroke="#edff45" stroke-width="5" stroke-linecap="round" opacity=".8">
+      <path d="M180 260 v34 M163 277 h34"/>
+      <path d="M745 590 v30 M730 605 h30"/>
+      <path d="M285 905 v26 M272 918 h26"/>
+    </g>
+  </g>
+
+  <!-- ============ FLOATING MEDIA ICON CARDS ============ -->
+  <g id="icons">
+    <!-- YouTube card (top-left) -->
+    <g transform="translate(115 300) rotate(-10)">
+      <rect x="-58" y="-44" width="116" height="88" rx="18" fill="#241d5e" class="stroke"/>
+      <rect x="-40" y="-27" width="80" height="56" rx="14" fill="#edff45" class="stroke-sm"/>
+      <path d="M-6 -12 L18 1 L-6 14 Z" fill="#0e0a2e"/>
+    </g>
+    <!-- Twitch card (top-right) -->
+    <g transform="translate(775 320) rotate(9)">
+      <rect x="-52" y="-52" width="104" height="104" rx="18" fill="#241d5e" class="stroke"/>
+      <path class="icon-fill" d="M-26 -24 h52 v40 l-16 16 h-14 l-10 10 v-10 h-16 z M-10 -10 v18 M6 -10 v18" stroke="#0e0a2e" stroke-width="5" fill="#edff45"/>
+    </g>
+    <!-- Download arrow card (left) -->
+    <g transform="translate(105 600) rotate(7)">
+      <rect x="-50" y="-50" width="100" height="100" rx="18" fill="#241d5e" class="stroke"/>
+      <path class="icon-lime" d="M0 -22 V14 M-16 -2 L0 16 L16 -2 M-24 28 H24"/>
+    </g>
+    <!-- Film/timeline card (right) -->
+    <g transform="translate(792 610) rotate(-8)">
+      <rect x="-56" y="-42" width="112" height="84" rx="16" fill="#241d5e" class="stroke"/>
+      <rect x="-40" y="-26" width="80" height="52" rx="8" fill="none" stroke="#f5f5f5" stroke-width="6"/>
+      <path stroke="#f5f5f5" stroke-width="5" d="M-40 -12 H40 M-40 12 H40"/>
+      <path stroke="#edff45" stroke-width="5" stroke-linecap="round" d="M-40 0 H-14"/>
+    </g>
+    <!-- Music note (bottom-left) -->
+    <g transform="translate(215 810) rotate(-6)">
+      <path class="icon" d="M14 -34 V22 a14 14 0 1 1 -12 -13 M14 -34 q22 -6 26 14"/>
+    </g>
+    <!-- Waveform (bottom-right) -->
+    <g transform="translate(690 815) rotate(5)">
+      <path class="icon-lime" stroke-width="6" d="M-34 0 h8 M-20 -14 v28 M-8 -24 v48 M4 -10 v20 M16 -18 v36 M28 -6 v12"/>
+    </g>
+  </g>
+
+  <!-- ============ THE OTTER ============ -->
+  <g id="otter">
+    <!-- tail sweeping left -->
+    <path d="M300 820 q-140 40 -190 130 q-16 30 14 38 q120 22 236 -60" fill="url(#furDark)" class="stroke"/>
+    <!-- body -->
+    <path d="M450 600
+             q-150 0 -165 160
+             q-8 90 40 170
+             q40 70 125 78
+             q85 8 125 -78
+             q48 -80 40 -170
+             q-15 -160 -165 -160 Z" fill="url(#fur)" class="stroke"/>
+    <!-- belly -->
+    <path d="M450 690 q-92 0 -100 130 q-6 96 100 104 q106 -8 100 -104 q-8 -130 -100 -130 Z" fill="url(#cream)" class="stroke-sm"/>
+    <!-- left arm reaching to orb -->
+    <path d="M335 700 q-70 -50 -60 -140 q4 -34 36 -30 q26 4 30 44 q6 70 34 96" fill="url(#fur)" class="stroke"/>
+    <!-- right arm reaching to orb -->
+    <path d="M565 700 q70 -50 60 -140 q-4 -34 -36 -30 q-26 4 -30 44 q-6 70 -34 96" fill="url(#fur)" class="stroke"/>
+    <!-- paws -->
+    <circle cx="312" cy="540" r="34" fill="url(#cream)" class="stroke"/>
+    <circle cx="588" cy="540" r="34" fill="url(#cream)" class="stroke"/>
+    <!-- head -->
+    <path d="M450 330 q-120 0 -132 105 q-10 88 60 130 q30 18 72 18 q42 0 72 -18 q70 -42 60 -130 q-12 -105 -132 -105 Z" fill="url(#fur)" class="stroke"/>
+    <!-- ears -->
+    <circle cx="352" cy="352" r="34" fill="url(#furDark)" class="stroke"/>
+    <circle cx="548" cy="352" r="34" fill="url(#furDark)" class="stroke"/>
+    <circle cx="352" cy="352" r="15" fill="#ecd9b8"/>
+    <circle cx="548" cy="352" r="15" fill="#ecd9b8"/>
+    <!-- muzzle -->
+    <path d="M450 470 q-58 0 -64 48 q-5 42 64 48 q69 -6 64 -48 q-6 -48 -64 -48 Z" fill="url(#cream)" class="stroke-sm"/>
+    <!-- nose -->
+    <path d="M450 486 q-20 0 -22 12 q-2 14 22 16 q24 -2 22 -16 q-2 -12 -22 -12 Z" fill="#0e0a2e"/>
+    <!-- mouth -->
+    <path d="M450 514 v12 M450 526 q-14 14 -30 8 M450 526 q14 14 30 8" fill="none" class="stroke-sm"/>
+    <!-- eyes (happy closed arcs) -->
+    <path d="M392 448 q18 -20 40 0" fill="none" class="stroke"/>
+    <path d="M468 448 q18 -20 40 0" fill="none" class="stroke"/>
+    <!-- blush -->
+    <ellipse cx="380" cy="492" rx="16" ry="9" fill="#e8a06b" opacity=".65"/>
+    <ellipse cx="520" cy="492" rx="16" ry="9" fill="#e8a06b" opacity=".65"/>
+
+    <!-- HEADPHONES -->
+    <path d="M330 400 q-8 -130 120 -136 q128 6 120 136" fill="none" stroke="#241d5e" stroke-width="26" stroke-linecap="round"/>
+    <path d="M330 400 q-8 -130 120 -136 q128 6 120 136" fill="none" stroke="#edff45" stroke-width="8" stroke-linecap="round" opacity=".85"/>
+    <!-- ear cups -->
+    <rect x="300" y="382" width="52" height="86" rx="24" fill="url(#phone)" class="stroke"/>
+    <rect x="548" y="382" width="52" height="86" rx="24" fill="url(#phone)" class="stroke"/>
+    <circle cx="326" cy="425" r="12" fill="#edff45" class="stroke-sm"/>
+    <circle cx="574" cy="425" r="12" fill="#edff45" class="stroke-sm"/>
+  </g>
+
+  <!-- ============ THE ORB (play-button globe) ============ -->
+  <g id="orb">
+    <circle cx="450" cy="250" r="150" fill="url(#orbGlow)"/>
+    <circle cx="450" cy="250" r="96" fill="url(#orbCore)" class="stroke"/>
+    <!-- latitude/longitude globe lines -->
+    <path d="M450 154 a96 96 0 0 1 0 192 a96 96 0 0 1 0 -192 M450 154 q-58 96 0 192 M450 154 q58 96 0 192 M356 214 h188 M362 286 h176" fill="none" stroke="#0e0a2e" stroke-width="5" opacity=".35"/>
+    <!-- play triangle -->
+    <path d="M425 205 L505 250 L425 295 Z" fill="#0e0a2e" stroke="#0e0a2e" stroke-width="10" stroke-linejoin="round"/>
+    <!-- highlight -->
+    <ellipse cx="415" cy="200" rx="26" ry="14" fill="#ffffff" opacity=".75" transform="rotate(-24 415 200)"/>
+  </g>
+
+  <!-- orbiting sparkles around orb -->
+  <g stroke="#f5f5f5" stroke-width="5" stroke-linecap="round" opacity=".7">
+    <path d="M300 160 v22 M289 171 h22"/>
+    <path d="M612 330 v18 M603 339 h18"/>
+  </g>
+</svg>
