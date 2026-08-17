@@ -1,203 +1,105 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" role="img" aria-label="MediaOtter hero illustration: an otter in flowing line-art style holding a glowing play-button orb, surrounded by swirling ornamental strokes and media icons">
-  <defs>
-    <radialGradient id="orbGlow" cx="50%" cy="45%" r="55%">
-      <stop offset="0%" stop-color="#edff45" stop-opacity=".9"/>
-      <stop offset="50%" stop-color="#edff45" stop-opacity=".28"/>
-      <stop offset="100%" stop-color="#edff45" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="orbCore" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#f7ffb0"/>
-      <stop offset="55%" stop-color="#edff45"/>
-      <stop offset="100%" stop-color="#c9d62e"/>
-    </linearGradient>
-    <style>
-      .L{fill:none;stroke:#f5f5f5;stroke-linecap:round;stroke-linejoin:round}
-      .L1{stroke-width:3.5;opacity:.92}
-      .L2{stroke-width:2.4;opacity:.6}
-      .L3{stroke-width:1.6;opacity:.38}
-      .A{fill:none;stroke:#edff45;stroke-linecap:round;stroke-linejoin:round}
-      .A1{stroke-width:3.2;opacity:.95}
-      .A2{stroke-width:2.2;opacity:.55}
-      .fillw{fill:#f5f5f5}
-      .filla{fill:#edff45}
-      .soft{fill:#f5f5f5;opacity:.12}
-    </style>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" role="img" aria-label="MediaOtter hero illustration: serene otter wearing large over-ear headphones, eyes closed, presenting a glowing play-button orb">
+<title>MediaOtter — serene otter with headphones presenting a glowing orb</title>
+<defs>
+  <radialGradient id="orbCore" cx="38%" cy="32%" r="72%">
+    <stop offset="0%" stop-color="#fbffd8"/>
+    <stop offset="38%" stop-color="#edff45"/>
+    <stop offset="78%" stop-color="#edff45"/>
+    <stop offset="100%" stop-color="#b9c62e"/>
+  </radialGradient>
+  <radialGradient id="orbHalo" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#edff45" stop-opacity="0.42"/>
+    <stop offset="38%" stop-color="#edff45" stop-opacity="0.18"/>
+    <stop offset="68%" stop-color="#edff45" stop-opacity="0.06"/>
+    <stop offset="100%" stop-color="#edff45" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="litPlane" x1="78%" y1="12%" x2="18%" y2="88%">
+    <stop offset="0%" stop-color="#dce6f7"/>
+    <stop offset="52%" stop-color="#8fa3d0"/>
+    <stop offset="100%" stop-color="#8fa3d0"/>
+  </linearGradient>
+  <linearGradient id="midPlane" x1="72%" y1="18%" x2="28%" y2="82%">
+    <stop offset="0%" stop-color="#8fa3d0"/>
+    <stop offset="60%" stop-color="#4a5a8a"/>
+    <stop offset="100%" stop-color="#4a5a8a"/>
+  </linearGradient>
+  <linearGradient id="shadowPlane" x1="78%" y1="14%" x2="18%" y2="86%">
+    <stop offset="0%" stop-color="#4a5a8a"/>
+    <stop offset="100%" stop-color="#232c4e"/>
+  </linearGradient>
+  <linearGradient id="muzzleFill" x1="62%" y1="14%" x2="38%" y2="86%">
+    <stop offset="0%" stop-color="#dce6f7"/>
+    <stop offset="58%" stop-color="#dce6f7"/>
+    <stop offset="100%" stop-color="#8fa3d0"/>
+  </linearGradient>
+  <linearGradient id="torsoLit" x1="78%" y1="18%" x2="22%" y2="82%">
+    <stop offset="0%" stop-color="#8fa3d0"/>
+    <stop offset="48%" stop-color="#4a5a8a"/>
+    <stop offset="100%" stop-color="#4a5a8a"/>
+  </linearGradient>
+</defs>
 
-  <!-- ================= ORNAMENTAL FIELD ================= -->
-  <g id="field">
-    <!-- big sweeping arcs behind everything -->
-    <path class="L L3" d="M-40 880 Q 200 520 450 560 Q 700 600 940 300"/>
-    <path class="L L3" d="M-60 760 Q 240 420 520 470 Q 760 512 950 180"/>
-    <path class="L L3" d="M60 1080 Q 300 760 560 800 Q 780 834 920 620"/>
-    <path class="A A2" d="M-20 960 Q 260 640 500 690 Q 720 736 900 480"/>
-    <!-- concentric circles around the orb -->
-    <circle class="L L3" cx="450" cy="240" r="150"/>
-    <circle class="L L3" cx="450" cy="240" r="200" stroke-dasharray="2 18"/>
-    <circle class="A A2" cx="450" cy="240" r="250" stroke-dasharray="1 30"/>
-    <!-- radiating ticks from orb -->
-    <g class="L L3">
-      <path d="M450 20 v50"/><path d="M610 60 l-30 42"/><path d="M700 240 h-52"/>
-      <path d="M290 60 l30 42"/><path d="M200 240 h52"/>
-      <path d="M640 410 l-36 -32"/><path d="M260 410 l36 -32"/>
-    </g>
-    <!-- floating dots constellation -->
-    <g class="fillw" opacity=".5">
-      <circle cx="130" cy="150" r="3.5"/><circle cx="770" cy="120" r="3"/>
-      <circle cx="830" cy="430" r="3.5"/><circle cx="80" cy="420" r="3"/>
-      <circle cx="120" cy="640" r="3.5"/><circle cx="800" cy="700" r="3"/>
-      <circle cx="240" cy="940" r="3"/><circle cx="680" cy="940" r="3.5"/>
-      <circle cx="450" cy="1000" r="3"/><circle cx="330" cy="60" r="3"/>
-      <circle cx="590" cy="40" r="3.5"/>
-    </g>
-    <!-- sparkle crosses -->
-    <g class="A A1" stroke-width="2.6">
-      <path d="M170 280 v26 M157 293 h26"/>
-      <path d="M730 560 v22 M719 571 h22"/>
-      <path d="M255 830 v20 M245 840 h20"/>
-    </g>
-  </g>
+<!-- grounded anchor — soft wide shadow under shoulders -->
+<ellipse cx="452" cy="1062" rx="348" ry="44" fill="#232c4e" opacity="0.18"/>
 
-  <!-- ================= FLOATING ICON CHIPS (fine-line style) ================= -->
-  <g id="chips">
-    <!-- play button diamond (top-left) -->
-    <g transform="translate(150 380) rotate(-12)">
-      <rect class="L L1" x="-44" y="-44" width="88" height="88" rx="14"/>
-      <path class="filla" d="M-12 -16 L20 0 L-12 16 Z"/>
-    </g>
-    <!-- waveform chip (right) -->
-    <g transform="translate(760 420) rotate(9)">
-      <rect class="L L1" x="-48" y="-40" width="96" height="80" rx="14"/>
-      <path class="A A1" stroke-width="2.8" d="M-30 0 h6 M-18 -12 v24 M-6 -20 v40 M6 -8 v16 M18 -15 v30 M30 -4 v8"/>
-    </g>
-    <!-- download chip (left lower) -->
-    <g transform="translate(140 640) rotate(8)">
-      <rect class="L L1" x="-42" y="-42" width="84" height="84" rx="14"/>
-      <path class="A A1" stroke-width="2.8" d="M0 -18 V10 M-12 -2 L0 12 L12 -2 M-20 22 H20"/>
-    </g>
-    <!-- film strip chip (right lower) -->
-    <g transform="translate(755 670) rotate(-9)">
-      <rect class="L L1" x="-46" y="-36" width="92" height="72" rx="12"/>
-      <path class="L L2" d="M-30 -20 H30 M-30 0 H30 M-30 20 H30"/>
-      <path class="A A1" stroke-width="2.6" d="M-30 0 H-8"/>
-    </g>
-    <!-- music note (bottom-left of otter) -->
-    <g transform="translate(255 890) rotate(-7)">
-      <path class="L L1" d="M10 -26 V14 a11 11 0 1 1 -9 -10 M10 -26 q18 -5 21 11"/>
-    </g>
-    <!-- scissors (bottom-right) -->
-    <g transform="translate(655 880) rotate(6)">
-      <circle class="L L1" cx="-12" cy="12" r="9"/>
-      <circle class="L L1" cx="12" cy="12" r="9"/>
-      <path class="L L1" d="M-7 5 L16 -18 M7 5 L-16 -18"/>
-    </g>
-  </g>
+<!-- SHOULDERS / TORSO — broad portrait, fills lower 2/3, spreads to bottom edge -->
+<path d="M 34 1100 L 34 992 C 68 872 208 742 395 706 L 395 740 C 390 760 386 800 384 840 L 384 1100 Z" fill="#232c4e" opacity="0.96"/>
+<path d="M 395 706 C 432 690 478 690 515 706 C 702 742 842 872 876 992 L 876 1100 L 384 1100 L 384 840 C 386 800 390 760 395 740 Z" fill="url(#torsoLit)"/>
+<!-- lit chest plane — faces upper-right orb -->
+<path d="M 464 744 C 556 762 648 812 692 912 L 692 1100 L 468 1100 C 464 1002 456 900 424 828 C 434 788 448 754 464 744 Z" fill="url(#litPlane)" opacity="0.92"/>
 
-  <!-- ================= THE ORB ================= -->
-  <g id="orb">
-    <circle cx="450" cy="240" r="140" fill="url(#orbGlow)"/>
-    <circle cx="450" cy="240" r="86" fill="url(#orbCore)"/>
-    <!-- fine engraved globe lines -->
-    <g class="L" stroke="#0b0e1a" opacity=".4">
-      <circle cx="450" cy="240" r="86" stroke-width="3"/>
-      <ellipse cx="450" cy="240" rx="86" ry="30" stroke-width="2"/>
-      <ellipse cx="450" cy="240" rx="86" ry="58" stroke-width="1.6"/>
-      <ellipse cx="450" cy="240" rx="30" ry="86" stroke-width="2"/>
-      <ellipse cx="450" cy="240" rx="58" ry="86" stroke-width="1.6"/>
-    </g>
-    <!-- play triangle -->
-    <path d="M428 202 L498 240 L428 278 Z" fill="#0b0e1a"/>
-    <!-- orbiting ring -->
-    <ellipse class="A A1" cx="450" cy="240" rx="128" ry="40" transform="rotate(-18 450 240)" stroke-dasharray="60 22"/>
-    <!-- sparkles on orb -->
-    <g class="L L2" stroke-width="2.4">
-      <path d="M318 150 v16 M310 158 h16"/>
-      <path d="M596 320 v14 M589 327 h14"/>
-    </g>
-  </g>
+<!-- NECK — visible -->
+<path d="M 392 628 L 392 718 C 392 718 432 736 454 736 C 476 736 516 718 516 718 L 516 628 Z" fill="url(#shadowPlane)"/>
+<path d="M 444 630 L 516 630 L 516 718 C 492 726 462 732 444 722 C 438 688 440 648 444 630 Z" fill="#8fa3d0" opacity="0.74"/>
 
-  <!-- ================= THE OTTER (fine line-art / engraving style) ================= -->
-  <g id="otter">
-    <!-- swirling water current the otter floats on -->
-    <path class="L L2" d="M180 900 Q 330 850 450 890 Q 570 930 720 880"/>
-    <path class="L L3" d="M210 940 Q 340 900 450 930 Q 560 960 690 920"/>
-    <path class="A A2" d="M250 975 Q 360 945 450 968 Q 540 990 650 955"/>
+<!-- HEADPHONES cups — behind head, ~30% overlap (head drawn on top of inner edge) -->
+<ellipse cx="296" cy="506" rx="54" ry="78" fill="#4a5a8a"/>
+<ellipse cx="612" cy="506" rx="58" ry="82" fill="#4a5a8a"/>
+<path d="M 254 438 C 240 462 236 492 242 524 C 246 496 254 470 268 448 C 280 428 296 416 316 410 C 282 410 262 418 254 438 Z" fill="#dce6f7" opacity="0.96"/>
+<path d="M 564 428 C 548 452 544 484 552 518 C 556 490 566 464 582 442 C 596 422 616 410 640 404 C 602 404 574 410 564 428 Z" fill="#dce6f7" opacity="0.98"/>
 
-    <!-- tail -->
-    <path class="L L1" d="M330 830 Q 220 860 160 940 Q 130 980 165 995 Q 250 1020 350 960"/>
-    <path class="L L2" d="M320 855 Q 245 880 200 935"/>
+<!-- HEAD — sweeping silhouette, ~42% of figure height -->
+<path d="M 312 468 C 284 414 316 352 384 324 C 438 302 522 312 568 352 C 612 390 626 452 612 516 C 598 580 554 628 484 652 C 412 672 332 634 310 562 C 302 524 304 492 312 468 Z" fill="#4a5a8a"/>
+<!-- jaw / neck shadow — lower-left falloff -->
+<path d="M 312 468 C 298 492 298 534 320 574 C 344 612 392 644 452 660 C 484 652 516 634 544 606 C 502 612 462 604 430 578 C 374 534 348 492 360 452 C 336 452 318 460 312 468 Z" fill="url(#shadowPlane)"/>
+<!-- lit forehead — upper-right -->
+<path d="M 384 324 C 438 302 522 312 568 352 C 552 384 508 408 458 412 C 412 412 376 390 368 348 C 372 334 376 328 384 324 Z" fill="url(#litPlane)" opacity="0.98"/>
+<!-- cheek plane — large smooth -->
+<path d="M 368 452 C 408 438 476 436 528 462 C 542 490 534 526 508 558 C 462 580 404 578 364 548 C 332 524 340 474 368 452 Z" fill="url(#midPlane)" opacity="0.98"/>
+<!-- muzzle — lighter -->
+<path d="M 298 504 C 270 518 262 552 278 582 C 294 612 332 630 376 626 C 410 620 430 596 430 564 C 430 528 398 504 352 500 C 326 498 306 500 298 504 Z" fill="url(#muzzleFill)"/>
+<ellipse cx="302" cy="546" rx="16" ry="12.5" fill="#232c4e"/>
+<ellipse cx="298" cy="542" rx="6.5" ry="4.5" fill="#dce6f7" opacity="0.92"/>
 
-    <!-- body — long flowing swimming pose, reaching up -->
-    <path class="L L1" d="M450 560
-      C 380 560 320 620 305 700
-      C 292 770 300 850 340 905
-      C 375 955 425 975 450 975
-      C 475 975 525 955 560 905
-      C 600 850 608 770 595 700
-      C 580 620 520 560 450 560 Z"/>
-    <!-- belly contour -->
-    <path class="L L2" d="M450 640 C 395 640 355 700 350 780 C 346 855 385 920 450 928 C 515 920 554 855 550 780 C 545 700 505 640 450 640 Z"/>
-    <!-- fur texture strokes on body -->
-    <g class="L L3">
-      <path d="M340 720 q 18 8 30 2"/><path d="M330 780 q 18 8 30 2"/>
-      <path d="M345 840 q 18 8 30 2"/><path d="M560 720 q -18 8 -30 2"/>
-      <path d="M570 780 q -18 8 -30 2"/><path d="M555 840 q -18 8 -30 2"/>
-    </g>
+<!-- EARS — small rounded triangles tucked near headphone band -->
+<path d="M 364 344 C 352 324 332 314 322 328 C 312 342 320 362 342 372 C 356 374 366 360 364 344 Z" fill="#4a5a8a"/>
+<path d="M 344 334 C 336 330 328 332 326 340 C 324 350 332 360 344 362 C 352 360 356 350 350 338 Z" fill="#dce6f7" opacity="0.94"/>
+<path d="M 548 348 C 562 326 582 316 594 330 C 604 344 596 364 574 374 C 560 376 548 364 548 348 Z" fill="#4a5a8a"/>
+<path d="M 570 334 C 578 330 586 332 588 340 C 590 350 582 360 570 362 C 562 360 558 350 562 338 Z" fill="#dce6f7" opacity="0.94"/>
 
-    <!-- left arm reaching up to orb -->
-    <path class="L L1" d="M368 640 C 330 590 315 520 330 460 C 338 428 360 418 375 435 C 388 450 385 480 390 520 C 396 565 410 600 425 620"/>
-    <!-- right arm reaching up -->
-    <path class="L L1" d="M532 640 C 570 590 585 520 570 460 C 562 428 540 418 525 435 C 512 450 515 480 510 520 C 504 565 490 600 475 620"/>
-    <!-- paws -->
-    <circle class="L L1" cx="345" cy="445" r="26"/>
-    <circle class="L L1" cx="555" cy="445" r="26"/>
-    <path class="L L3" d="M335 445 h20 M345 435 v20 M545 445 h20 M555 435 v20"/>
+<!-- HEADPHONES band — bold 28px arch over head, visually connects both cups with no gap -->
+<path d="M 296 500 L 296 445 C 300 365 368 304 452 290 C 536 304 608 365 612 445 L 612 500 C 608 385 550 322 452 318 C 354 322 300 385 296 500 Z" fill="#4a5a8a"/>
 
-    <!-- head -->
-    <path class="L L1" d="M450 380
-      C 385 380 340 425 338 490
-      C 336 545 375 595 450 600
-      C 525 595 564 545 562 490
-      C 560 425 515 380 450 380 Z"/>
-    <!-- ears -->
-    <path class="L L1" d="M368 395 C 350 370 320 372 312 395 C 305 415 320 435 342 432"/>
-    <path class="L L1" d="M532 395 C 550 370 580 372 588 395 C 595 415 580 435 558 432"/>
-    <path class="L L2" d="M362 402 C 350 388 332 390 328 404"/>
-    <path class="L L2" d="M538 402 C 550 388 568 390 572 404"/>
+<!-- PAW + ARM — single smooth tapered limb from lower-left chest to wrist under orb -->
+<path d="M 287 794 L 343 836 L 632.5 442.9 L 603.7 421.2 Z" fill="#8fa3d0"/>
+<path d="M 287 794 L 603.7 421.2 L 614 429 L 297.5 801.7 Z" fill="#4a5a8a" opacity="0.98"/>
+<!-- paw — open upturned mitten, palm-up, 2 shade planes, directly under orb gap ≤12px -->
+<path d="M 576 416 C 558 400 560 376 584 364 C 610 352 646 366 664 386 C 678 402 678 422 664 438 C 640 456 598 452 576 416 Z" fill="#8fa3d0"/>
+<path d="M 584 364 C 604 352 634 356 656 374 C 646 388 626 398 604 398 C 582 398 564 386 576 416 C 560 404 560 380 584 364 Z" fill="#dce6f7" opacity="0.96"/>
+<!-- halo wash over paw top plane -->
+<ellipse cx="620" cy="382" rx="36" ry="16" fill="#edff45" opacity="0.25"/>
 
-    <!-- muzzle -->
-    <path class="L L2" d="M450 505 C 415 505 395 525 397 550 C 399 575 425 590 450 590 C 475 590 501 575 503 550 C 505 525 485 505 450 505 Z"/>
-    <!-- nose -->
-    <path class="L L1" d="M450 512 C 438 512 432 519 433 527 C 434 535 442 540 450 540 C 458 540 466 535 467 527 C 468 519 462 512 450 512 Z"/>
-    <path class="filla" d="M450 517 C 444 517 440 521 441 526 C 442 531 446 533 450 533 C 454 533 458 531 459 526 C 460 521 456 517 450 517 Z"/>
-    <!-- mouth + whiskers -->
-    <path class="L L2" d="M450 540 v10 M450 550 q -12 10 -24 5 M450 550 q 12 10 24 5"/>
-    <g class="L L3">
-      <path d="M398 540 q -28 -4 -46 4"/><path d="M400 552 q -26 2 -42 12"/>
-      <path d="M502 540 q 28 -4 46 4"/><path d="M500 552 q 26 2 42 12"/>
-    </g>
-    <!-- eyes — bright lime dots with fine lids -->
-    <path class="L L2" d="M395 472 q 16 -14 36 -4"/>
-    <path class="L L2" d="M469 468 q 20 -10 36 4"/>
-    <circle class="filla" cx="415" cy="478" r="7"/>
-    <circle class="filla" cx="485" cy="478" r="7"/>
-    <circle class="fillw" cx="417.5" cy="475.5" r="2.2"/>
-    <circle class="fillw" cx="487.5" cy="475.5" r="2.2"/>
-    <!-- brow fur lines -->
-    <g class="L L3">
-      <path d="M400 445 q 15 -8 30 -2"/><path d="M470 443 q 15 -6 30 2"/>
-      <path d="M420 415 q 30 -10 60 0"/>
-    </g>
+<!-- ORB — at (620,300) upper-right, just above paw -->
+<circle cx="620" cy="300" r="132" fill="url(#orbHalo)"/>
+<circle cx="620" cy="300" r="62" fill="url(#orbCore)"/>
+<ellipse cx="604" cy="278" rx="26" ry="20" fill="white" opacity="0.20"/>
+<path d="M 600 272 L 644 300 L 600 328 Z" fill="#0b0e1a" opacity="0.98"/>
+<circle cx="684" cy="242" r="4.2" fill="#edff45" opacity="0.95"/>
+<circle cx="694" cy="268" r="2.6" fill="#edff45" opacity="0.88"/>
+<circle cx="674" cy="368" r="3.4" fill="#edff45" opacity="0.92"/>
 
-    <!-- HEADPHONES — fine-line style -->
-    <path class="L L1" d="M345 460 C 330 360 380 300 450 298 C 520 300 570 360 555 460"/>
-    <path class="A A2" d="M352 455 C 340 365 385 310 450 308 C 515 310 560 365 548 455"/>
-    <!-- ear cups -->
-    <path class="L L1" d="M330 445 C 322 445 315 455 315 475 C 315 500 322 515 332 515 C 342 515 350 500 350 480 C 350 460 342 445 330 445 Z"/>
-    <path class="L L1" d="M570 445 C 578 445 585 455 585 475 C 585 500 578 515 568 515 C 558 515 550 500 550 480 C 550 460 558 445 570 445 Z"/>
-    <circle class="filla" cx="332" cy="482" r="7"/>
-    <circle class="filla" cx="568" cy="482" r="7"/>
-    <!-- sound waves from cups -->
-    <path class="A A2" d="M300 470 q -14 12 0 26 M600 470 q 14 12 0 26"/>
-  </g>
+<!-- FACE DETAILS — eyes sit ON muzzle upper edge, slightly curved downward, symmetric serene -->
+<path d="M 360 506 C 376 524 404 524 420 506" fill="none" stroke="#dce6f7" stroke-width="4" stroke-linecap="round" opacity="0.96"/>
+<path d="M 476 506 C 492 524 520 524 536 506" fill="none" stroke="#dce6f7" stroke-width="4" stroke-linecap="round" opacity="0.96"/>
+<path d="M 304 566 C 310 574 320 578 334 574" fill="none" stroke="#dce6f7" stroke-width="2" stroke-linecap="round" opacity="0.38"/>
 </svg>
