@@ -1,0 +1,21 @@
+# ─── Secrets — NEVER commit these ─────────────────────────────
+credentials.json
+*.secret
+.env
+.env.*
+!.env.example
+
+# ─── Runtime / build artifacts ────────────────────────────────
+extension/binaries/
+*.zxp
+*.zip
+dist/
+build/
+node_modules/
+
+# ─── OS cruft ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+.cache/

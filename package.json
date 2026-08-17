@@ -1,0 +1,18 @@
+{
+  "name": "mediaotter",
+  "version": "1.0.0",
+  "description": "MediaOtter — search & download video/audio straight into Premiere Pro and After Effects. Open-source CEP panel powered by yt-dlp.",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "binaries": "node scripts/download-binaries.js",
+    "build:zxp": "node scripts/build-zxp.js",
+    "inject:credentials": "node scripts/inject-credentials.js",
+    "install:mac": "bash scripts/install-mac.sh",
+    "validate": "node scripts/validate.js",
+    "test:engine": "node scripts/test-engine.js"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}

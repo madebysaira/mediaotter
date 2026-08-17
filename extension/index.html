@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <title>MediaOtter</title>
+  <link rel="stylesheet" href="lib/fonts/poppins/poppins.css" />
+  <link rel="stylesheet" href="lib/fonts/fa/css/all.min.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <script src="lib/CSInterface.js"></script>
+</head>
+<body>
+  <div id="app" class="app">
+    <!-- ── Header ─────────────────────────────────────────── -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark"><i class="fa-solid fa-otter"></i></span>
+        <span class="brand-name">MediaOtter</span>
+        <span class="brand-ver" id="ver-chip">beta</span>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="btn-history" title="Downloads &amp; history"><i class="fa-solid fa-clock-rotate-left"></i></button>
+        <button class="icon-btn" id="btn-settings" title="Settings"><i class="fa-solid fa-gear"></i></button>
+      </div>
+    </header>
+
+    <!-- ── Search screen ──────────────────────────────────── -->
+    <main id="screen-search" class="screen active">
+      <div class="tab-pills" role="tablist">
+        <button class="pill active" data-tab="search" role="tab"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        <button class="pill" data-tab="paste" role="tab"><i class="fa-solid fa-link"></i> Paste URL</button>
+      </div>
+
+      <!-- search form -->
+      <section class="search-form" id="search-form">
+        <div class="search-bar-wrap">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input id="search-input" type="text" placeholder="Search YouTube…" autocomplete="off" spellcheck="false" />
+          <button class="clear-btn hidden" id="search-clear"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="suggest-box hidden" id="suggest-box"></div>
+        <div class="filter-row" id="filter-row">
+          <button class="filter-chip active" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="video">Videos</button>
+          <button class="filter-chip" data-filter="playlist">Playlists</button>
+        </div>
+      </section>
+
+      <!-- paste form -->
+      <section class="paste-form hidden" id="paste-form">
+        <div class="search-bar-wrap">
+          <i class="fa-solid fa-link search-icon"></i>
+          <input id="paste-input" type="text" placeholder="Paste any video / playlist link (YouTube, Vimeo, SoundCloud, Twitch…)" autocomplete="off" spellcheck="false" />
+          <button class="btn primary sm" id="paste-go">Fetch</button>
+        </div>
+        <p class="hint">Works with any of the <span id="site-count">1000+</span> sites supported by yt-dlp.</p>
+      </section>
+
+      <div id="results" class="results"></div>
+      <div id="results-more" class="results-more hidden"><button class="btn ghost" id="btn-more"><i class="fa-solid fa-angles-down"></i> Load more</button></div>
+      <div id="results-status" class="status-row"></div>
+    </main>
+
+    <!-- ── Downloads screen ───────────────────────────────── -->
+    <main id="screen-downloads" class="screen">
+      <h2 class="screen-title"><i class="fa-solid fa-download"></i> Downloads</h2>
+      <div id="active-downloads" class="active-downloads"></div>
+      <div class="section-head"><h3>History</h3><button class="text-btn" id="btn-clear-history">Clear</button></div>
+      <div id="history-list" class="history-list"></div>
+      <div class="empty-state hidden" id="downloads-empty"><i class="fa-solid fa-folder-open"></i><p>Nothing here yet.<br/>Download something from Search or Paste URL.</p></div>
+    </main>
+
+    <!-- ── Playlists screen ───────────────────────────────── -->
+    <main id="screen-playlists" class="screen">
+      <h2 class="screen-title"><i class="fa-solid fa-list-ul"></i> My YouTube</h2>
+      <div id="account-card" class="card account-card"></div>
+      <div id="playlist-tabs" class="tab-pills hidden">
+        <button class="pill active" data-ptab="playlists"><i class="fa-solid fa-list"></i> Playlists</button>
+        <button class="pill" data-ptab="liked"><i class="fa-solid fa-thumbs-up"></i> Liked</button>
+      </div>
+      <div id="playlist-grid" class="playlist-grid"></div>
+      <div id="playlist-items" class="playlist-items hidden"></div>
+      <button class="btn ghost back-btn hidden" id="btn-playlist-back"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    </main>
+
+    <!-- ── Settings screen ────────────────────────────────── -->
+    <main id="screen-settings" class="screen">
+      <h2 class="screen-title"><i class="fa-solid fa-gear"></i> Settings</h2>
+
+      <div class="card">
+        <div class="setting-row">
+          <div class="setting-label"><i class="fa-solid fa-tower-broadcast"></i> Max video quality</div>
+          <select id="set-quality" class="select">
+            <option value="2160">4K (2160p)</option>
+            <option value="1440">2K (1440p)</option>
+            <option value="1080">1080p</option>
+            <option value="720">720p</option>
+            <option value="480">480p</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label"><i class="fa-solid fa-microchip"></i> Allow encoding to H.264<span class="setting-sub">Transcodes VP9/AV1 when no H.264 is available (slower)</span></div>
+          <label class="switch"><input type="checkbox" id="set-encoding" /><span></span></label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label"><i class="fa-solid fa-folder"></i> Download to<span class="setting-sub">Project folder, or a fixed location</span></div>
+          <div class="seg"><button class="seg-btn active" data-loc="project">Project</button><button class="seg-btn" data-loc="custom">Custom…</button></div>
+        </div>
+        <div class="setting-row hidden" id="row-custom-path">
+          <input id="set-custom-path" class="input" type="text" placeholder="/path/to/folder" />
+          <button class="btn primary sm" id="btn-browse"><i class="fa-solid fa-folder-open"></i> Browse</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="setting-label"><i class="fa-solid fa-cookie-bite"></i> YouTube browser session<span class="setting-sub">Lets you download private, age-restricted or bot-flagged videos with your own cookies</span></div>
+        <select id="set-cookies" class="select">
+          <option value="">Off</option>
+          <option value="chrome">Google Chrome</option>
+          <option value="edge">Microsoft Edge</option>
+          <option value="brave">Brave</option>
+          <option value="firefox">Firefox</option>
+        </select>
+        <div id="cookie-status" class="cookie-status"></div>
+      </div>
+
+      <div class="card">
+        <div class="setting-row">
+          <div class="setting-label"><i class="fa-solid fa-palette"></i> Theme</div>
+          <div class="seg"><button class="seg-btn active" data-theme="dark">Dark</button><button class="seg-btn" data-theme="light">Light</button></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label"><i class="fa-solid fa-circle-half-stroke"></i> Pause preview when panel hidden</div>
+          <label class="switch"><input type="checkbox" id="set-pause" /><span></span></label>
+        </div>
+      </div>
+
+      <div class="card about-card">
+        <div class="setting-label"><i class="fa-solid fa-circle-info"></i> MediaOtter</div>
+        <p id="about-text" class="about-text"></p>
+        <div class="about-actions">
+          <button class="btn ghost sm" id="btn-check-updates"><i class="fa-solid fa-rotate"></i> Check for updates</button>
+          <button class="btn ghost sm" id="btn-open-repo"><i class="fa-brands fa-github"></i> GitHub</button>
+        </div>
+        <div id="update-status" class="cookie-status"></div>
+      </div>
+    </main>
+
+    <!-- ── Preview overlay ────────────────────────────────── -->
+    <div id="preview" class="preview hidden">
+      <div class="preview-header">
+        <button class="icon-btn" id="preview-back"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="preview-title" id="preview-title"></div>
+        <button class="icon-btn" id="preview-open"><i class="fa-solid fa-up-right-from-square"></i></button>
+      </div>
+      <div class="video-frame"><iframe id="preview-frame" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
+      <div class="preview-meta">
+        <div class="channel-row">
+          <div class="channel-avatar" id="preview-avatar">?</div>
+          <div class="channel-info">
+            <div class="channel-name" id="preview-channel"></div>
+            <div class="preview-stats" id="preview-stats"></div>
+          </div>
+        </div>
+        <div class="preview-desc" id="preview-desc"></div>
+        <div class="range-row">
+          <label class="range-label"><i class="fa-solid fa-scissors"></i> Download range</label>
+          <div class="range-inputs">
+            <input id="range-start" class="input sm" type="text" placeholder="Start 0:00" />
+            <span class="range-sep">–</span>
+            <input id="range-end" class="input sm" type="text" placeholder="End" />
+            <button class="btn ghost sm" id="btn-clear-range" title="Full video"><i class="fa-solid fa-rotate-left"></i></button>
+          </div>
+        </div>
+        <div class="quality-actions" id="preview-actions"></div>
+      </div>
+    </div>
+
+    <!-- ── Toast ──────────────────────────────────────────── -->
+    <div id="toasts" class="toasts"></div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
