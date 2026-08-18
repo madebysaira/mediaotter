@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MediaOtter — Documentation</title>
+<meta name="description" content="MediaOtter documentation — install, first download, trim, formats, YouTube sign-in, updates, troubleshooting, uninstall and privacy. Everything to get from zero to your first clip.">
+<meta name="theme-color" content="#0b0e1a">
+<link rel="canonical" href="https://mediaotter.madebysaira.me/docs.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MediaOtter — Documentation">
+<meta property="og:description" content="From zero to your first clip — install MediaOtter, sign in, search, paste, trim and import MP4 or WAV straight to your Premiere timeline.">
+<meta property="og:url" content="https://mediaotter.madebysaira.me/docs.html">
+<meta property="og:image" content="https://mediaotter.madebysaira.me/screenshots/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MediaOtter — Documentation">
+<meta name="twitter:description" content="From zero to your first clip — install MediaOtter, sign in, search, paste, trim and import straight to Premiere.">
+<meta name="twitter:image" content="https://mediaotter.madebysaira.me/screenshots/og-image.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0e1a'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='38' text-anchor='middle' fill='%23edff45'%3E%E2%9E%A4%3C/text%3E%3C/svg%3E">
+<link rel="preload" as="image" href="assets/hero-otter.svg" fetchpriority="high">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  :root{
+    --bg:#0b0e1a; --panel:#11152a; --card:#f5f5f5; --fg:#f5f5f5; --accent:#edff45;
+    --ink:#0b0e1a;
+    --border:rgba(245,245,245,.16);
+    --dim:rgba(245,245,245,.78);
+    --faint:rgba(245,245,245,.55);
+    --serif:'Playfair Display','Times New Roman',serif;
+    --mono:'Courier Prime',ui-monospace,Menlo,Consolas,monospace;
+    --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --gutter:clamp(20px,6vw,96px);
+    --frame:clamp(10px,1.4vw,18px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;background:var(--bg)}
+  body{
+    background:var(--bg);color:var(--fg);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;overflow-x:clip;line-height:1.5;
+  }
+  ::selection{background:var(--accent);color:var(--ink)}
+  img,svg,video{display:block;max-width:100%;height:auto;-webkit-user-drag:none}
+  a{color:inherit;text-decoration:none}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:rgba(245,245,245,.28);border-radius:8px;border:2px solid var(--bg)}
+
+  .noise{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.14;mix-blend-mode:color-burn;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .frame{position:fixed;inset:0;z-index:200;pointer-events:none;border:var(--frame) solid var(--bg)}
+
+  .wrap{max-width:1360px;margin:0 auto;padding:0 var(--gutter)}
+  .docs-wrap{max-width:860px;margin:0 auto;padding:0 var(--gutter)}
+  .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg)}
+  .eyebrow .dot{color:var(--accent)}
+  .serif{font-family:var(--serif);text-transform:uppercase;font-weight:400;letter-spacing:.03em;line-height:.92}
+
+  /* NAV — 3-col grid like index */
+  nav{position:absolute;inset-inline:0;top:var(--frame);z-index:40;
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:start;
+    padding-inline:var(--gutter);padding-top:clamp(18px,3vw,34px)}
+  .nav-side{display:flex;gap:clamp(16px,2.6vw,34px);align-items:flex-start}
+  .nav-side.right{justify-content:flex-end;align-items:center}
+  .nav-link{font-family:var(--serif);text-transform:uppercase;font-weight:700;
+    font-size:clamp(.8rem,1.2vw,1.05rem);letter-spacing:.03em;color:var(--fg);
+    text-decoration:none;text-underline-offset:.3em;text-decoration-color:transparent;transition:text-decoration-color .15s}
+  .nav-link:hover{text-decoration:underline;text-decoration-color:currentColor}
+  .nav-link .arr{font-family:var(--mono);font-size:.85em;margin-left:.35em}
+  .nav-center{display:flex;flex-direction:column;align-items:center;gap:14px;line-height:1}
+  .nav-brand{font-family:var(--serif);text-transform:uppercase;font-weight:700;
+    font-size:clamp(1.05rem,1.9vw,1.7rem);letter-spacing:.03em;text-align:center;line-height:1.05}
+  .nav-social{display:flex;gap:18px}
+  .nav-social a{opacity:.7;transition:opacity .2s;font-size:15px}
+  .nav-social a:hover{opacity:1}
+  .menu-btn{display:none;background:none;border:1px solid var(--border);color:var(--fg);font-size:15px;padding:8px 12px;border-radius:2px;cursor:pointer}
+
+  /* term-card reused */
+  .term-card{width:min(680px,100%);max-width:100%;background:var(--card);color:var(--ink);border-radius:4px;overflow:hidden;
+    box-shadow:0 18px 60px rgba(0,0,0,.45);align-self:flex-start}
+  .term-tabs{display:flex;gap:22px;border-bottom:1px solid rgba(11,14,26,.1);padding:13px 18px 0}
+  .term-tab{font-family:var(--mono);font-size:13px;background:none;border:none;cursor:pointer;
+    padding-bottom:11px;color:rgba(11,14,26,.45);border-bottom:2px solid transparent;font-weight:400}
+  .term-tab.active{color:var(--ink);font-weight:700;border-bottom-color:var(--ink)}
+  .term-body{padding:16px 18px;display:flex;align-items:center;gap:14px}
+  .term-cmd{font-family:var(--mono);font-size:clamp(12.5px,1.3vw,14.5px);line-height:1.4;flex:1;min-width:0;
+    overflow-wrap:anywhere;white-space:normal;word-break:break-word}
+  .term-cmd .c1{color:rgba(11,14,26,.45)}
+  .term-cmd .c2{color:var(--ink);font-weight:700}
+  .term-copy{flex:none;background:none;border:none;cursor:pointer;color:rgba(11,14,26,.35);
+    font-size:16px;padding:6px;transition:color .15s}
+  .term-copy:hover{color:rgba(11,14,26,.7)}
+
+  .ascii-btn{position:relative;display:inline-flex;align-items:center;gap:14px;
+    background:var(--fg);color:var(--ink);padding:14px 24px 14px 50px;
+    font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:.06em;
+    box-shadow:0 4px 14px rgba(0,0,0,.35);transition:background .15s;border-radius:2px;max-width:min(680px,100%);align-self:flex-start}
+  .ascii-btn:hover{background:#fff}
+  .ascii-btn i{position:absolute;left:22px;top:50%;transform:translateY(-50%);font-size:15px}
+
+  /* DOCS specific */
+  .docs-hero{padding:clamp(130px,20vh,210px) 0 44px;border-bottom:1px solid var(--border)}
+  .docs-hero h1{font-size:clamp(2.6rem,6vw,5.2rem);font-weight:400;line-height:.95;max-width:760px}
+  .docs-hero .lede{margin-top:16px;font-family:var(--sans);font-size:15px;line-height:1.7;color:var(--dim);max-width:560px}
+  .docs-hero .lede strong{color:var(--fg);font-weight:600}
+  .toc{margin-top:28px;display:flex;flex-wrap:wrap;gap:8px}
+  .toc a{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);
+    border:1px solid var(--border);padding:7px 10px;border-radius:2px;transition:color .15s,border-color .15s,background .15s}
+  .toc a:hover{color:var(--fg);border-color:rgba(245,245,245,.35);background:rgba(245,245,245,.06)}
+
+  .doc-sec{padding:46px 0 44px;border-bottom:1px solid var(--border);scroll-margin-top:28px}
+  .doc-sec:last-of-type{border-bottom:none}
+  .doc-sec .sec-eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .doc-sec h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.55rem,2.6vw,2.15rem);line-height:1;text-transform:none;letter-spacing:.01em;margin-bottom:14px;color:var(--fg)}
+  .doc-sec p{font-family:var(--sans);font-size:15px;line-height:1.7;color:var(--dim);margin-bottom:12px}
+  .doc-sec p strong{color:var(--fg);font-weight:600}
+  .doc-sec p a{color:var(--fg);text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 25%,transparent);text-underline-offset:.3em}
+  .doc-sec p a:hover{color:var(--accent);text-decoration-color:var(--accent)}
+  .doc-sec ul,.doc-sec ol{margin:10px 0 16px;padding-left:20px;color:var(--dim);font-size:15px;line-height:1.7;font-family:var(--sans)}
+  .doc-sec li{margin:6px 0}
+  .doc-sec li::marker{color:var(--faint)}
+  .doc-sec li strong{color:var(--fg)}
+  .doc-sec li code,.doc-sec p code{font-family:var(--mono);font-size:13px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:2px 6px;border-radius:4px;color:var(--fg);word-break:break-all}
+  .doc-sec li code.accent,.doc-sec p code.accent{color:var(--accent);border-color:rgba(237,255,69,.25)}
+  .code-block{font-family:var(--mono);font-size:13px;line-height:1.6;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:4px;padding:14px 16px;color:var(--fg);overflow:auto;margin:14px 0}
+  .code-block .dim{color:var(--faint)}
+  .code-block .accent{color:var(--accent)}
+  .mini{border:1px solid var(--border);background:var(--panel);border-radius:4px;padding:16px 18px;margin:16px 0;display:flex;flex-direction:column;gap:8px}
+  .mini-lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+  .mini p{margin:0;font-family:var(--mono);font-size:13px;line-height:1.6;color:var(--dim)}
+  .mini code{font-family:var(--mono);font-size:12.5px;background:rgba(0,0,0,.3);border:1px solid rgba(245,245,245,.14);padding:2px 6px;border-radius:4px;color:var(--fg);word-break:break-all}
+  .mini a{color:var(--fg);text-decoration:underline;text-decoration-color:rgba(245,245,245,.3)}
+  .dl-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+  .dl-row a{font-family:var(--mono);font-size:12px;letter-spacing:.06em;padding:10px 14px;border:1px solid var(--border);border-radius:2px;background:var(--panel);color:var(--fg);display:inline-flex;align-items:center;gap:8px;transition:border-color .15s,background .15s}
+  .dl-row a:hover{border-color:rgba(245,245,245,.35);background:rgba(245,245,245,.08)}
+  .dl-row a i{color:var(--accent)}
+
+  .trouble-wrap{overflow:auto;margin-top:16px;border:1px solid var(--border);border-radius:4px}
+  .trouble-table{width:100%;border-collapse:collapse;min-width:560px;background:var(--panel)}
+  .trouble-table th{text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding:12px 14px;border-bottom:1px solid var(--border);font-weight:400;background:rgba(245,245,245,.04)}
+  .trouble-table td{font-family:var(--sans);font-size:13.5px;line-height:1.6;padding:12px 14px;border-bottom:1px solid var(--border);color:var(--dim);vertical-align:top}
+  .trouble-table tr:last-child td{border-bottom:none}
+  .trouble-table td:first-child{font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;color:var(--fg);font-weight:400;white-space:nowrap;width:34%;vertical-align:top}
+  .trouble-table td code{font-family:var(--mono);font-size:11.5px;background:rgba(0,0,0,.25);padding:2px 5px;border-radius:3px;border:1px solid rgba(245,245,245,.12);color:var(--fg)}
+
+  /* footer same as index */
+  footer{position:relative;min-height:88dvh;display:flex;flex-direction:column;overflow:hidden;
+    border-top:1px solid var(--border)}
+  .foot-cta{position:relative;z-index:5;margin:0 auto;max-width:760px;text-align:center;
+    display:flex;flex-direction:column;align-items:center;gap:24px;padding-top:9dvh;flex:0 0 auto;max-height:40vh;padding-inline:var(--gutter)}
+  .foot-cta h2{font-size:clamp(2.4rem,6vw,4.6rem);font-weight:400}
+  .foot-cta .lede{font-family:var(--mono);font-size:14px;line-height:1.55;opacity:.9;max-width:560px}
+  .foot-ghost{position:absolute;inset-inline:0;bottom:-.12em;z-index:1;text-align:center;pointer-events:none;white-space:nowrap;overflow:hidden;
+    font-family:var(--serif);text-transform:uppercase;font-weight:700;line-height:.8;
+    font-size:clamp(6rem,23vw,21rem);color:transparent;
+    -webkit-text-stroke:1px rgba(245,245,245,.14)}
+  .foot-otter{position:absolute;z-index:2;left:50%;bottom:-4%;transform:translateX(-50%);
+    width:clamp(240px,26vw,420px);opacity:.9;pointer-events:none;mix-blend-mode:lighten}
+  .foot-meta{position:absolute;z-index:6;bottom:6dvh;font-family:var(--mono);font-size:11.5px;
+    letter-spacing:.12em;text-transform:uppercase;line-height:1.9;color:var(--fg)}
+  .foot-meta.left{left:var(--gutter)}
+  .foot-meta.right{right:var(--gutter);text-align:right}
+  .foot-meta a{color:var(--fg);text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 25%,transparent);text-underline-offset:.3em}
+  .foot-meta a:hover{text-decoration-color:currentColor}
+  .foot-meta .faint{color:var(--faint)}
+
+  @media(max-width:1000px){
+    .trouble-wrap{margin-left:calc(var(--gutter) * -1);margin-right:calc(var(--gutter) * -1);border-left:none;border-right:none;border-radius:0}
+  }
+  @media(max-width:767px){
+    nav{display:flex;justify-content:space-between;align-items:flex-start;padding-inline:var(--gutter)}
+    .nav-side.left{display:none;position:absolute;top:calc(100% + 10px);left:0;right:0;
+      background:var(--bg);border-bottom:1px solid var(--border);padding:20px var(--gutter);flex-direction:column;gap:18px}
+    .nav-side.left.open{display:flex}
+    .menu-btn{display:inline-flex}
+    .nav-brand{font-size:1.05rem;text-align:left}
+    .nav-center{align-items:flex-start}
+    .docs-hero{padding-top:clamp(105px,16vh,150px);padding-bottom:28px}
+    .docs-hero h1{font-size:11vw}
+    .term-card{width:100%}
+    footer{min-height:auto;padding:48px 0 0;overflow:hidden}
+    .foot-cta{padding-top:0;padding-bottom:24px;max-height:none}
+    .foot-ghost,.foot-otter{display:none}
+    .foot-meta{position:static;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;padding:24px var(--gutter)}
+    .foot-meta.left{left:auto}
+    .foot-meta.right{right:auto;text-align:center}
+  }
+  @media(max-width:480px){
+    .trouble-table{min-width:480px}
+  }
+</style>
+</head>
+<body>
+<div class="noise" aria-hidden="true"></div>
+<div class="frame" aria-hidden="true"></div>
+
+<nav aria-label="Main">
+  <div class="nav-side left" id="navLinks">
+    <a class="nav-link" href="index.html#features">Features</a>
+    <a class="nav-link" href="index.html#screens">Screens</a>
+    <a class="nav-link" href="docs.html" aria-current="page" style="text-decoration:underline;text-decoration-color:currentColor">Docs</a>
+  </div>
+  <div class="nav-center">
+    <a class="nav-brand" href="index.html">Media<br>Otter</a>
+    <span class="nav-social">
+      <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github" aria-hidden="true"></i></a>
+      <a href="mailto:hi@madebysaira.me" aria-label="Email"><i class="fa-solid fa-envelope" aria-hidden="true"></i></a>
+    </span>
+  </div>
+  <div class="nav-side right">
+    <a class="nav-link" href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">GitHub</a>
+    <a class="nav-link" href="index.html#install">Install<span class="arr">→</span></a>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+  </div>
+</nav>
+
+<main>
+  <!-- HERO -->
+  <section class="docs-wrap docs-hero">
+    <p class="eyebrow">Docs <span class="dot">•</span> Read me</p>
+    <h1 class="serif">From zero to your first clip.</h1>
+    <p class="lede">MediaOtter lives inside Premiere Pro &amp; After Effects on your Mac — search YouTube, paste any link, trim and import <strong>MP4 or WAV</strong> straight to your timeline. This guide gets you there in about five minutes.</p>
+    <div class="toc" aria-label="On this page">
+      <a href="#install">Install</a>
+      <a href="#first-use">First download</a>
+      <a href="#trim">Trim</a>
+      <a href="#formats">Formats</a>
+      <a href="#signin">Sign-in</a>
+      <a href="#updates">Updates</a>
+      <a href="#troubleshoot">Troubleshoot</a>
+      <a href="#uninstall">Uninstall</a>
+      <a href="#legal">Legal</a>
+    </div>
+  </section>
+
+  <div class="docs-wrap">
+    <!-- 2 Install -->
+    <section class="doc-sec" id="install">
+      <p class="sec-eyebrow">01 — Install</p>
+      <h2>Install</h2>
+      <p>MediaOtter installs into the Adobe CEP extensions folder — <strong>no admin password, no Java, no ZXPSignCmd</strong>. Two ways in:</p>
+
+      <h3 style="font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg);margin:18px 0 10px">a) One-liner (recommended)</h3>
+      <p>Open <strong>Terminal</strong> on your Mac, paste and press Enter. The script detects Apple Silicon vs Intel, downloads the right zip from GitHub Releases, and installs it.</p>
+      <div class="term-card">
+        <div class="term-tabs" role="tablist">
+          <button class="term-tab active" type="button" role="tab">macOS</button>
+          <button class="term-tab" type="button" role="tab" disabled style="cursor:default">Windows — soon</button>
+        </div>
+        <div class="term-body">
+          <div class="term-cmd"><span class="c1">curl </span><span class="c2">-fsSL https://mediaotter.madebysaira.me/install.sh</span><span class="c1"> | sh</span></div>
+          <button class="term-copy copy-btn" data-copy="curl -fsSL https://mediaotter.madebysaira.me/install.sh | sh" aria-label="Copy install command"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
+        </div>
+      </div>
+      <p style="margin-top:12px">What the script does: <code>mkdir -p ~/Library/Application\ Support/Adobe/CEP/extensions</code>, downloads <code>mediaotter-darwin-arm64.zip</code> or <code>-x64.zip</code> from <code>https://github.com/madebysaira/mediaotter/releases/download/v1.0.0/</code>, verifies <code>MediaOtter/CSXS/manifest.xml</code>, then <code>cp -R MediaOtter ~/Library/Application\ Support/Adobe/CEP/extensions/MediaOtter</code>. Read it before you run it: <a href="https://github.com/madebysaira/mediaotter/blob/main/install.sh" target="_blank" rel="noopener noreferrer">install.sh on GitHub</a>.</p>
+
+      <h3 style="font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg);margin:22px 0 10px">b) Manual zip</h3>
+      <p>If you prefer the zip, download from <a href="https://github.com/madebysaira/mediaotter/releases/latest" target="_blank" rel="noopener noreferrer">GitHub Releases (latest)</a>:</p>
+      <div class="dl-row">
+        <a href="https://github.com/madebysaira/mediaotter/releases/latest/download/mediaotter-darwin-arm64.zip" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-apple" aria-hidden="true"></i> Apple Silicon (arm64)</a>
+        <a href="https://github.com/madebysaira/mediaotter/releases/latest/download/mediaotter-darwin-x64.zip" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-apple" aria-hidden="true"></i> Intel (x64)</a>
+      </div>
+      <p>Unzip, then either double-click <code>install.command</code> if present, or manually copy the <code>MediaOtter</code> folder to the <strong>real path the installer uses</strong>:</p>
+      <div class="code-block"><span class="accent">~/Library/Application Support/Adobe/CEP/extensions/MediaOtter</span></div>
+      <p>Create the folders if they do not exist. The result must contain <code>MediaOtter/CSXS/manifest.xml</code> and <code>MediaOtter/index.html</code>.</p>
+
+      <h3 style="font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg);margin:22px 0 10px">c) Enable unsigned extensions</h3>
+      <p>Because the panel is unsigned, CEP must allow unsigned extensions once. The one-liner does this automatically; for manual installs run in Terminal:</p>
+      <div class="code-block">defaults write <span class="accent">com.adobe.CSXS.10</span> PlayerDebugMode 1</div>
+      <p>This is exactly what <code>install.sh</code> does — <code>defaults write com.adobe.CSXS.10 PlayerDebugMode 1</code> (only if not already set). On older Premiere/AE using CEP 10, this is the correct domain; newer CEP 11 uses <code>com.adobe.CSXS.11</code> — set both if you run multiple Adobe versions. No symlink is created; the extension is a plain copy.</p>
+
+      <h3 style="font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg);margin:22px 0 10px">d) Restart Adobe</h3>
+      <p>Fully quit Premiere Pro / After Effects (<code>Cmd+Q</code>), reopen, then:</p>
+      <div class="code-block">Window → Extensions → <span class="accent">MediaOtter</span></div>
+      <p>The panel docks like Lumetri. No relogin required.</p>
+    </section>
+
+    <!-- 3 Your first download -->
+    <section class="doc-sec" id="first-use">
+      <p class="sec-eyebrow">02 — Your first download</p>
+      <h2>Your first download</h2>
+      <ol>
+        <li><strong>Open the panel</strong> — <code>Window → Extensions → MediaOtter</code> inside Premiere Pro or After Effects.</li>
+        <li><strong>Search YouTube</strong> — use the search box at the top. Results show thumbnails, duration and channel inline. Click a result to load it. Filters for duration/upload date are inline.</li>
+        <li><strong>Or paste any URL</strong> — copy a link from YouTube, Twitch, Vimeo, Instagram, X (Twitter), SoundCloud, TikTok, Reddit, Facebook and 1000+ more (<code>yt-dlp</code> extractors), then <code>⌘V</code> inside the panel. MediaOtter detects URLs on your clipboard automatically.</li>
+        <li><strong>Choose format &amp; quality</strong> — pick <strong>MP4</strong> (video) or <strong>WAV</strong> (audio) and a quality cap. See <a href="#formats">Formats &amp; quality</a> for guidance.</li>
+        <li><strong>Watch live progress</strong> — each download shows percent, speed, ETA and file size. Controls are inline: <strong>Pause / Resume / Cancel</strong>.</li>
+        <li><strong>Import</strong> — when finished, click <strong>Import</strong>. MediaOtter creates (or reuses) a bin called <code>MediaOtter</code> inside your Project panel and drops the file there. <strong>Drag it to your timeline</strong> — it is a normal clip, already linked.</li>
+      </ol>
+      <div class="mini">
+        <span class="mini-lbl">Where files land</span>
+        <p>By default in <code>~/Movies/MediaOtter</code> (change in the panel's gear menu → Download folder). Files are plain MP4/WAV — move or rename them like any media.</p>
+      </div>
+    </section>
+
+    <!-- 4 Section trim -->
+    <section class="doc-sec" id="trim">
+      <p class="sec-eyebrow">03 — Section trim</p>
+      <h2>Section trim</h2>
+      <p>Do not download the whole file if you only need a moment. Before hitting Download, set a <strong>start</strong> and <strong>end</strong> time (e.g. <code>00:31</code> — <code>00:44</code>).</p>
+      <ul>
+        <li>Works for both <strong>video (MP4)</strong> and <strong>audio (WAV)</strong>.</li>
+        <li>MediaOtter downloads the stream and trims locally with <code>ffmpeg</code> — no re-upload, no quality loss beyond the cut.</li>
+        <li>Uses <code>yt-dlp --download-sections "*HH:MM:SS-HH:MM:SS"</code> under the hood (bare seconds are mis-parsed, so <code>H:MM:SS</code> is required).</li>
+        <li>If a range download fails (network/DNS while streaming the cut), MediaOtter falls back to downloading the full file with <code>yt-dlp</code>'s native range handling and trims afterwards.</li>
+      </ul>
+      <p>Short sections are faster and smaller — useful when YouTube throttles long downloads.</p>
+    </section>
+
+    <!-- 5 Formats & quality -->
+    <section class="doc-sec" id="formats">
+      <p class="sec-eyebrow">04 — Formats &amp; quality</p>
+      <h2>Formats &amp; quality</h2>
+      <ul>
+        <li><strong>MP4 video</strong> — up to <strong>1080p</strong> (<code>h264 + aac</code>, Premiere-friendly). Higher sources are capped to keep imports instant and avoid HEVC/VP9 timelines.</li>
+        <li><strong>WAV audio</strong> — <strong>48kHz stereo PCM</strong>, clean and ready for the timeline without re-encoding.</li>
+        <li><strong>Quality picker</strong> — the panel caps the best available format at your chosen ceiling (e.g. 1080p, 720p, 480p). Logic lives in <code>extension/js/quality.js</code> using <code>yt-dlp -J</code> metadata.</li>
+      </ul>
+      <p><strong>When to pick what:</strong> Need a talking head or B-roll? → <strong>MP4</strong>. Need music, SFX or a voiceover bed? → <strong>WAV</strong> (smaller, faster, no video decode, ideal for throttled connections).</p>
+      <div class="code-block">MP4: <span class="accent">h264</span> video + <span class="accent">aac</span> audio — muxed to .mp4 &nbsp;|&nbsp; WAV: <span class="accent">48kHz</span> PCM stereo</div>
+    </section>
+
+    <!-- 6 YouTube sign-in -->
+    <section class="doc-sec" id="signin">
+      <p class="sec-eyebrow">05 — YouTube sign-in</p>
+      <h2>YouTube sign-in</h2>
+      <p>Some YouTube streams need a signed-in session (age-restricted, private playlists, bot-check challenges). MediaOtter handles this with a <strong>one-time, local OAuth flow</strong> — your password never touches MediaOtter.</p>
+      <ul>
+        <li><strong>How it works:</strong> Click <em>Sign in with Google</em> in the panel. MediaOtter opens your system browser to <code>https://accounts.google.com/o/oauth2/v2/auth</code> with scopes <code>openid email profile https://www.googleapis.com/auth/youtube.readonly</code> using <strong>PKCE</strong> (no client secret). A tiny local server listens on <code>http://127.0.0.1:8787/</code> for the OAuth redirect, exchanges the code at <code>https://oauth2.googleapis.com/token</code>, and closes the tab with <em>“Signed in — you can close this window”</em>.</li>
+        <li><strong>Where tokens live:</strong> Only on your Mac, at <code>~/Library/Application Support/MediaOtter/auth.json</code> (mode <code>0600</code>). The file holds <code>accessToken</code>, <code>refreshToken</code> and <code>expiryMs</code> — see <code>extension/js/auth.js</code> (<code>getAuthPath() → path.join(util.getStateDir(),"auth.json")</code>) and <code>extension/js/util.js</code> (<code>getStateDir() → ~/Library/Application Support/MediaOtter</code> on macOS).</li>
+        <li><strong>What MediaOtter sees:</strong> Only the access/refresh tokens. It never sees your Google password; cookies stay in your browser. API calls use <code>Authorization: Bearer &lt;token&gt;</code> to the YouTube Data API.</li>
+        <li><strong>Sign out / reset:</strong> Panel → Settings → <em>Sign out</em> deletes <code>auth.json</code> (<code>deleteAuth()</code>), or manually: <code>rm ~/Library/Application\ Support/MediaOtter/auth.json</code>. Also revoke at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a>.</li>
+        <li><strong>Refresh:</strong> Access tokens auto-refresh via <code>refresh_token</code> grant when expired or on 401; a failed refresh with 400/401 deletes <code>auth.json</code> and asks you to sign in again.</li>
+      </ul>
+      <div class="mini">
+        <span class="mini-lbl">No credentials.json needed for users</span>
+        <p>The installer ships with <code>credentials.json</code> internally; end users do not need to create one. If you build from source, see <code>credentials.example.json</code>.</p>
+      </div>
+    </section>
+
+    <!-- 7 Updates -->
+    <section class="doc-sec" id="updates">
+      <p class="sec-eyebrow">06 — Updates</p>
+      <h2>Updates</h2>
+      <p><strong>Bundled engine (yt-dlp):</strong> MediaOtter's download engine auto-updates from GitHub with <strong>SHA256 verification</strong>. On a 24-hour check it fetches <code>https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest</code>, finds the asset for your platform (<code>yt-dlp_macos</code> on macOS, <code>yt-dlp.exe</code> on Windows), downloads the matching <code>SHA2-256SUMS</code>, matches the 64-char hash, downloads the binary to a <code>.part</code> file, verifies with <code>util.sha256OfFile()</code>, then atomically renames to <code>~/Library/Application Support/MediaOtter/bin/yt-dlp</code> (0755). State is tracked in <code>~/Library/Application Support/MediaOtter/ytdlp-runtime.json</code>. A mismatched hash aborts the install. Source: <code>extension/js/binary-manager.js</code> (<code>fetchLatestYtDlpRelease()</code> → <code>installManagedYtDlp()</code>).</p>
+      <p><strong>Extension itself:</strong> Re-run the one-liner to get the latest panel:</p>
+      <div class="term-card">
+        <div class="term-tabs" role="tablist">
+          <button class="term-tab active" type="button" role="tab">macOS</button>
+          <button class="term-tab" type="button" role="tab" disabled style="cursor:default">Windows — soon</button>
+        </div>
+        <div class="term-body">
+          <div class="term-cmd"><span class="c1">curl </span><span class="c2">-fsSL https://mediaotter.madebysaira.me/install.sh</span><span class="c1"> | sh</span></div>
+          <button class="term-copy copy-btn" data-copy="curl -fsSL https://mediaotter.madebysaira.me/install.sh | sh" aria-label="Copy install command"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
+        </div>
+      </div>
+      <p style="margin-top:12px">Or download the fresh zip from <a href="https://github.com/madebysaira/mediaotter/releases/latest" target="_blank" rel="noopener noreferrer">Releases</a> and copy to <code>~/Library/Application Support/Adobe/CEP/extensions/MediaOtter</code> — then <code>Cmd+Q</code> Premiere/AE.</p>
+    </section>
+
+    <!-- 8 Troubleshooting -->
+    <section class="doc-sec" id="troubleshoot">
+      <p class="sec-eyebrow">07 — Troubleshooting</p>
+      <h2>Troubleshooting</h2>
+      <p>Most fixes take under a minute. Scan the table, then check the footnotes.</p>
+      <div class="trouble-wrap">
+        <table class="trouble-table">
+          <thead>
+            <tr><th>Symptom</th><th>Fix</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Panel doesn't appear<br><span style="color:var(--faint);font-size:11px;letter-spacing:.08em">Window → Extensions empty</span></td>
+              <td>CEP debug flag not set or Adobe not restarted. Run <code>defaults write com.adobe.CSXS.10 PlayerDebugMode 1</code> (as the installer does), then fully quit Premiere/AE with <code>Cmd+Q</code> and reopen. Verify the folder exists: <code>~/Library/Application Support/Adobe/CEP/extensions/MediaOtter/CSXS/manifest.xml</code>. CEP 10+ (Premiere/AE 2022+) required.</td>
+            </tr>
+            <tr>
+              <td>Downloads fail<br><span style="color:var(--faint);font-size:11px;letter-spacing:.08em">Unsupported / removed / locked</span></td>
+              <td>Link may be region-locked, age-restricted, private or removed. Try a different URL from the same site. For private/age-restricted YouTube, <a href="#signin">sign in</a> first. Check network — no MediaOtter server is involved.</td>
+            </tr>
+            <tr>
+              <td>Slow downloads<br><span style="color:var(--faint);font-size:11px;letter-spacing:.08em">Speed / ETA stalls</span></td>
+              <td>Source-side throttling (common on YouTube). Try lower quality or <code>Section trim</code> for a shorter span; WAV is smaller and often faster. Pause/Resume once, or retry in a minute.</td>
+            </tr>
+            <tr>
+              <td>“Unidentified developer” warning<br><span style="color:var(--faint);font-size:11px;letter-spacing:.08em">Gatekeeper</span></td>
+              <td>Right-click the downloaded zip → <em>Open</em>, or after unzip run <code>xattr -dr com.apple.quarantine ~/Library/Application\ Support/Adobe/CEP/extensions/MediaOtter</code> then restart Adobe. The one-liner install avoids this.</td>
+            </tr>
+            <tr>
+              <td>Extension missing after update<br><span style="color:var(--faint);font-size:11px;letter-spacing:.08em">Adobe update cleared it</span></td>
+              <td>Re-run the installer: <code>curl -fsSL https://mediaotter.madebysaira.me/install.sh | sh</code> and <code>Cmd+Q</code> Adobe again. Manual installs: recopy to <code>~/Library/Application Support/Adobe/CEP/extensions/MediaOtter</code>.</td>
+            </tr>
+            <tr>
+              <td>WAV import issues<br><span style="color:var(--faint);font-size:11px;letter-spacing:.08em">No audio / wrong rate</span></td>
+              <td>MediaOtter WAV is <strong>48kHz stereo PCM</strong> — Premiere's preferred rate. If silent, check sequence settings (48kHz), try <em>Modify → Audio Channels</em>, or re-import. For video with no audio, pick WAV explicitly.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:16px">Still stuck? <a href="https://github.com/madebysaira/mediaotter/issues" target="_blank" rel="noopener noreferrer">Open an issue on GitHub</a> with macOS version, Premiere/AE version and the URL you tried.</p>
+    </section>
+
+    <!-- 9 Uninstall -->
+    <section class="doc-sec" id="uninstall">
+      <p class="sec-eyebrow">08 — Uninstall</p>
+      <h2>Uninstall</h2>
+      <p>MediaOtter is a plain folder copy — removal is deleting folders. No admin needed.</p>
+      <ol>
+        <li><strong>Remove the extension:</strong>
+          <div class="code-block">rm -rf <span class="accent">~/Library/Application\ Support/Adobe/CEP/extensions/MediaOtter</span></div>
+        </li>
+        <li><strong>Symlinks:</strong> The installer creates <strong>no symlinks</strong> — it does <code>cp -R</code>. If you manually symlinked the folder, remove the link with <code>rm</code>.</li>
+        <li><strong>Delete local state (optional):</strong> Credentials, history and the managed yt-dlp live in the state dir from <code>util.getStateDir()</code>:
+          <div class="code-block">rm -rf <span class="accent">~/Library/Application\ Support/MediaOtter</span><br><span class="dim"># removes auth.json, settings.json, history.json, logs/, bin/yt-dlp, ytdlp-runtime.json</span></div>
+          To keep downloads, keep <code>~/Movies/MediaOtter</code>. To only sign out, delete just <code>~/Library/Application Support/MediaOtter/auth.json</code> or use Panel → Settings → Sign out.
+        </li>
+        <li><strong>Debug flag (optional):</strong> Leave <code>PlayerDebugMode</code> on — it is harmless. To revert: <code>defaults delete com.adobe.CSXS.10 PlayerDebugMode</code>.</li>
+      </ol>
+      <p>Then <code>Cmd+Q</code> Premiere/AE. The panel is gone.</p>
+    </section>
+
+    <!-- 10 License & privacy -->
+    <section class="doc-sec" id="legal">
+      <p class="sec-eyebrow">09 — License &amp; privacy</p>
+      <h2>License &amp; privacy</h2>
+      <p><strong>MIT License</strong> — see <a href="https://github.com/madebysaira/mediaotter/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">LICENSE on GitHub</a> (also <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer">opensource.org/licenses/MIT</a>). Copyright © 2026 MediaOtter contributors. Free to use, fork and distribute.</p>
+      <p><strong>No telemetry. No servers.</strong> MediaOtter runs entirely on your Mac. The only network requests are the sites you choose to download from, GitHub for yt-dlp updates (SHA256-verified), and the optional one-time Google OAuth handshake (<code>accounts.google.com</code> / <code>oauth2.googleapis.com</code>). There is no MediaOtter backend, no analytics and no tracking.</p>
+      <p>Details: <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Service</a> · <a href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer">Source on GitHub</a></p>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="foot-cta">
+    <p class="eyebrow">Free <span class="dot">•</span> Open Source <span class="dot">•</span> MIT</p>
+    <h2 class="serif">Yours. All of it.</h2>
+    <p class="lede">No accounts, no telemetry, no servers — everything runs on your Mac. Read the source, fork it, ship your own build.</p>
+    <a class="ascii-btn" href="https://github.com/madebysaira/mediaotter" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i>View on GitHub</a>
+  </div>
+  <div class="foot-ghost" aria-hidden="true">MediaOtter</div>
+  <img class="foot-otter" src="assets/hero-otter.svg" alt="" aria-hidden="true" loading="lazy">
+  <div class="foot-meta left">
+    <p>MediaOtter v1.0.0 — Docs</p>
+  </div>
+  <div class="foot-meta right">
+    <p><a href="docs.html">Docs</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+    <p class="faint">madebysaira · MIT License · 2026</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var menuBtn=document.getElementById('menuBtn'), navLinks=document.getElementById('navLinks');
+  if(menuBtn && navLinks){menuBtn.addEventListener('click',function(){
+    var open=navLinks.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded',open?'true':'false');
+    var ic=menuBtn.querySelector('i');
+    if(ic){ic.className=open?'fa-solid fa-xmark':'fa-solid fa-bars';}
+  });}
+  document.querySelectorAll('.copy-btn').forEach(function(b){
+    if(!b) return;
+    b.addEventListener('click',function(){
+      var text=b.getAttribute('data-copy')||'';
+      if(!text) return;
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){
+          var ic=b.querySelector('i'); if(ic){ic.className='fa-solid fa-check';}
+          setTimeout(function(){ if(ic){ic.className=b.classList.contains('term-copy')?'fa-regular fa-copy':'fa-solid fa-terminal';} },1600);
+        }).catch(function(){});
+      } else {
+        var t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();
+        try{document.execCommand('copy');}catch(e){}
+        document.body.removeChild(t);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

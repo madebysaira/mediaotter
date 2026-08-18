@@ -59,10 +59,15 @@ cp -R "$TMP/MediaOtter" "$DEST"
 
 # --- enable unsigned extensions (one-time) ----------------------------------
 if [ "$OS" = "Darwin" ]; then
-  if ! defaults read com.adobe.CSXS.10 PlayerDebugMode >/dev/null 2>&1; then
-    say "Enabling unsigned-extension loading (com.adobe.CSXS.10 PlayerDebugMode)..."
-    defaults write com.adobe.CSXS.10 PlayerDebugMode 1
-  fi
+  # Enable unsigned-extension loading for both CEP runtimes:
+  #   CSXS.10 -> Premiere Pro 2021 / AE 2021 and older CEP10 hosts
+  #   CSXS.11 -> Premiere Pro 2022+ / AE 2022+ (Adobe CC 2022..2026, CEP 11)
+  for csxs in 10 11; do
+    if ! defaults read "com.adobe.CSXS.${csxs}" PlayerDebugMode >/dev/null 2>&1; then
+      say "Enabling unsigned-extension loading (com.adobe.CSXS.${csxs} PlayerDebugMode)..."
+      defaults write "com.adobe.CSXS.${csxs}" PlayerDebugMode 1
+    fi
+  done
 fi
 
 echo
