@@ -1,0 +1,37 @@
+name: "✨ Feature request"
+description: "Tell us what MediaOtter should do next."
+labels: ["enhancement"]
+title: "Feature request: [what you'd like]"
+body:
+  - type: markdown
+    attributes:
+      value: "Ideas make this tool better. Tell us what would help your editing workflow."
+  - type: textarea
+    id: want
+    attributes:
+      label: "What would you like MediaOtter to do?"
+      placeholder: "e.g. Let me download multiple videos at once."
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: "Why would this help your workflow?"
+      placeholder: "e.g. I batch a lot of clips for social cutdowns."
+    validations:
+      required: false
+  - type: textarea
+    id: extra
+    attributes:
+      label: "Anything else to add?"
+    validations:
+      required: false
+  - type: checkboxes
+    id: done-search
+    attributes:
+      label: "Before submitting"
+      options:
+        - label: "I searched the existing issues and this isn't a duplicate"
+          required: true
+    validations:
+      required: false

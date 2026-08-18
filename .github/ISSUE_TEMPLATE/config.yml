@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "💬 Questions & help"
+    url: "https://github.com/madebysaira/mediaotter/discussions"
+    about: "Ask how to do something or chat about the tool."
+  - name: "📧 Email"
+    url: "mailto:hi@madebysaira.me"
+    about: "Direct contact for anything else."

@@ -1,0 +1,73 @@
+name: "🐛 Bug report"
+description: "Something isn't working — tell us what happened."
+labels: ["bug"]
+title: "Bug: [short description]"
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for reporting! You don't need to be technical — just fill in what you know. Every report is read."
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: "What happened?"
+      description: "In plain words, what went wrong?"
+      placeholder: "e.g. The download stopped at 60% and the panel froze."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: "What were you doing?"
+      description: "Step by step — what did you click, what did you paste?"
+      placeholder: "1. Opened the MediaOtter panel in Premiere\n2. Searched for a video\n3. Hit download…"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: "What did you expect?"
+    validations:
+      required: false
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: "Screenshot"
+      description: "On Mac: press Cmd+Shift+4, drag the rectangle, then drag the image file into this box."
+    validations:
+      required: false
+  - type: dropdown
+    id: app
+    attributes:
+      label: "Which Adobe app?"
+      options:
+        - "Premiere Pro"
+        - "After Effects"
+        - "Not sure"
+    validations:
+      required: false
+  - type: dropdown
+    id: chip
+    attributes:
+      label: "Which Mac are you on?"
+      options:
+        - "Apple Silicon (M1/M2/M3/M4)"
+        - "Intel"
+        - "Not sure"
+    validations:
+      required: false
+  - type: input
+    id: mo-version
+    attributes:
+      label: "MediaOtter version (if you can see it)"
+      placeholder: "v1.0.0"
+    validations:
+      required: false
+  - type: checkboxes
+    id: done-search
+    attributes:
+      label: "Before submitting"
+      options:
+        - label: "I searched the existing issues and this isn't a duplicate"
+          required: true
+    validations:
+      required: false
