@@ -431,20 +431,36 @@
     <!-- 9 Uninstall -->
     <section class="doc-sec" id="uninstall">
       <p class="sec-eyebrow">09 — Uninstall</p>
-      <h2>Uninstall</h2>
-      <p>MediaOtter is a plain folder copy — removal is deleting folders. No admin needed.</p>
-      <ol>
-        <li><strong>Remove the extension:</strong>
-          <div class="code-block">rm -rf <span class="accent">~/Library/Application\ Support/Adobe/CEP/extensions/MediaOtter</span></div>
-        </li>
-        <li><strong>Symlinks:</strong> The installer creates <strong>no symlinks</strong> — it does <code>cp -R</code>. If you manually symlinked the folder, remove the link with <code>rm</code>.</li>
-        <li><strong>Delete local state (optional):</strong> Credentials, history and the managed yt-dlp live in the state dir from <code>util.getStateDir()</code>:
-          <div class="code-block">rm -rf <span class="accent">~/Library/Application\ Support/MediaOtter</span><br><span class="dim"># removes auth.json, settings.json, history.json, logs/, bin/yt-dlp, ytdlp-runtime.json</span></div>
-          To keep downloads, keep <code>~/Movies/MediaOtter</code>. To only sign out, delete just <code>~/Library/Application Support/MediaOtter/auth.json</code> or use Panel → Settings → Sign out.
-        </li>
-        <li><strong>Debug flag (optional):</strong> Leave <code>PlayerDebugMode</code> on — it is harmless. To revert: <code>defaults delete com.adobe.CSXS.10 PlayerDebugMode</code>.</li>
-      </ol>
-      <p>Then <code>Cmd+Q</code> Premiere/AE. The panel is gone.</p>
+      <h2>Uninstall — one line</h2>
+      <p>MediaOtter is a plain folder copy — removal is deleting folders. No admin needed. Pick the one-liner or the manual steps.</p>
+
+      <div class="term-card" style="margin:14px 0 18px">
+        <div class="term-tabs" role="tablist">
+          <button class="term-tab active" type="button" role="tab">Uninstall</button>
+          <button class="term-tab" type="button" role="tab" disabled style="cursor:default">Purge also wipes state</button>
+        </div>
+        <div class="term-body">
+          <div class="term-cmd"><span class="c1">curl </span><span class="c2">-fsSL https://mediaotter.madebysaira.me/install.sh</span><span class="c1"> | sh -s -- --uninstall</span></div>
+          <button class="term-copy copy-btn" data-copy="curl -fsSL https://mediaotter.madebysaira.me/install.sh | sh -s -- --uninstall" aria-label="Copy uninstall command"><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
+        </div>
+      </div>
+      <p style="font-size:13px; opacity:0.78">Shorthand: <code>curl -fsSL https://mediaotter.madebysaira.me/uninstall.sh | sh</code> — same script, just shorter. Add <code>--purge</code> to also delete <code>~/Library/Application Support/MediaOtter</code> (auth, history, logs, managed yt-dlp). Without <code>--purge</code> we keep your state so you can re-install without re-signing in.</p>
+
+      <details style="margin-top:14px">
+        <summary style="cursor:pointer; font-weight:600">Manual steps (without the script)</summary>
+        <ol style="margin-top:10px">
+          <li><strong>Remove the extension:</strong>
+            <div class="code-block">rm -rf <span class="accent">~/Library/Application\ Support/Adobe/CEP/extensions/MediaOtter</span></div>
+          </li>
+          <li><strong>Symlinks:</strong> The installer creates <strong>no symlinks</strong> — it does <code>cp -R</code>. If you manually symlinked the folder, remove the link with <code>rm</code>.</li>
+          <li><strong>Delete local state (optional):</strong> Credentials, history and the managed yt-dlp live in the state dir from <code>util.getStateDir()</code>:
+            <div class="code-block">rm -rf <span class="accent">~/Library/Application\ Support/MediaOtter</span><br><span class="dim"># removes auth.json, settings.json, history.json, logs/, bin/yt-dlp, ytdlp-runtime.json</span></div>
+            To keep downloads, keep <code>~/Movies/MediaOtter</code>. To only sign out, delete just <code>~/Library/Application Support/MediaOtter/auth.json</code> or use Panel → Settings → Sign out.
+          </li>
+          <li><strong>Debug flag (optional):</strong> Leave <code>PlayerDebugMode</code> on — it is harmless. To revert: <code>defaults delete com.adobe.CSXS.10 PlayerDebugMode</code>.</li>
+        </ol>
+      </details>
+      <p style="margin-top:12px">Then <code>Cmd+Q</code> Premiere/AE. The panel is gone.</p>
     </section>
 
     <!-- 10 License & privacy -->
