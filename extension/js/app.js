@@ -5,20 +5,38 @@
  * Wires the UI to the download engine. No telemetry, everything local.
  */
 
-var fs = require("fs");
-var path = require("path");
-
-var util = require("./util.js");
-var logger = require("./logger.js");
-var settings = require("./settings.js");
-var history = require("./history.js");
-var downloader = require("./downloader.js");
-var quality = require("./quality.js");
-var binaryManager = require("./binary-manager.js");
-var cookieJar = require("./cookie-jar.js");
-var csbridge = require("./csbridge.js");
-var auth = require("./auth.js");
-var playlists = require("./playlists.js");
+var fs, path, util, logger, settings, historyStore, downloader, quality, binaryManager, cookieJar, csbridge, auth, playlists;
+try {
+  fs = require("fs");
+  path = require("path");
+  util = require("./util.js");
+  logger = require("./logger.js");
+  settings = require("./settings.js");
+  historyStore = require("./history.js");
+  downloader = require("./downloader.js");
+  quality = require("./quality.js");
+  binaryManager = require("./binary-manager.js");
+  cookieJar = require("./cookie-jar.js");
+  csbridge = require("./csbridge.js");
+  auth = require("./auth.js");
+  playlists = require("./playlists.js");
+} catch (e) {
+  // Browser preview mode (no Node / plain http) — stub so UI still wires for verification
+  var _noop = function(){};
+  fs = { readFileSync:function(){return "{}";}, writeFileSync:_noop, mkdirSync:_noop, existsSync:function(){return false;}, statSync:function(){return {size:0};}, unlinkSync:_noop, accessSync:function(){throw new Error("no fs");}, chmodSync:_noop, appendFileSync:_noop, readdirSync:function(){return [];}, renameSync:_noop };
+  path = { join:function(){ return Array.prototype.slice.call(arguments).join("/"); }, dirname:function(p){ return p.split("/").slice(0,-1).join("/")||"."; }, basename:function(p){ return p.split("/").pop(); } };
+  util = { getStateDir:function(){return "/tmp";}, getLogsDir:function(){return "/tmp";}, httpGet:function(){return Promise.reject(new Error("no http"));}, spawnProcess:function(){return Promise.reject(new Error("no spawn"));}, parseJsonTolerant:function(){return null;}, decodeCompressedBody:function(b){return b.toString();}, formatCount:function(v){return String(v);}, formatDuration:function(){return "";}, getPlatform:function(){return "darwin";}, getArch:function(){return "x64";}, formatBytes:function(v){return v+" B";}, readJson:function(){return null;}, writeJson:_noop };
+  logger = { info:_noop, warn:_noop, error:_noop, getLogFilePath:function(){return "/tmp/mediaotter.log";} };
+  settings = { read:function(){return { maxQualityHeight:1080, allowEncoding:false, downloadLocation:"project", customPath:"", cookiesBrowser:"", theme:"dark", pausePreviewWhenHidden:false, autoCheckUpdates:false, historyLimit:200 };}, write:function(p){return settings.read();}, DEFAULTS:{} };
+  historyStore = { read:function(){return [];}, add:_noop, remove:_noop, clear:_noop, findByPath:function(){return []; } };
+  downloader = { on:_noop, searchYouTube:function(){return Promise.resolve({items:[], continuationToken:""});}, loadMoreResults:function(){return Promise.resolve({items:[], continuationToken:""});}, fetchSuggestions:function(){return Promise.resolve([]);}, resolveMetadata:function(){return Promise.reject(new Error("no metadata in preview"));}, classifyUrl:function(u){return "generic";}, fetchPlaylistEntries:function(){return Promise.resolve({entries:[]});}, enqueueDownload:function(r){return {id:"preview", stage:"queued", title:r.url};}, cancelDownload:_noop, getActiveDownloads:function(){return [];}, mapYtDlpError:function(m){return m;} };
+  quality = { planVideoCandidates:function(){return [];}, estimateAudioSize:function(){return null;}, getAudioSelector:function(){return "bestaudio";}, getFormatSortArgs:function(){return [];}, QUALITY_CAPS:[] };
+  binaryManager = { getRuntimeStatus:function(){return { ytDlpReady:true, ffmpegReady:true, ytDlpVersion:"preview", ffmpegDir:"", jsRuntimeArgs:[], ffmpegPath:"" };}, getYtDlpCommand:function(){return {executable:"", argsPrefix:[], path:"", pythonKind:"", error:""};}, checkForUpdates:function(){return Promise.resolve({updated:false, version:"preview"});}, autoCheckForUpdates:function(){return Promise.resolve({});}, getFfmpegPath:function(){return "";}, reportSpawnSuccess:_noop, reportSpawnFailure:_noop };
+  cookieJar = { probeBrowser:function(){return Promise.resolve({ok:false});}, getSupportedBrowsers:function(){return []; } };
+  csbridge = { isCEP:function(){return false;}, getHostName:function(){return "dev";}, getHostVersion:function(){return "";}, evalScript:function(){return Promise.resolve({ok:false});}, ensureHostScript:function(){return Promise.resolve({ok:false});}, resolveDownloadRoot:function(){return Promise.resolve({ok:true, path:"/tmp"});}, importIntoHost:function(){return Promise.resolve({ok:false});}, revealInFinder:function(){return Promise.resolve();}, openExternalUrl:function(u){ try{ window.open(u,"_blank"); }catch(e){} return Promise.resolve(); } };
+  auth = { isConfigured:function(){return false;}, isSignedIn:function(){return false;}, getUserInfo:function(){return Promise.resolve(null);}, signIn:function(){return Promise.resolve({ok:false});}, signOut:function(){return Promise.resolve();}, getAccessToken:function(){return Promise.resolve(null);} };
+  playlists = { listMyPlaylists:function(){return Promise.resolve([]);}, getLikedVideos:function(){return Promise.resolve([]);}, getPlaylistItems:function(){return Promise.resolve([]);} };
+}
 
 var VERSION = "1.0.0";
 var REPO_URL = "https://github.com/mediaotter/mediaotter";
@@ -117,13 +135,67 @@ function toast(message, kind) {
 
 function showScreen(name) {
   state.screen = name;
+  var screenMap = {
+    search: els.screenSearch,
+    downloads: els.screenDownloads,
+    playlists: els.screenPlaylists,
+    settings: els.screenSettings
+  };
   ["search", "downloads", "playlists", "settings"].forEach(function (key) {
-    els["screen-" + key].classList.toggle("active", key === name);
+    var el = screenMap[key];
+    if (el) { el.classList.toggle("active", key === name); }
   });
-  els.btnHistory.classList.toggle("active", name === "downloads");
-  els.btnSettings.classList.toggle("active", name === "settings");
+  // legacy topbar compat
+  if (els.btnHistory) { els.btnHistory.classList.toggle("active", name === "downloads"); }
+  if (els.btnSettings) { els.btnSettings.classList.toggle("active", name === "settings"); }
+  // bottom nav (new)
+  document.querySelectorAll(".bottom-nav .nav-item").forEach(function (btn) {
+    var isActive = btn.dataset.screen === name;
+    btn.classList.toggle("active", isActive);
+    if (isActive) { btn.setAttribute("aria-current", "page"); }
+    else { btn.removeAttribute("aria-current"); }
+  });
+  // update engine dot state
+  updateEngineDot();
   if (name === "downloads") { renderActiveDownloads(); renderHistory(); }
   if (name === "playlists") { renderAccount(); }
+  // hide preview when switching screens? keep preview overlay on top if open; don't auto-close
+}
+
+function updateEngineDot() {
+  var dot = document.getElementById("engine-dot");
+  if (!dot) { return; }
+  try {
+    var runtime = binaryManager.getRuntimeStatus ? binaryManager.getRuntimeStatus() : {};
+    if (runtime.ytDlpReady === false || runtime.ffmpegReady === false) {
+      dot.className = "engine-dot warn";
+      dot.title = runtime.ytDlpError || "Engine not ready";
+    } else if (runtime.ytDlpReady) {
+      dot.className = "engine-dot";
+      dot.title = "Engine ready";
+    } else {
+      dot.className = "engine-dot";
+    }
+  } catch (e) { dot.className = "engine-dot"; }
+}
+
+function updateDownloadBadge() {
+  var badge = document.getElementById("nav-badge");
+  if (!badge) { return; }
+  var activeIds = Object.keys(state.activeDownloads).filter(function (id) {
+    var r = state.activeDownloads[id];
+    return r && (r.stage === "running" || r.stage === "merging" || r.stage === "transcoding" || r.stage === "finalizing" || r.stage === "queued");
+  });
+  if (activeIds.length) {
+    badge.textContent = String(activeIds.length);
+    badge.classList.remove("hidden");
+  } else {
+    badge.classList.add("hidden");
+  }
+  var dlCount = document.getElementById("dl-count");
+  if (dlCount) {
+    dlCount.textContent = activeIds.length ? activeIds.length + " active" : "";
+  }
 }
 
 // ─── search ────────────────────────────────────────────────
@@ -400,7 +472,9 @@ function openPreviewById(id, kind, meta) {
   els.previewAvatar.textContent = (channel || "?").trim().charAt(0).toUpperCase();
   els.previewDesc.textContent = description.slice(0, 600);
   els.previewFrame.src = "https://www.youtube.com/embed/" + id + "?autoplay=1&rel=0&modestbranding=1";
-  els.previewOpen.href = state.selectedUrl;
+  // preview-open is now a button; handle click via handler bound once in bindNavigation
+  els.previewOpen.dataset.url = state.selectedUrl;
+  els.previewOpen.title = state.selectedUrl;
 
   els.rangeStart.value = "";
   els.rangeEnd.value = "";
@@ -507,7 +581,10 @@ function renderActiveDownloads() {
   els.downloadsEmpty.classList.toggle("hidden", ids.length > 0);
   els.activeDownloads.innerHTML = ids.map(function (id) {
     var record = state.activeDownloads[id];
-    var percent = record.percent != null ? Math.round(record.percent) : 0;
+    var percent = 0;
+    if (record.percent != null) { percent = Math.round(record.percent); }
+    else if (record.progress && record.progress.percent != null) { percent = Math.round(record.progress.percent); }
+    else if (record.downloadedBytes && record.totalBytes) { percent = Math.round((record.downloadedBytes / record.totalBytes) * 100); }
     var stageClass = record.stage === "merging" || record.stage === "postprocessing" ? "merging" : "running";
     var metrics = "";
     if (record.stage === "done") {
@@ -515,11 +592,15 @@ function renderActiveDownloads() {
     } else if (record.stage === "error" || record.stage === "cancelled") {
       metrics = '<span class="m"><i class="fa-solid fa-circle-exclamation"></i> ' + escapeHtml(record.error || "") + "</span>";
     } else {
+      var dlBytes = record.downloadedBytes || (record.progress && record.progress.downloadedBytes);
+      var totBytes = record.totalBytes || (record.progress && record.progress.totalBytes);
+      var speed = record.speed || (record.progress && record.progress.speedText);
+      var eta = record.eta || (record.progress && record.progress.etaText);
       metrics = '<span class="m"><i class="fa-solid fa-percent"></i> ' + percent + "%</span>" +
-        (record.downloadedBytes ? '<span class="m"><i class="fa-solid fa-database"></i> ' + fmtBytes(record.downloadedBytes) + "</span>" : "") +
-        (record.totalBytes ? '<span class="m"><i class="fa-solid fa-box"></i> ' + fmtBytes(record.totalBytes) + "</span>" : "") +
-        (record.speed ? '<span class="m"><i class="fa-solid fa-gauge-high"></i> ' + escapeHtml(record.speed) + "</span>" : "") +
-        (record.eta ? '<span class="m"><i class="fa-solid fa-hourglass-half"></i> ' + escapeHtml(record.eta) + "</span>" : "");
+        (dlBytes ? '<span class="m"><i class="fa-solid fa-database"></i> ' + fmtBytes(dlBytes) + "</span>" : "") +
+        (totBytes ? '<span class="m"><i class="fa-solid fa-box"></i> ' + fmtBytes(totBytes) + "</span>" : "") +
+        (speed ? '<span class="m"><i class="fa-solid fa-gauge-high"></i> ' + escapeHtml(speed) + "</span>" : "") +
+        (eta ? '<span class="m"><i class="fa-solid fa-hourglass-half"></i> ' + escapeHtml(eta) + "</span>" : "");
     }
     var actions = "";
     if (record.stage === "done") {
@@ -552,6 +633,7 @@ function renderActiveDownloads() {
   els.activeDownloads.querySelectorAll("[data-cancel]").forEach(function (button) {
     button.addEventListener("click", function () { cancelRecord(button.dataset.cancel); });
   });
+  updateDownloadBadge();
 }
 
 function importRecord(id) {
@@ -578,7 +660,7 @@ function cancelRecord(id) {
 }
 
 function renderHistory() {
-  var entries = history.read();
+  var entries = historyStore.read();
   els.historyList.innerHTML = entries.length ? entries.map(function (entry) {
     return '<div class="history-item" draggable="true" data-file="' + escapeHtml(entry.filePath) + '">' +
       (entry.thumbnail ? '<img class="hi-thumb" src="' + escapeHtml(entry.thumbnail) + '" alt="" />' : '<div class="hi-thumb" style="background:var(--card-solid)"></div>') +
@@ -599,7 +681,7 @@ function renderHistory() {
     button.addEventListener("click", function () { if (csbridge.isCEP()) { csbridge.revealInFinder(button.dataset.hreveal); } });
   });
   els.historyList.querySelectorAll("[data-hremove]").forEach(function (button) {
-    button.addEventListener("click", function () { history.remove(button.dataset.hremove); renderHistory(); });
+    button.addEventListener("click", function () { historyStore.remove(button.dataset.hremove); renderHistory(); });
   });
   els.historyList.querySelectorAll(".history-item").forEach(function (item) {
     item.addEventListener("dragstart", function (event) {
@@ -746,14 +828,14 @@ function openPlaylistById(playlistId, item) {
   });
 }
 
-var wiredCards = {};
-
 function wireOnce(container, selector, handler) {
   var button = container.querySelector(selector);
   if (!button) { return; }
-  if (wiredCards[selector]) { return; }
-  wiredCards[selector] = true;
-  button.addEventListener("click", handler);
+  // replace to avoid double listeners on re-render: clone technique not needed because innerHTML replaces nodes,
+  // so we just attach fresh each time. Remove any prior listener by cloning.
+  var fresh = button.cloneNode(true);
+  button.parentNode.replaceChild(fresh, button);
+  fresh.addEventListener("click", handler);
 }
 
 // ─── settings ──────────────────────────────────────────────
@@ -866,7 +948,7 @@ function bindEngineEvents() {
   });
   downloader.on("download:complete", function (record) {
     state.activeDownloads[record.id] = record;
-    history.add({
+    historyStore.add({
       title: record.title || "",
       kind: record.kind || "video",
       url: record.url || "",
@@ -894,17 +976,31 @@ function bindEngineEvents() {
 }
 
 function updateDownloadMini(record) {
-  var badge = els.btnHistory;
-  if (record.stage === "running" || record.stage === "merging") {
-    badge.classList.add("downloading");
+  updateDownloadBadge();
+  var badge = document.getElementById("nav-badge");
+  if (badge && (record.stage === "running" || record.stage === "merging" || record.stage === "transcoding")) {
+    badge.classList.remove("hidden");
   }
 }
 
 // ─── boot ──────────────────────────────────────────────────
 
 function bindNavigation() {
-  els.btnHistory.addEventListener("click", function () { showScreen("downloads"); });
-  els.btnSettings.addEventListener("click", function () { showScreen("settings"); });
+  if (els.btnHistory) { els.btnHistory.addEventListener("click", function () { showScreen("downloads"); }); }
+  if (els.btnSettings) { els.btnSettings.addEventListener("click", function () { showScreen("settings"); }); }
+  // bottom nav
+  document.querySelectorAll(".bottom-nav .nav-item").forEach(function (btn) {
+    btn.addEventListener("click", function () { showScreen(btn.dataset.screen); });
+  });
+  // preview open (external)
+  if (els.previewOpen) {
+    els.previewOpen.addEventListener("click", function () {
+      var url = els.previewOpen.dataset.url || state.selectedUrl;
+      if (!url) { return; }
+      if (csbridge.isCEP()) { csbridge.openExternalUrl(url); }
+      else { try { window.open(url, "_blank"); } catch (e) {} }
+    });
+  }
   document.querySelectorAll(".pill[data-tab]").forEach(function (pill) {
     pill.addEventListener("click", function () {
       document.querySelectorAll(".pill[data-tab]").forEach(function (p) { p.classList.toggle("active", p === pill); });
@@ -916,6 +1012,10 @@ function bindNavigation() {
     chip.addEventListener("click", function () {
       document.querySelectorAll(".filter-chip").forEach(function (c) { c.classList.toggle("active", c === chip); });
       state.searchFilter = chip.dataset.filter;
+      // if there's an active query, re-run search with new filter so UI feels alive
+      if (state.searchQuery && els.searchInput && els.searchInput.value.trim()) {
+        runSearch();
+      }
     });
   });
   els.pasteGo.addEventListener("click", fetchPasted);
@@ -924,7 +1024,7 @@ function bindNavigation() {
   });
   els.btnMore.addEventListener("click", loadMore);
   els.btnClearHistory.addEventListener("click", function () {
-    history.clear();
+    historyStore.clear();
     renderHistory();
     toast("History cleared", "info");
   });
@@ -955,6 +1055,10 @@ function init() {
     screenSettings: $("screen-settings"),
     btnHistory: $("btn-history"),
     btnSettings: $("btn-settings"),
+    navSearch: $("nav-search"),
+    navDownloads: $("nav-downloads"),
+    navPlaylists: $("nav-playlists"),
+    navSettings: $("nav-settings"),
     searchInput: $("search-input"),
     searchClear: $("search-clear"),
     suggestBox: $("suggest-box"),
@@ -1027,4 +1131,8 @@ function init() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", init);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
