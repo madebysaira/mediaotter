@@ -1,101 +1,53 @@
-# 🛠 MediaOtter — Install & Build
+# Install and build MediaOtter 1.1.0
 
-## Requirements
+## Offline macOS developer package
 
-- **macOS** (Apple Silicon or Intel) or Windows 10/11
-- **Adobe Premiere Pro 2021+** or **Adobe After Effects 2021+**
-- Adobe Creative Cloud desktop app (for the host apps to accept the extension)
+1. Get `mediaotter-1.1.0-darwin-arm64-developer.zip` for Apple Silicon, or the corresponding `darwin-x64` package after the publisher has built and tested it. Keep the ZIP's `.sha256` file alongside it.
+2. Verify in Terminal: `shasum -a 256 -c mediaotter-1.1.0-darwin-arm64-developer.zip.sha256`.
+3. Extract it. The archive contains `MediaOtter/`, `Install.command`, `FILES.sha256` and these instructions.
+4. Run `bash /path/to/extracted/Install.command`. Node, Java and administrator access are not required. The installer verifies the internal manifest and executes runtime version checks before replacing the panel.
+5. Fully quit and restart Premiere, then choose **Window → Extensions → MediaOtter**.
 
-## Quick start (users)
+Existing panels are preserved under `~/Library/Application Support/MediaOtter/install-backups/`. Local settings, account tokens and history remain separate. To restore, quit Premiere, move the current panel outside Adobe's extensions directory, then move the chosen backup to `~/Library/Application Support/Adobe/CEP/extensions/MediaOtter`.
 
-### 1. Fetch the binaries
+The package is unsigned. Adobe's developer mode may be required. The installer prints commands but does not change security preferences. CEP 12 hosts use `com.adobe.CSXS.12`, CEP 11 uses `.11`, and CEP 10 uses `.10`; determine the runtime used by your installed host. For a CEP 12 development host:
 
-MediaOtter bundles its own yt-dlp, ffmpeg and Deno — nothing to install system-wide:
-
-```bash
-node scripts/download-binaries.js          # fetches for YOUR platform
-# or, when packaging for everything:
-node scripts/download-binaries.js --all
+```sh
+defaults write com.adobe.CSXS.12 PlayerDebugMode 1
 ```
 
-Pins and SHA-256 hashes land in `extension/binaries/release.json`.
+For ordinary end-user distribution, the publisher should provide a signed ZXP and a trusted extension installer. Do not disable system security protections to install this panel.
 
-### 2. Install the extension (macOS)
+## Contributors
 
-```bash
-./scripts/install-mac.sh
+```sh
+npm run binaries
+npm run check
+npm run test:integration
+node scripts/verify-binaries.js
+npm run install:mac
+npm run build:zxp
 ```
 
-This copies the panel to `~/Library/Application Support/Adobe/CEP/extensions/MediaOtter`
-(no admin rights needed). Windows: copy the `extension/` folder to
-`%APPDATA%\Adobe\CEP\extensions\MediaOtter\`.
+Use Node 14+ for contributor scripts. Runtime versions and SHA256 hashes are recorded in `extension/binaries/release.json`. Packages are named for the build machine's architecture. `--all` fetches other runtime assets but does not establish compatibility on those devices.
 
-### 3. Enable unsigned extensions (one-time)
+The manifest permits Premiere 14.4+ with CEP 10+ and After Effects 18+. The tested engine environment is macOS Apple Silicon; declared host ranges do not establish validation of all older releases.
 
-Because MediaOtter is open source and not signed by Adobe:
+## Signed publisher build
 
-- **macOS**: open Terminal and run:
-  ```bash
-  defaults write com.adobe.CSXS.10 PlayerDebugMode 1
-  ```
-- **Windows**: create the registry key
-  `HKEY_CURRENT_USER\Software\Adobe\CSXS.10` → `PlayerDebugMode` = `1` (DWORD).
+Set `MEDIAOTTER_SIGN_CERT` to your certificate file, `MEDIAOTTER_SIGN_PASSWORD` to its password, and `MEDIAOTTER_ZXPSIGNCMD` to Adobe's ZXPSignCmd. Then run `npm run build:zxp`; it signs and verifies the package. Without these values the build produces a developer ZIP. Credentials and signing certificates are excluded from packages and version control.
 
-Then fully **quit and restart** Premiere Pro / After Effects.
+Complete `docs/REPAIR-NOTES.md` before publishing. Upload both the archive and its `.sha256` asset. The website installer uses those exact versioned names. Changing these scripts does not publish a release or deploy the website.
 
-### 4. First run
+## Windows
 
-- In Premiere Pro: **Window → Extensions → MediaOtter**
-- In After Effects: **Window → Extensions → MediaOtter**
-
-Optional: set up your own YouTube credentials for playlist browsing —
-see [CREDENTIALS.md](CREDENTIALS.md).
-
----
-
-## Build (for contributors / packagers)
-
-```bash
-# 1. fetch runtime binaries (all platforms)
-node scripts/download-binaries.js --all
-
-# 2. (packagers only) inject maintainer credentials — NEVER commits these
-export MF_GOOGLE_CLIENT_ID="…"
-export MF_GOOGLE_API_KEY="…"
-node scripts/inject-credentials.js
-
-# 3. package the .zxp
-node scripts/build-zxp.js            # → dist/mediaotter-1.0.0.zxp
-
-# 4. dev-install
-./scripts/install-mac.sh
-```
-
-### Validation before shipping
-
-```bash
-node scripts/validate.js             # syntax checks, manifest lint, secret scan
-MEDIAOTTER_TEST_DIR=/tmp/otter-test node scripts/engine-test.js   # live engine test
-```
-
-## Platform notes
-
-| Component | macOS | Windows |
-|---|---|---|
-| yt-dlp | bundled standalone binary (`yt-dlp_macos`) | `yt-dlp.exe` |
-| ffmpeg | static build (arm64 / x64) | static build (x64) |
-| Deno (PO-token JS runtime) | bundled | bundled |
-| Python | not needed (standalone yt-dlp) | not needed |
-| Install dir | `~/Library/Application Support/Adobe/CEP/extensions/MediaOtter` | `%APPDATA%\Adobe\CEP\extensions\MediaOtter` |
+Fetch and verify Windows runtime assets on Windows. Copy `extension/` to `%APPDATA%\Adobe\CEP\extensions\MediaOtter\`. Use a signed package for ordinary distribution. Download, cancel, reveal and import require Windows device verification before release.
 
 ## Troubleshooting
 
-- **"Sign in to confirm you're not a bot"**: turn on **YouTube browser session**
-  in Settings (uses your browser's cookies) — this is the fix for age-restricted
-  or bot-flagged content.
-- **Panel doesn't appear**: verify `PlayerDebugMode` (step 3), restart the app,
-  and check the extension shows under Window → Extensions.
-- **Downloads fail with HTTP 4xx**: check `~/.mediaotter/logs/mediaotter.log`,
-  then try the browser session setting.
-- **4K shows VP9/AV1**: enable *Allow encoding to H.264* in Settings to get a
-  Premiere-max-compatible H.264 file (slower, but plays anywhere).
+- Panel missing: check installed `CSXS/manifest.xml`, host version and matching CEP developer mode for unsigned builds, then restart the host.
+- Engine missing: verify runtimes and use the correct architecture package; installing Node/Python globally should not be needed.
+- Source rejects access: update yt-dlp in Settings. Optionally test your own browser session. Cookie access can fail or prompt for Keychain access; it does not guarantee restricted content is downloadable.
+- No video quality: enable H.264 encoding for VP9/AV1 or unknown direct-file dimensions. Protected media cannot be converted by this setting.
+- Import fails: open a project; completed media stays available for manual import or retry. Unsaved projects use the state folder's `downloads/` directory.
+- Save diagnostics from Settings and review paths before sharing. Include the failing action and error, excluding tokens, cookies and credentials.

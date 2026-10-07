@@ -25,12 +25,15 @@ function getSupportedBrowsers() {
 
 /** Probe: can yt-dlp read cookies for this browser? */
 function probeBrowser(browserKey) {
+  if (!SUPPORTED_BROWSERS.some(function (browser) { return browser.key === browserKey; })) {
+    return Promise.resolve({ ok: false, error: "Unsupported browser session." });
+  }
   var command = binaryManager.getYtDlpCommand();
   if (!command.executable && !command.argsPrefix.length) {
     return Promise.resolve({ ok: false, error: "yt-dlp runtime is not ready." });
   }
   var args = [
-    "--no-warnings",
+    "--ignore-config",
     "--cookies-from-browser", browserKey,
     "--skip-download",
     "--dump-single-json",
@@ -58,7 +61,7 @@ function probeBrowser(browserKey) {
       error += " Browser profile not found.";
     }
     return { ok: false, browser: browserKey, error: error, detail: text.slice(-200) };
-  });
+  }).catch(function (error) { return { ok: false, browser: browserKey, error: error.message || "Browser session probe failed." }; });
 }
 
 module.exports = {

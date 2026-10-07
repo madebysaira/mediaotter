@@ -58,7 +58,8 @@ function evalScript(script) {
         if (done) { return; }
         done = true;
         clearTimeout(timer);
-        resolve({ ok: true, value: value == null ? "" : String(value) });
+        if (/^EvalScript error\.?$/i.test(String(value).trim())) { resolve({ok:false, error:"Premiere could not execute the host script"}); }
+        else { resolve({ ok: true, value: value == null ? "" : String(value) }); }
       });
     } catch (error) {
       if (!done) {
@@ -80,13 +81,13 @@ function ensureHostScript() {
     /* keep empty */
   }
   var scriptPath = (extensionPath || ".") + "/jsx/hostscript.jsx";
-  var script = "$.evalFile(\"" + scriptPath.replace(/\\/g, "\\\\").replace(/"/g, "\\\"") + "\");";
+  var script = "$.evalFile(\"" + scriptPath.replace(/\\/g, "\\\\").replace(/"/g, "\\\"") + "\"); mediaotter.ping();";
   return evalScript(script).then(function (result) {
-    if (result.ok) {
+    if (result.ok && result.value === "MEDIAOTTER_HOST_READY_1.1.0") {
       hostScriptLoaded = true;
       return { ok: true };
     }
-    return { ok: false, error: result.error || "Host script not loaded" };
+    return { ok: false, error: result.error || "Host script did not confirm readiness" };
   });
 }
 
@@ -128,17 +129,19 @@ function importIntoHost(filePath, options) {
 }
 
 function revealInFinder(filePath) {
-  return ensureHostScript().then(function (loaded) {
-    if (!loaded.ok) { return; }
-    return evalScript("mediaotter.revealInFinder(" + JSON.stringify(filePath) + ")");
-  });
+  var cp = require("child_process"), fs = require("fs");
+  if (!fs.existsSync(filePath)) { return Promise.reject(new Error("File not found")); }
+  var cmd = process.platform === "darwin" ? "open" : process.platform === "win32" ? "explorer.exe" : "xdg-open";
+  var args = process.platform === "darwin" ? ["-R", filePath] : process.platform === "win32" ? ["/select," + filePath] : [require("path").dirname(filePath)];
+  return new Promise(function (resolve, reject) { cp.execFile(cmd, args, function (error) { if (error) { reject(error); } else { resolve(); } }); });
 }
-
 function openExternalUrl(url) {
-  return ensureHostScript().then(function (loaded) {
-    if (!loaded.ok) { return; }
-    return evalScript("mediaotter.openUrl(" + JSON.stringify(url) + ")");
-  });
+  if (!/^https?:\/\//i.test(url)) { return Promise.reject(new Error("Expected an HTTP(S) URL")); }
+  if (csInterface && csInterface.openURLInDefaultBrowser) { csInterface.openURLInDefaultBrowser(url); return Promise.resolve(); }
+  var cp = require("child_process");
+  var command = process.platform === "darwin" ? "open" : process.platform === "win32" ? "rundll32.exe" : "xdg-open";
+  var args = process.platform === "win32" ? ["url.dll,FileProtocolHandler", url] : [url];
+  return new Promise(function (resolve, reject) { cp.execFile(command, args, function (error) { if (error) { reject(error); } else { resolve(); } }); });
 }
 
 init();

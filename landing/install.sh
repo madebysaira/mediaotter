@@ -9,7 +9,7 @@
 # No admin, no Java. Works on macOS (Apple Silicon + Intel).
 set -eu
 
-VERSION="1.0.0"
+VERSION="${MEDIAOTTER_VERSION:-1.1.0}"
 REPO="madebysaira/mediaotter"
 BASE="https://github.com/${REPO}/releases/download/v${VERSION}"
 DEST="$HOME/Library/Application Support/Adobe/CEP/extensions/MediaOtter"
@@ -133,8 +133,8 @@ ARCH="$(uname -m 2>/dev/null || echo unknown)"
 case "$OS" in
   Darwin)
     case "$ARCH" in
-      arm64|aarch64) PKG="mediaotter-darwin-arm64.zip"; PLAT="darwin-arm64"; LABEL="Apple Silicon";;
-      x86_64)        PKG="mediaotter-darwin-x64.zip";   PLAT="darwin-x64";   LABEL="Intel";;
+      arm64|aarch64) PKG="mediaotter-${VERSION}-darwin-arm64-developer.zip"; PLAT="darwin-arm64"; LABEL="Apple Silicon";;
+      x86_64)        PKG="mediaotter-${VERSION}-darwin-x64-developer.zip";   PLAT="darwin-x64";   LABEL="Intel";;
       *) printf "${RED}✘${RESET} unsupported Mac architecture: %s\n" "$ARCH" >&2; exit 1;;
     esac
     ;;
@@ -185,9 +185,10 @@ if [ "$DL_OK" != "1" ] || [ ! -s "$ZIP" ]; then
   printf "  ${GREY}Check https://github.com/%s/releases — or retry.${RESET}\n" "$REPO"
   exit 1
 fi
-SIZE="$(du -h "$ZIP" 2>/dev/null | cut -f1)"
-if [ -z "$SIZE" ]; then SIZE="$(wc -c < "$ZIP" 2>/dev/null | tr -d ' ') bytes"; fi
-ok "Downloaded $SIZE"
+curl -fsSL --retry 3 -o "$TMP/$PKG.sha256" "$URL.sha256"
+(cd "$TMP" && shasum -a 256 -c "$PKG.sha256")
+SIZE="$(du -h "$ZIP" | cut -f1)"
+ok "Downloaded and verified $SIZE"
 
 # 3 — install
 step 3 4 "Installing"
@@ -210,27 +211,8 @@ printf "\r  ${GREEN}✔${RESET} Extracted %-30s\n" "($SIZE)"
   printf "  ${GREY}Got: %s${RESET}\n" "$(ls -1 "$TMP" 2>/dev/null | tr '\n' ' ')"
   exit 1
 }
-spin "Copying to $DEST…"
-rm -rf "$DEST" 2>/dev/null || true
-mkdir -p "$(dirname "$DEST")"
-cp -R "$TMP/MediaOtter" "$DEST"
-INSTALLED_SIZE="$(du -sh "$DEST" 2>/dev/null | cut -f1)"
-if [ -z "$INSTALLED_SIZE" ]; then INSTALLED_SIZE="$SIZE"; fi
-printf "\r  ${GREEN}✔${RESET} Installed %-30s ${GREY}(%s)${RESET}\n" "" "$INSTALLED_SIZE"
-
-# 4 — enable unsigned
-step 4 4 "Enabling unsigned extensions (one-time)"
-DID=0
-for csxs in 10 11; do
-  if ! defaults read "com.adobe.CSXS.${csxs}" PlayerDebugMode >/dev/null 2>&1; then
-    printf "  ${DIM}→${RESET} com.adobe.CSXS.${csxs}.PlayerDebugMode = 1\n"
-    defaults write "com.adobe.CSXS.${csxs}" PlayerDebugMode 1 2>/dev/null || warn "could not write com.adobe.CSXS.${csxs} — run: defaults write com.adobe.CSXS.${csxs} PlayerDebugMode 1"
-    DID=1
-  else
-    printf "  ${GREY}✔ com.adobe.CSXS.${csxs} already enabled${RESET}\n"
-  fi
-done
-if [ "$DID" = "0" ]; then ok "Already enabled"; else ok "Enabled"; fi
+bash "$TMP/Install.command"
+INSTALLED_SIZE="$(du -sh "$DEST" | cut -f1)"
 
 # cleanup before success banner so size stays
 cleanup; trap - EXIT INT TERM

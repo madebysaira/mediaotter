@@ -35,6 +35,7 @@ var listeners = {};
 function on(eventName, handler) {
   listeners[eventName] = listeners[eventName] || [];
   listeners[eventName].push(handler);
+  return function () { listeners[eventName] = listeners[eventName].filter(function (fn) { return fn !== handler; }); };
 }
 
 function emit(eventName, payload) {
@@ -50,11 +51,11 @@ function emit(eventName, payload) {
 
 function getYtDlpBaseArgs(extra) {
   var args = [
-    "--no-warnings",
+    "--ignore-config",
     "--no-playlist",
     "--continue",
     "--no-overwrites",
-    "--retries", "10",
+    "--retries", "3",
     "--extractor-retries", "3",
     "--socket-timeout", "15",
     "--newline"
@@ -102,6 +103,8 @@ function findVideoRenderers(node, output) {
   if (!node || typeof node !== "object") {
     return;
   }
+  if (node.lockupViewModel && /PLAYLIST|VIDEO/.test(node.lockupViewModel.contentType || "")) { output.push(node.lockupViewModel); }
+  if (node.playlistRenderer) { output.push(node.playlistRenderer); }
   if (node.videoRenderer) {
     output.push(node.videoRenderer);
   }
@@ -114,7 +117,7 @@ function findVideoRenderers(node, output) {
   var keys = Object.keys(node);
   for (var index = 0; index < keys.length; index += 1) {
     var key = keys[index];
-    if (key === "videoRenderer" || key === "compactVideoRenderer" || key === "richItemRenderer") {
+    if (key === "lockupViewModel" || key === "playlistRenderer" || key === "videoRenderer" || key === "compactVideoRenderer" || key === "richItemRenderer") {
       continue;
     }
     var value = node[key];
@@ -139,8 +142,21 @@ function extractContinuationToken(data) {
   return "";
 }
 
+function mapLockup(renderer) {
+  var playlist = /PLAYLIST/.test(renderer.contentType || "");
+  var metadata = renderer.metadata && renderer.metadata.lockupMetadataViewModel || {};
+  var image = renderer.contentImage || {};
+  var thumbnail = image.thumbnailViewModel || (image.collectionThumbnailViewModel && image.collectionThumbnailViewModel.primaryThumbnail && image.collectionThumbnailViewModel.primaryThumbnail.thumbnailViewModel) || {};
+  var sources = thumbnail.image && thumbnail.image.sources || [];
+  var rows = metadata.metadata && metadata.metadata.contentMetadataViewModel && metadata.metadata.contentMetadataViewModel.metadataRows || [];
+  var parts = rows[0] && rows[0].metadataParts || [];
+  var id = renderer.contentId;
+  return {id:id,kind:playlist?"playlist":"video",title:metadata.title && metadata.title.content || "",channel:parts[0] && parts[0].text && parts[0].text.content || "",thumbnail:sources.length?sources[sources.length-1].url:"",duration:"",views:"",published:"",url:(playlist?"https://www.youtube.com/playlist?list=":"https://www.youtube.com/watch?v=")+id};
+}
 function mapVideoRenderer(renderer) {
-  var id = renderer.videoId || "";
+  if (renderer.contentId) { return mapLockup(renderer); }
+  var isPlaylist = Boolean(renderer.playlistId);
+  var id = renderer.videoId || renderer.playlistId || "";
   var title = "";
   try {
     title = renderer.title.runs.map(function (run) { return run.text; }).join("");
@@ -180,7 +196,7 @@ function mapVideoRenderer(renderer) {
   } catch (error) {
     published = "";
   }
-  return { id: id, title: title, channel: channel, views: views, duration: duration, published: published, thumbnail: thumbnail, url: id ? "https://www.youtube.com/watch?v=" + id : "" };
+  return { kind: isPlaylist ? "playlist" : "video", id: id, title: title, channel: channel, views: views, duration: duration, published: published, thumbnail: thumbnail, url: id ? (isPlaylist ? "https://www.youtube.com/playlist?list=" : "https://www.youtube.com/watch?v=") + id : "" };
 }
 
 function parseSearchHtml(html) {
@@ -202,13 +218,16 @@ function parseSearchHtml(html) {
   var items = renderers.map(mapVideoRenderer).filter(function (item) {
     return item.id && item.title;
   });
+  var seen = {};
+  items = items.filter(function (item) { if (seen[item.id]) { return false; } seen[item.id] = true; return true; });
   return { items: items, continuationToken: extractContinuationToken(data) };
 }
 
 function fetchSearchPage(query, filter) {
   var params = [];
   if (filter && filter !== "all") {
-    params.push("sp=" + encodeURIComponent(filter));
+    var filters = {video:"EgIQAQ==",playlist:"EgIQAw=="};
+    if (filters[filter]) { params.push("sp=" + encodeURIComponent(filters[filter])); }
   }
   var url = YT_SEARCH_URL + encodeURIComponent(query) + (params.length ? "&" + params.join("&") : "");
   return util.httpGet(url, {
@@ -281,12 +300,12 @@ function fetchSearchContinuation(token) {
 function searchYouTube(query, filter) {
   return fetchSearchPage(query, filter).then(function (page) {
     if (page.items.length === 0 && !page.continuationToken) {
-      return searchYouTubeWithYtDlp(query);
+      return filter === "playlist" ? {items:[],continuationToken:"",source:"web"} : searchYouTubeWithYtDlp(query);
     }
     return Object.assign(page, { source: "web" });
   }).catch(function (error) {
     logger.warn("downloader", "search_fallback", { message: error.message });
-    return searchYouTubeWithYtDlp(query);
+    return filter === "playlist" ? {items:[],continuationToken:"",source:"web"} : searchYouTubeWithYtDlp(query);
   });
 }
 
@@ -377,15 +396,11 @@ function putPreResolved(url, meta, extra) {
 }
 
 function classifyUrl(url) {
-  var lower = String(url || "").toLowerCase();
-  if (lower.indexOf("youtube.com") !== -1 || lower.indexOf("youtu.be") !== -1 || lower.indexOf("music.youtube.com") !== -1) {
-    if (lower.indexOf("playlist?list=") !== -1 || lower.indexOf("&list=") !== -1) {
-      return "youtube_playlist";
-    }
-    if (lower.indexOf("/playlist/") !== -1) {
-      return "youtube_playlist";
-    }
-    return "youtube_video";
+  var parsed;
+  try { parsed = new (require("url").URL)(url); } catch (error) { return "generic"; }
+  var host = parsed.hostname.toLowerCase();
+  if (host === "youtu.be" || host === "youtube.com" || /\.youtube\.com$/.test(host)) {
+    return parsed.pathname === "/playlist" ? "youtube_playlist" : "youtube_video";
   }
   return "generic";
 }
@@ -396,16 +411,17 @@ function resolveMetadata(url, extra) {
     return Promise.resolve(cached);
   }
   var command = binaryManager.getYtDlpCommand();
-  if (!command.executable && !command.argsPrefix.length) {
+  if (!command.executable) {
     return Promise.reject(new Error(command.error || "yt-dlp runtime is not ready."));
   }
   var args = getYtDlpBaseArgs(extra).concat([
     "--dump-single-json",
     "--skip-download",
-    url
+    "--", url
   ]);
   return util.spawnProcess(command.executable, command.argsPrefix.concat(args), {
     env: getSpawnEnv(command.pythonKind),
+    timeoutMs: 90000,
     onError: function () { binaryManager.reportSpawnFailure(command.path); }
   }).then(function (result) {
     binaryManager.reportSpawnSuccess(command.path);
@@ -428,7 +444,7 @@ function resolveMetadata(url, extra) {
  */
 function fetchPlaylistEntries(url, extra) {
   var command = binaryManager.getYtDlpCommand();
-  if (!command.executable && !command.argsPrefix.length) {
+  if (!command.executable) {
     return Promise.reject(new Error(command.error || "yt-dlp runtime is not ready."));
   }
   var playlistExtra = Object.assign({}, extra || {}, { noPlaylist: false });
@@ -440,6 +456,7 @@ function fetchPlaylistEntries(url, extra) {
   ]);
   return util.spawnProcess(command.executable, command.argsPrefix.concat(args), {
     env: getSpawnEnv(command.pythonKind),
+    timeoutMs: 90000,
     onError: function () { binaryManager.reportSpawnFailure(command.path); }
   }).then(function (result) {
     binaryManager.reportSpawnSuccess(command.path);
@@ -531,392 +548,151 @@ function mapYtDlpError(stderr, url) {
   return "Download failed: " + tail;
 }
 
-// ─── download pipeline ─────────────────────────────────────────
-
-function buildOutputTemplate(destDir, downloadRecord) {
-  var suffix = "";
-  if (downloadRecord && downloadRecord.range) {
-    suffix = " " + formatSecondsSpec(downloadRecord.range.start) + "-" + formatSecondsSpec(downloadRecord.range.end);
-  }
-  return path.join(destDir, "%(title).80B [%(id)s]" + suffix + ".%(ext)s");
-}
-
+// Each job owns a temporary directory and a single queue slot across all stages.
 function parseProgressLine(line) {
-  var parts = line.split("|");
-  if (parts.length < 5) {
-    return null;
-  }
-  var toNumber = function (value) {
-    var parsed = parseFloat(value);
-    return isFinite(parsed) ? parsed : null;
-  };
-  return {
-    percent: toNumber(parts[0].replace("%", "")),
-    downloadedBytes: toNumber(parts[1]),
-    totalBytes: toNumber(parts[2]),
-    speedText: parts[3] === "NA" ? "" : parts[3],
-    etaText: parts[4] === "NA" ? "" : parts[4]
-  };
+  var fields = line.replace(/^MEDIAOTTER_PROGRESS\s*/, "").split("|");
+  if (fields.length < 5) { return null; }
+  return {percent: parseFloat(fields[0]) || 0, downloadedBytes: Number(fields[1]) || 0,
+    totalBytes: Number(fields[2]) || 0, speedText: fields[3] === "NA" ? "" : fields[3], etaText: fields[4] === "NA" ? "" : fields[4]};
 }
-
-function runDownload(downloadRecord) {
-  var meta = downloadRecord.meta;
-  var settings = downloadRecord.settings;
+function stage(record, name) { record.stage = name; emit("download:progress", record); }
+function assertNotCancelled(record) { if (record._cancelled) { throw new Error("Cancelled"); } }
+async function processJob(record, executable, args, options) {
+  assertNotCancelled(record);
+  var proc = util.spawnProcess(executable, args, options || {});
+  record._process = proc;
+  var result = await proc;
+  record._process = null;
+  assertNotCancelled(record);
+  if (result.timedOut) { throw new Error("The process timed out. Check your connection and retry."); }
+  return result;
+}
+async function probeFile(record, filePath) {
+  var result = await processJob(record, binaryManager.getFfprobePath(), ["-v", "error", "-show_streams", "-show_format", "-of", "json", filePath], {timeoutMs: 30000});
+  if (result.code !== 0) { throw new Error("Could not inspect downloaded media: " + result.stderr.slice(-300)); }
+  var probe = util.parseJsonTolerant(result.stdout);
+  if (!probe || !Array.isArray(probe.streams)) { throw new Error("Media inspection returned invalid data"); }
+  return probe;
+}
+async function fetchMedia(record, section) {
   var command = binaryManager.getYtDlpCommand();
-  var args = getYtDlpBaseArgs(settings);
-
-  if (downloadRecord.range) {
-    // yt-dlp needs h:mm:ss specifiers — bare seconds are mis-parsed
-    args.push("--download-sections", "*" + formatSecondsSpec(downloadRecord.range.start) + "-" + formatSecondsSpec(downloadRecord.range.end));
-    args.push("--force-keyframes-at-cuts");
-  }
-
-  if (downloadRecord.kind === "audio") {
-    args.push("-f", quality.getAudioSelector());
-    args.push("-x");
-    args.push("--audio-format", "wav");
-    args.push("--postprocessor-args", "ExtractAudio:-vn -ar 48000 -ac 2 -c:a pcm_s16le");
-  } else {
-    args.push("-f", downloadRecord.selector);
-    args.push("--merge-output-format", "mp4");
-    args.push.apply(args, quality.getFormatSortArgs());
-    if (!downloadRecord.transcode) {
-      // remux is only safe when we keep the source codecs; transcode path goes through ffmpeg anyway
-      args.push("--remux-video", "mp4");
-    }
-  }
-
-  args.push("-o", buildOutputTemplate(downloadRecord.destDir, downloadRecord));
-  args.push("--progress-template", "%(progress._percent_str)s|%(progress.downloaded_bytes)s|%(progress.total_bytes)s|%(progress._speed_str)s|%(progress._eta_str)s");
-  args.push("--print", "after_move:MEDIAOTTER_PATH %(filepath)s");
-  args.push(downloadRecord.url);
-
-  downloadRecord.stage = "running";
-  downloadRecord.startedAt = Date.now();
-  emit("download:start", downloadRecord);
-
-  var proc = util.spawnProcess(command.executable, command.argsPrefix.concat(args), {
+  var args = getYtDlpBaseArgs(record.settings);
+  args.push("--no-simulate", "--no-overwrites", "-f", record.kind === "audio" ? quality.getAudioSelector() : record.selector,
+    "--merge-output-format", "mkv", "-o", path.join(record._workDir, "source.%(ext)s"),
+    "--progress", "--progress-template", "download:MEDIAOTTER_PROGRESS %(progress._percent_str)s|%(progress.downloaded_bytes)s|%(progress.total_bytes)s|%(progress._speed_str)s|%(progress._eta_str)s",
+    "--print", "after_move:MEDIAOTTER_PATH %(filepath)j");
+  if (section) { args.push("--download-sections", "*" + record.range.start + "-" + record.range.end, "--force-keyframes-at-cuts"); }
+  args.push("--", record.url);
+  record._sourcePath = "";
+  var result = await processJob(record, command.executable, command.argsPrefix.concat(args), {
     env: getSpawnEnv(command.pythonKind),
-    onStdout: function (chunk) {
-      var lines = chunk.split(/\r?\n/);
-      for (var index = 0; index < lines.length; index += 1) {
-        var line = lines[index].trim();
-        if (line.indexOf("MEDIAOTTER_PATH ") === 0) {
-          downloadRecord.finalPath = line.slice("MEDIAOTTER_PATH ".length);
-          downloadRecord.stage = "finalizing";
-        }
+    onStdoutLine: function (line) {
+      if (line.indexOf("MEDIAOTTER_PATH ") === 0) {
+        try { record._sourcePath = JSON.parse(line.slice(16)); } catch (error) {}
       }
+      if (line.indexOf("MEDIAOTTER_PROGRESS ") === 0) { record.progress = parseProgressLine(line); emit("download:progress", record); }
     },
-    onStderr: function (chunk) {
-      var lines = chunk.split(/\r?\n/);
-      for (var index = 0; index < lines.length; index += 1) {
-        var line = lines[index].trim();
-        if (!line || line.indexOf("%") === -1) {
-          continue;
-        }
-        var progress = parseProgressLine(line);
-        if (progress) {
-          downloadRecord.progress = progress;
-          emit("download:progress", downloadRecord);
-        }
-      }
-    },
-    onError: function () {
-      binaryManager.reportSpawnFailure(command.path);
-      failDownload(downloadRecord, "Unable to launch the download engine (yt-dlp). Check Settings → Engine.");
+    onStderrLine: function (line) {
+      if (line.indexOf("MEDIAOTTER_PROGRESS ") === 0) { record.progress = parseProgressLine(line); emit("download:progress", record); }
     }
   });
-
-  downloadRecord.cancel = function () {
-    if (downloadRecord.stage === "done" || downloadRecord.stage === "error") {
-      return;
-    }
-    downloadRecord.stage = "cancelled";
-    try {
-      proc.cancel();
-    } catch (error) {
-      /* ignore */
-    }
-    cleanupPartialFiles(downloadRecord);
-    emit("download:cancelled", downloadRecord);
-    logger.info("downloader", "download_cancelled", { id: downloadRecord.id });
-  };
-
-  proc.then(function (result) {
-    if (downloadRecord.stage === "cancelled") {
-      return;
-    }
-    if (result.code !== 0) {
-      // Range downloads can fail when yt-dlp streams the cut through ffmpeg
-      // (DNS / network). Fall back to full download + local cut.
-      if (downloadRecord.range && !downloadRecord._sectionFallback && isSectionCutFailure(result)) {
-        runSectionCutFallback(downloadRecord);
-        return;
-      }
-      failDownload(downloadRecord, mapYtDlpError(result.stderr, downloadRecord.url));
-      return;
-    }
-    if (!downloadRecord.finalPath || !fs.existsSync(downloadRecord.finalPath)) {
-      failDownload(downloadRecord, "The file was downloaded but its path could not be resolved.");
-      return;
-    }
-    if (downloadRecord.transcode) {
-      transcodeToH264(downloadRecord).then(function (finalPath) {
-        downloadRecord.finalPath = finalPath;
-        completeDownload(downloadRecord);
-      }).catch(function (error) {
-        failDownload(downloadRecord, "Transcode failed: " + error.message);
-      });
-      return;
-    }
-    completeDownload(downloadRecord);
-  }).catch(function () {
-    if (downloadRecord.stage !== "cancelled") {
-      failDownload(downloadRecord, "Download process error.");
-    }
-  });
+  if (result.code !== 0) { var error = new Error(mapYtDlpError(result.stderr, record.url)); error.detail = result.stderr; throw error; }
+  if (!record._sourcePath || !fs.existsSync(record._sourcePath) || path.dirname(record._sourcePath) !== record._workDir) { throw new Error("Download finished without a valid output file"); }
+  return record._sourcePath;
 }
-
-function transcodeToH264(downloadRecord) {
+async function normalizeMedia(record, source, locallyTrim) {
+  stage(record, "finalizing");
+  var input = await probeFile(record, source);
+  var video = input.streams.filter(function (s) { return s.codec_type === "video" && !(s.disposition && s.disposition.attached_pic); })[0];
+  var audio = input.streams.filter(function (s) { return s.codec_type === "audio"; })[0];
+  if (record.kind === "audio" && !audio) { throw new Error("This source has no audio stream"); }
+  if (record.kind === "video" && !video) { throw new Error("This source has no video stream"); }
+  var ext = record.kind === "audio" ? ".wav" : ".mp4";
+  var output = path.join(record._workDir, "ready" + ext);
+  var args = ["-nostdin", "-y", "-i", source];
+  if (locallyTrim) { args.push("-ss", String(record.range.start), "-t", String(record.range.end - record.range.start)); }
+  if (record.kind === "audio") { args.push("-map", "0:a:0", "-vn", "-c:a", "pcm_s16le", "-ar", "48000", "-ac", "2"); }
+  else {
+    args.push("-map", "0:v:0", "-map", "0:a:0?");
+    var videoCopy = video.codec_name === "h264" && video.height <= record.maxHeight && !locallyTrim && /^(yuv420p|yuvj420p)$/.test(video.pix_fmt);
+    if (videoCopy) { args.push("-c:v", "copy"); }
+    else { args.push("-c:v", "libx264", "-preset", "fast", "-crf", "18", "-pix_fmt", "yuv420p"); if (video.height > record.maxHeight) { args.push("-vf", "scale=-2:" + record.maxHeight); } stage(record, "transcoding"); }
+    if (audio) { args.push("-c:a", audio.codec_name === "aac" && !locallyTrim ? "copy" : "aac"); }
+    args.push("-movflags", "+faststart");
+  }
+  args.push(output);
+  var converted = await processJob(record, binaryManager.getFfmpegPath(), args, {});
+  if (converted.code !== 0) { throw new Error("Media conversion failed: " + converted.stderr.slice(-400)); }
+  stage(record, "verifying");
+  var probe = await probeFile(record, output);
+  var duration = Number(probe.format && probe.format.duration);
+  if (!isFinite(duration) || duration <= 0 || !fs.statSync(output).size) { throw new Error("Finished media is empty or has no valid duration"); }
+  if (record.range && Math.abs(duration - (record.range.end - record.range.start)) > 0.75) { throw new Error("The source could not provide the requested section duration. Choose a range within the available media."); }
+  var streams = probe.streams;
+  if (record.kind === "audio" && !streams.some(function (s) { return s.codec_name === "pcm_s16le" && Number(s.sample_rate) === 48000 && s.channels === 2; })) { throw new Error("Audio validation failed"); }
+  if (record.kind === "video" && !streams.some(function (s) { return s.codec_name === "h264" && s.height <= record.maxHeight; })) { throw new Error("Video validation failed: codec or quality cap differs from the selection"); }
+  if (record.kind === "video" && streams.some(function (s) { return s.codec_type === "audio" && s.codec_name !== "aac"; })) { throw new Error("Video audio validation failed"); }
+  var title = String(record.title || "MediaOtter").replace(/[\\/:*?"<>|\x00-\x1f]/g, "_").slice(0, 100).replace(/[ .]+$/, "") || "MediaOtter";
+  var suffix = record.range ? " [" + record.range.start + "-" + record.range.end + "s]" : "";
+  var finalPath = path.join(record.destDir, title + suffix + " [" + record.id + "]" + ext);
+  assertNotCancelled(record);
+  fs.renameSync(output, finalPath);
+  record.finalPath = finalPath; record.finalSize = fs.statSync(finalPath).size;
+  record.mediaInfo = {duration: duration, streams: streams.map(function (s) { return {type:s.codec_type,codec:s.codec_name,width:s.width,height:s.height,sampleRate:s.sample_rate,channels:s.channels}; })};
+}
+async function runDownload(record) {
+  record.startedAt = Date.now(); record.stage = "running"; emit("download:start", record);
+  try {
+    fs.mkdirSync(record.destDir, {recursive: true});
+    if (!fs.statSync(record.destDir).isDirectory()) { throw new Error("Choose a download folder, not a project file"); }
+    record._workDir = fs.mkdtempSync(path.join(record.destDir, ".mediaotter-"));
+    var source, locallyTrim = false;
+    try { source = await fetchMedia(record, Boolean(record.range)); }
+    catch (error) {
+      assertNotCancelled(record);
+      if (!record.range || !/ffmpeg|error opening input|failed to resolve hostname|input\/output error/i.test(error.detail || "")) { throw error; }
+      util.removeDir(record._workDir);
+      record._workDir = fs.mkdtempSync(path.join(record.destDir, ".mediaotter-"));
+      stage(record, "running"); source = await fetchMedia(record, false); locallyTrim = true;
+    }
+    await normalizeMedia(record, source, locallyTrim);
+    assertNotCancelled(record); record.stage = "done"; record.finishedAt = Date.now();
+    record.progress = {percent:100}; logger.info("downloader", "download_complete", {id:record.id,media:record.mediaInfo}); emit("download:complete", record);
+  } catch (error) {
+    record.finishedAt = Date.now();
+    if (record._cancelled) { record.stage = "cancelled"; emit("download:cancelled", record); }
+    else { record.stage = "error"; record.error = error.message || String(error); logger.warn("downloader", "download_failed", {id:record.id,error:record.error}); emit("download:error", record); }
+  } finally {
+    if (record._workDir) { try { util.removeDir(record._workDir); } catch (error) {} }
+    record._process = null;
+    activeCount = Math.max(0, activeCount - 1); pumpQueue();
+  }
+}
+function pumpQueue() {
+  while (activeCount < CONCURRENT_DOWNLOAD_LIMIT && pendingQueue.length) { var record = pendingQueue.shift(); activeCount++; runDownload(record); }
+}
+function enqueueDownload(request) {
+  if (!/^https?:\/\//i.test(request.url || "")) { throw new Error("Expected an HTTP(S) media URL"); }
   var runtime = binaryManager.getRuntimeStatus();
-  var sourcePath = downloadRecord.finalPath;
-  var targetPath = sourcePath.replace(/\.[^.]+$/, ".h264.mp4");
-  var ffmpegArgs = ["-y", "-i", sourcePath, "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", targetPath];
-  downloadRecord.stage = "transcoding";
-  emit("download:progress", downloadRecord);
-  return util.spawnProcess(runtime.ffmpegPath, ffmpegArgs, {}).then(function (result) {
-    if (result.code !== 0) {
-      throw new Error("ffmpeg exited " + result.code + ": " + result.stderr.slice(-300));
-    }
-    try {
-      fs.unlinkSync(sourcePath);
-    } catch (error) {
-      /* keep both */
-    }
-    return targetPath;
-  });
+  if (!runtime.ytDlpReady || !runtime.ffmpegReady || !runtime.ffprobeReady) { throw new Error(runtime.ytDlpError || "Download engine is incomplete. Check Settings."); }
+  if (request.kind !== "audio" && request.kind !== "video") { throw new Error("Choose audio or video"); }
+  if (request.kind === "video" && !request.selector) { throw new Error("Choose an available video quality"); }
+  if (request.range && (!isFinite(request.range.start) || !isFinite(request.range.end) || request.range.start < 0 || request.range.end <= request.range.start)) { throw new Error("Choose a valid start and end time"); }
+  if (request.range && request.meta && request.meta.duration && request.range.end > request.meta.duration + 0.1) { throw new Error("The section ends after this media ends"); }
+  if (!path.isAbsolute(request.destDir || "")) { throw new Error("Choose an absolute download folder"); }
+  var record = Object.assign({}, request, {id: require("crypto").randomBytes(6).toString("hex"), title: request.meta && request.meta.title || "MediaOtter", settings:request.settings || {}, stage:"queued", createdAt:Date.now(), maxHeight:Number(request.settings && request.settings.maxQualityHeight) || 2160});
+  activeDownloads[record.id] = record; pendingQueue.push(record); emit("download:queued", record); pumpQueue(); return record;
 }
-
-// ─── section-cut fallback ────────────────────────────────────────
-
-/** True when yt-dlp failed while streaming the cut through ffmpeg (network/DNS). */
-function isSectionCutFailure(result) {
-  var text = String(result.stderr || "") + " " + String(result.stdout || "");
-  return /ffmpeg exited with code/i.test(text) ||
-    /error opening input/i.test(text) ||
-    /failed to resolve hostname/i.test(text) ||
-    /input\/output error/i.test(text);
-}
-
-/**
- * Range downloads normally stream only the section via ffmpeg (fast). When that
- * path fails (e.g. DNS/network), download the full media with yt-dlp's native
- * downloader, then cut locally with ffmpeg -c copy.
- */
-function runSectionCutFallback(downloadRecord) {
-  downloadRecord._sectionFallback = true;
-  cleanupPartialFiles(downloadRecord);
-  var range = downloadRecord.range;
-  var meta = downloadRecord.meta;
-  var settings = downloadRecord.settings;
-  var command = binaryManager.getYtDlpCommand();
-  var args = getYtDlpBaseArgs(settings);
-
-  if (downloadRecord.kind === "audio") {
-    args.push("-f", quality.getAudioSelector());
-    args.push("-x");
-    args.push("--audio-format", "wav");
-    args.push("--postprocessor-args", "ExtractAudio:-vn -ar 48000 -ac 2 -c:a pcm_s16le");
-  } else {
-    args.push("-f", downloadRecord.selector);
-    args.push("--merge-output-format", "mp4");
-    args.push.apply(args, quality.getFormatSortArgs());
-    if (!downloadRecord.transcode) {
-      args.push("--remux-video", "mp4");
-    }
-  }
-
-  // temp name: " [full]" marks the untrimmed file
-  args.push("-o", buildOutputTemplate(downloadRecord.destDir, null).replace(".%(ext)s", " [full].%(ext)s"));
-  args.push("--progress-template", "%(progress._percent_str)s|%(progress.downloaded_bytes)s|%(progress.total_bytes)s|%(progress._speed_str)s|%(progress._eta_str)s");
-  args.push("--print", "after_move:MEDIAOTTER_PATH %(filepath)s");
-  args.push(downloadRecord.url);
-
-  downloadRecord.stage = "running";
-  logger.info("downloader", "section_fallback_full_download", { id: downloadRecord.id });
-
-  var proc = util.spawnProcess(command.executable, command.argsPrefix.concat(args), {
-    env: getSpawnEnv(command.pythonKind),
-    onStdout: function (chunk) {
-      var lines = chunk.split(/\r?\n/);
-      for (var index = 0; index < lines.length; index += 1) {
-        var line = lines[index].trim();
-        if (line.indexOf("MEDIAOTTER_PATH ") === 0) {
-          downloadRecord.finalPath = line.slice("MEDIAOTTER_PATH ".length);
-          downloadRecord.stage = "finalizing";
-        }
-      }
-    },
-    onStderr: function (chunk) {
-      var lines = chunk.split(/\r?\n/);
-      for (var index = 0; index < lines.length; index += 1) {
-        var line = lines[index].trim();
-        if (!line || line.indexOf("%") === -1) {
-          continue;
-        }
-        var progress = parseProgressLine(line);
-        if (progress) {
-          downloadRecord.progress = progress;
-          emit("download:progress", downloadRecord);
-        }
-      }
-    },
-    onError: function () {
-      binaryManager.reportSpawnFailure(command.path);
-    }
-  });
-
-  downloadRecord.cancel = function () {
-    if (downloadRecord.stage === "done" || downloadRecord.stage === "error") {
-      return;
-    }
-    downloadRecord.stage = "cancelled";
-    try {
-      proc.cancel();
-    } catch (error) {
-      /* ignore */
-    }
-    cleanupPartialFiles(downloadRecord);
-    emit("download:cancelled", downloadRecord);
-  };
-
-  proc.then(function (result) {
-    if (downloadRecord.stage === "cancelled") {
-      return;
-    }
-    if (result.code !== 0) {
-      failDownload(downloadRecord, mapYtDlpError(result.stderr, downloadRecord.url));
-      return;
-    }
-    if (!downloadRecord.finalPath || !fs.existsSync(downloadRecord.finalPath)) {
-      failDownload(downloadRecord, "The file was downloaded but its path could not be resolved.");
-      return;
-    }
-    var fullPath = downloadRecord.finalPath;
-    var sectionName = path.basename(fullPath).replace(" [full]", " " + formatSecondsSpec(range.start) + "-" + formatSecondsSpec(range.end));
-    var sectionPath = path.join(downloadRecord.destDir, sectionName);
-    var ffmpeg = binaryManager.getFfmpegPath();
-    var cutArgs = ["-y", "-ss", formatSecondsSpec(range.start), "-to", formatSecondsSpec(range.end), "-i", fullPath, "-c", "copy", "-map", "0", sectionPath];
-    util.spawnProcess(ffmpeg, cutArgs, {}).then(function (cutResult) {
-      if (cutResult.code !== 0) {
-        throw new Error("ffmpeg exited " + cutResult.code + ": " + String(cutResult.stderr || "").slice(-300));
-      }
-      if (!fs.existsSync(sectionPath)) {
-        throw new Error("ffmpeg produced no output.");
-      }
-      try {
-        fs.unlinkSync(fullPath);
-      } catch (error) {
-        /* keep the full file as well */
-      }
-      cleanupPartialFiles(downloadRecord);
-      downloadRecord.finalPath = sectionPath;
-      completeDownload(downloadRecord);
-    }).catch(function (error) {
-      failDownload(downloadRecord, "Section cut failed: " + error.message);
-    });
-  }).catch(function () {
-    if (downloadRecord.stage !== "cancelled") {
-      failDownload(downloadRecord, "Download process error.");
-    }
-  });
-}
-
-function completeDownload(downloadRecord) {
-  downloadRecord.stage = "done";
-  downloadRecord.finishedAt = Date.now();
-  downloadRecord.progress = downloadRecord.progress || {};
-  downloadRecord.progress.percent = 100;
-  logger.info("downloader", "download_complete", { id: downloadRecord.id, finalPath: downloadRecord.finalPath });
-  emit("download:complete", downloadRecord);
-  releaseSlot();
-}
-
-function failDownload(downloadRecord, message) {
-  downloadRecord.stage = "error";
-  downloadRecord.error = message;
-  downloadRecord.finishedAt = Date.now();
-  cleanupPartialFiles(downloadRecord);
-  logger.warn("downloader", "download_failed", { id: downloadRecord.id, message: message });
-  emit("download:error", downloadRecord);
-  releaseSlot();
-}
-
-function cleanupPartialFiles(downloadRecord) {
-  if (!downloadRecord.finalPath) {
-    return;
-  }
-  [downloadRecord.finalPath + ".part", downloadRecord.finalPath + ".ytdl"].forEach(function (candidate) {
-    try {
-      if (fs.existsSync(candidate)) {
-        fs.unlinkSync(candidate);
-      }
-    } catch (error) {
-      /* ignore */
-    }
-  });
-}
-
-function releaseSlot() {
-  activeCount = Math.max(0, activeCount - 1);
-  while (activeCount < CONCURRENT_DOWNLOAD_LIMIT && pendingQueue.length) {
-    var next = pendingQueue.shift();
-    activeCount += 1;
-    runDownload(next);
-  }
-}
-
-/** Enqueue a download. settings: { destDir, cookiesBrowser, maxQualityHeight, allowEncoding } */
-function enqueueDownload(record) {
-  var downloadRecord = Object.assign({}, record, {
-    id: record.id || String(Date.now()) + "_" + Math.floor(Math.random() * 10000),
-    stage: "queued",
-    progress: null,
-    createdAt: Date.now()
-  });
-  activeDownloads[downloadRecord.id] = downloadRecord;
-  if (activeCount < CONCURRENT_DOWNLOAD_LIMIT) {
-    activeCount += 1;
-    runDownload(downloadRecord);
-  } else {
-    pendingQueue.push(downloadRecord);
-    emit("download:queued", downloadRecord);
-  }
-  return downloadRecord;
-}
-
 function cancelDownload(id) {
   var record = activeDownloads[id];
-  if (!record) {
-    return;
-  }
-  var queueIndex = pendingQueue.indexOf(record);
-  if (queueIndex !== -1) {
-    pendingQueue.splice(queueIndex, 1);
-    record.stage = "cancelled";
-    emit("download:cancelled", record);
-    return;
-  }
-  record.cancel && record.cancel();
+  if (!record || /^(done|error|cancelled)$/.test(record.stage)) { return; }
+  record._cancelled = true;
+  var index = pendingQueue.indexOf(record);
+  if (index !== -1) { pendingQueue.splice(index, 1); record.stage = "cancelled"; emit("download:cancelled", record); return; }
+  record.stage = "cancelling"; emit("download:progress", record);
+  if (record._process) { record._process.cancel(); }
 }
-
-function getActiveDownloads() {
-  return Object.keys(activeDownloads).map(function (key) {
-    return activeDownloads[key];
-  }).filter(function (record) {
-    return record.stage === "queued" || record.stage === "running" || record.stage === "finalizing" || record.stage === "transcoding";
-  });
-}
+function getActiveDownloads() { return Object.keys(activeDownloads).map(function (id) { return activeDownloads[id]; }).filter(function (r) { return !/^(done|error|cancelled)$/.test(r.stage); }); }
 
 module.exports = {
   on: on,

@@ -1,94 +1,50 @@
-# 🦦 MediaOtter
+# MediaOtter
 
-**Search & download video/audio straight into Premiere Pro and After Effects.**
+Search, preview, download and import media into Premiere Pro through an open-source Adobe CEP panel. The 1.1.0 repair adds reliable download verification, honest import results, and search recommendations.
 
-MediaOtter is an open-source Adobe CEP panel that puts a friendly YouTube search —
-plus **any** of yt-dlp's 1000+ supported sites via a pasted URL — directly inside
-your NLE. Pick a result, choose the quality, download, and it lands in your project
-bin as a **Premiere-ready MP4 (H.264/AAC)** or **WAV (PCM 48 kHz)**.
+## Workflow
 
-Powered by [yt-dlp](https://github.com/yt-dlp/yt-dlp) + ffmpeg, bundled and pinned —
-nothing to install system-wide. Free, no accounts, **no telemetry**.
+- Search YouTube videos or playlists with autocomplete, editor-oriented starter searches, and recent searches saved on your computer.
+- Paste a supported media URL. YouTube uses its embedded player; other sites show metadata and a link to preview at the source.
+- Choose an available video resolution or audio, optionally choose a start/end section, and download.
+- Video is inspected and normalized to MP4 H.264/AAC; audio becomes WAV PCM 16-bit, 48 kHz, stereo. Exact format IDs and output inspection enforce the selected resolution limit.
+- Completed media imports into a MediaOtter project bin. Failed imports remain visible and can be retried. History items can be revealed or dragged into Premiere.
+- Optional Google sign-in supports your playlists and likes with your own Google desktop OAuth configuration. Browser cookies are optional and off by default.
 
-## ✨ Features
+Recommendations are starter searches and your recent queries. They do not analyze your project or use an AI recommendation service.
 
-- 🔎 **YouTube search with live suggestions** — type-ahead autocomplete as you type
-- ▶️ **In-panel preview** — watch before you download (custom player overlay)
-- 🎬 **Video download** — muxed MP4 H.264/AAC preferred; 4K/2K/1080p/720p caps;
-  optional **transcode to H.264** when only VP9/AV1 exists
-- 🎧 **Audio download** — WAV PCM 48 kHz stereo, born Premiere-ready
-- ✂️ **Download just a section** — pick a start/end range, get only what you need
-- 🌐 **Any site by URL** — Vimeo, SoundCloud, Twitch, TikTok, X/Twitter, archive.org,
-  and 1000+ more through yt-dlp
-- 📥 **One-click import** — downloads auto-import into a **MediaOtter** bin;
-  drag history items straight onto your timeline
-- 👤 **Your YouTube account** — optional sign-in (bring-your-own Google
-  credentials) to browse **your playlists, likes and subscriptions**; browser-cookie
-  session for private / age-restricted downloads
-- 🎨 **Premium dark UI** — glassmorphism, Poppins, real-time progress
-  (percent / speed / ETA / size)
-- 🔄 **Self-updating yt-dlp** — SHA-256-verified updates so extractors stay fresh
+## Install and verify
 
-## ⚠️ Please use responsibly
+See [installation instructions](docs/INSTALL.md) for the offline developer ZIP, source installation and signed ZXP distribution. A developer ZIP is unsigned; renaming a ZIP to `.zxp` does not sign it.
 
-MediaOtter is a download tool. Only download content you own or have permission to
-use, and respect each platform's terms of service and copyright.
-
-## 📦 Install (macOS first, Windows supported)
-
-```bash
-node scripts/download-binaries.js   # fetch pinned yt-dlp/ffmpeg/deno
-./scripts/install-mac.sh            # → ~/Library/Application Support/Adobe/CEP/extensions/MediaOtter
-defaults write com.adobe.CSXS.10 PlayerDebugMode 1   # one-time (unsigned panel)
+```sh
+npm run binaries
+npm run check
+npm run test:integration
+npm run install:mac
+npm run build:zxp
 ```
 
-Restart Premiere Pro / After Effects → **Window → Extensions → MediaOtter**.
+Node 14+ is required for contributor scripts, not for the packaged Mac installer. yt-dlp, FFmpeg, FFprobe and Deno are bundled. Do not run the website release installer until its corresponding release assets have been uploaded.
 
-Full build & platform notes: **[docs/INSTALL.md](docs/INSTALL.md)**
+## Verification status
 
-## 🔑 Credentials & privacy
+The repair was exercised on macOS Apple Silicon: real YouTube video and playlist search, autocomplete, continuation and metadata; generated local media downloaded through real yt-dlp; MP4/WAV conversion, section duration, VP9/Opus normalization, resolution limits and cancellation. Regression tests also check host import failures, duplicate import avoidance, unsaved projects and ExtendScript bridge failures using a host model.
 
-- Open-source users bring their **own free Google Cloud credentials** (5 min setup):
-  **[docs/CREDENTIALS.md](docs/CREDENTIALS.md)**
-- Nothing sensitive is ever committed: `credentials.json`, tokens and history are
-  gitignored or stored in `~/.mediaotter/` with 0600 permissions.
-- Packaged builds inject the maintainer's credentials **at build time via env vars**,
-  never from the repo.
+See [repair notes](docs/REPAIR-NOTES.md) for exact evidence and remaining host/distribution checks. Windows, Intel macOS and After Effects must be verified on their own devices. Website restrictions, DRM, expired URLs, unavailable formats and embedding-disabled videos can prevent access. Google sign-in and browser-cookie access require the user's own configuration and permissions.
 
-## 🧱 Architecture
+## Architecture and privacy
 
-```
-extension/
-├── CSXS/manifest.xml      # CEP 10, hosts: PPRO 14+ & AEFT 18+
-├── index.html             # panel UI (search / paste / preview / downloads / settings)
-├── css/main.css           # premium dark theme (light mode included)
-├── js/
-│   ├── app.js             # panel controller
-│   ├── csbridge.js        # CSInterface ↔ ExtendScript bridge
-│   ├── downloader.js      # yt-dlp engine: search, suggestions, metadata, download
-│   ├── quality.js         # format/compat planner (H.264 first, merge, transcode)
-│   ├── binary-manager.js  # bundled runtimes + SHA-256-verified yt-dlp auto-update
-│   ├── cookie-jar.js      # browser-session cookies for yt-dlp
-│   ├── auth.js            # Google OAuth (PKCE loopback — no client secret)
-│   ├── playlists.js       # YouTube Data API: playlists / likes
-│   ├── settings.js / history.js / logger.js / util.js
-├── jsx/hostscript.jsx     # ExtendScript: import into bin, add to timeline (PPRO+AEFT)
-└── lib/                   # CSInterface.js, bundled fonts (offline)
-scripts/
-├── download-binaries.js   # fetch + SHA-256-pin yt-dlp/ffmpeg/deno per platform
-├── build-zxp.js           # package dist/mediaotter-<ver>.zxp
-├── inject-credentials.js  # env → gitignored credentials.json (refuses placeholders)
-├── install-mac.sh         # dev install into the CEP extensions folder
-├── validate.js            # syntax + manifest + secret-scan gates
-└── engine-test.js         # live integration test (search→download→verify)
-```
+`app.js` controls the CEP HTML panel. `downloader.js` provides search and a bounded job queue. `quality.js` selects formats. `binary-manager.js` selects bundled runtimes and maintains a separate yt-dlp update. `util.js` manages processes and local files. `csbridge.js` calls `jsx/hostscript.jsx`, which imports actual files through the Premiere/After Effects scripting API.
 
-## 🧪 Status
+Downloads use isolated temporary directories. Completion requires a real file, positive duration, compatible codecs and valid section duration. Cancellation terminates the child process tree. The host bridge confirms its script is loaded and checks the imported project item.
 
-Engine proven live: search (scrape + continuation), suggestions, metadata,
-WAV audio download, MP4 video download, section-range trimming, and generic-site
-URLs all pass an end-to-end integration test.
+Search and media requests contact YouTube or the chosen source; update checks contact GitHub. No separate MediaOtter analytics service is used. Settings, history, recent searches, diagnostics and optional tokens are local. Never share account tokens, cookies, credentials or the full state folder with bug reports. [Credential setup](docs/CREDENTIALS.md).
 
-## 📄 License
+## Contributing
 
-[MIT](LICENSE) — use it, fork it, ship it.
+Run `npm run check` and the generated-media integration test before packaging. Use a disposable project for actual Premiere import checks. Host scripts must retain ExtendScript-compatible syntax. [Repair and release checklist](docs/REPAIR-NOTES.md).
+
+Only download content you own or are authorized to use. Respect the source's terms and applicable rights.
+
+[MIT license](LICENSE). Bundled tools retain their own licenses; see [third-party notices](docs/THIRD-PARTY.md).

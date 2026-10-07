@@ -69,7 +69,7 @@ function extractArchive(archivePath, destDir, kind) {
   }
   if (kind === "zip") {
     try {
-      return run("unzip", ["-o", "-q", archivePath, "-d", destDir]);
+      return run("unzip", ["-o", "-q", archivePath, "-d", destDir]).catch(function () { return run("python3", ["-m", "zipfile", "-e", archivePath, destDir]); });
     } catch (error) {
       // fallback: python zipfile (python3 commonly present on dev machines)
       return run("python3", ["-m", "zipfile", "-e", archivePath, destDir]);
@@ -83,8 +83,12 @@ function log(msg) {
 }
 
 function latestRelease(ownerRepo) {
-  return httpGet(GITHUB_API + "/" + ownerRepo + "/releases/latest", { headers: { Accept: "application/vnd.github+json" } }).then(function (res) {
+  return httpGet(GITHUB_API + "/" + ownerRepo + "/releases/latest", {headers:{Accept:"application/vnd.github+json"}}).then(function (res) {
     return JSON.parse(res.body.toString("utf8"));
+  }).catch(function (error) {
+    // Use the developer's authenticated GitHub CLI when anonymous API quota is exhausted.
+    var result = childProcess.spawnSync("gh", ["api", "repos/" + ownerRepo + "/releases/latest"], {encoding:"utf8", timeout:30000, maxBuffer:16*1024*1024});
+    if (result.status !== 0) { throw error; } return JSON.parse(result.stdout);
   });
 }
 
@@ -96,6 +100,7 @@ async function downloadTo(asset, destPath) {
   fs.mkdirSync(path.dirname(destPath), { recursive: true });
   log("  downloading " + asset.name + " (" + (asset.size / 1048576).toFixed(1) + " MB) → " + path.relative(ROOT, destPath));
   var res = await httpGet(asset.browser_download_url || asset.url);
+  if (asset.digest && asset.digest.indexOf("sha256:") === 0 && sha256(res.body) !== asset.digest.slice(7)) { throw new Error("Checksum mismatch: " + asset.name); }
   fs.writeFileSync(destPath, res.body);
   fs.chmodSync(destPath, 493); // 0755 — binaries must be executable
   return { sha256: sha256(res.body), size: res.body.length };
@@ -259,7 +264,7 @@ async function fetchPython(metadata, platformKeys) {
     }
     // Match by prefix (version may differ, e.g. cpython-3.13.14+20260623-...)
     var pattern = platformMap[key].replace("3.13.+", "3.13.");
-    var asset = (assets || []).filter(function (a) { return a.name.indexOf(pattern.slice(0, "cpython-3.13.".length)) === 0 && a.name.indexOf("aarch64-apple-darwin") !== -1; }).sort(function (a, b) { return b.name.localeCompare(a.name); })[0];
+    var asset = (assets || []).filter(function (a) { return a.name.indexOf(pattern.slice(0, "cpython-3.13.".length)) === 0 && a.name.indexOf(key === "darwin-x64" ? "x86_64-apple-darwin" : "aarch64-apple-darwin") !== -1; }).sort(function (a, b) { return b.name.localeCompare(a.name); })[0];
     if (!asset) {
       log("  ! missing python asset for " + key + " (skipping)");
       continue;

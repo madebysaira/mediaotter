@@ -14,7 +14,7 @@ var settingsCache = null;
 
 var DEFAULTS = {
   maxQualityHeight: 2160,       // 2160 | 1440 | 1080 | 720 | 480
-  allowEncoding: false,         // allow ffmpeg transcode to H.264 when needed
+  allowEncoding: true,         // allow ffmpeg transcode to H.264 when needed
   downloadLocation: "project",  // "project" | "custom"
   customPath: "",
   cookiesBrowser: "",           // chrome | edge | brave | firefox | ""

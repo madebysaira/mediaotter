@@ -647,3 +647,10 @@ html[data-theme="light"] .preview-header { background: rgba(255,255,255,0.92); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+.search-recommendations { padding: 4px 16px 12px; }
+.recommend-label { display:flex; justify-content:space-between; margin:12px 0 8px; font-size:11px; opacity:.7; letter-spacing:.04em; }
+.recommend-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.recommend-chip { background:rgba(128,128,128,.09); color:inherit; border:1px solid rgba(128,128,128,.22); border-radius:6px; padding:7px 9px; font:inherit; font-size:11px; text-align:left; cursor:pointer; }
+.recommend-chip:hover, .recommend-chip:focus-visible { border-color:#e7b56f; background:rgba(231,181,111,.12); }
+.dl-metrics { flex-wrap:wrap; overflow-wrap:anywhere; }

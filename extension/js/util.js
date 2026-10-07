@@ -2,7 +2,7 @@
 
 /**
  * MediaOtter — shared platform utilities.
- * Must run inside CEP 10 (Chromium 88 / Node 12.14) AND modern Node (testing).
+ * Must run inside Premiere's CEP Node runtime AND modern Node (testing).
  * Rules: ES2017 only — no optional chaining, no nullish coalescing, no fetch().
  */
 
@@ -33,6 +33,7 @@ function getLayoutKey() {
 }
 
 function getStateDir() {
+  if (process.env.MEDIAOTTER_STATE_DIR) { fs.mkdirSync(process.env.MEDIAOTTER_STATE_DIR, {recursive:true}); return process.env.MEDIAOTTER_STATE_DIR; }
   var base;
   if (getPlatform() === "darwin") {
     base = path.join(os.homedir(), "Library", "Application Support", "MediaOtter");
@@ -62,6 +63,23 @@ function getLogsDir() {
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
   return dir;
+}
+
+function readJson(file, fallback) { try { return JSON.parse(fs.readFileSync(file, "utf8")); } catch (error) { return fallback; } }
+function writeJson(file, value) {
+  fs.mkdirSync(path.dirname(file), {recursive:true});
+  var temp = file + "." + crypto.randomBytes(4).toString("hex") + ".tmp";
+  try { fs.writeFileSync(temp, JSON.stringify(value, null, 2) + "\n", {mode:384}); fs.renameSync(temp, file); fs.chmodSync(file, 384); }
+  finally { try { if (fs.existsSync(temp)) { fs.unlinkSync(temp); } } catch (error) {} }
+}
+
+function removeDir(dir) {
+  if (!fs.existsSync(dir)) { return; }
+  fs.readdirSync(dir).forEach(function (name) {
+    var file = path.join(dir, name);
+    if (fs.lstatSync(file).isDirectory()) { removeDir(file); } else { fs.unlinkSync(file); }
+  });
+  fs.rmdirSync(dir);
 }
 
 function clampInteger(value, fallback, min, max) {
@@ -121,6 +139,7 @@ function sha256OfBuffer(buffer) {
 
 function isExecutable(filePath) {
   try {
+    if (!fs.statSync(filePath).isFile()) { return false; }
     fs.accessSync(filePath, fs.constants.X_OK);
     return true;
   } catch (error) {
@@ -141,7 +160,7 @@ function httpGet(url, options) {
     var request;
 
     function cleanup() {
-      request.removeAllListeners();
+      request.setTimeout(0);
     }
 
     request = transport.get(url, {
@@ -217,76 +236,60 @@ function httpGet(url, options) {
  * Resolves { code, stdout, stderr } or rejects on spawn error.
  */
 function spawnProcess(executable, args, options) {
-  var settings = Object.assign({}, options || {});
-  var child = null;
-  var settled = false;
-  var stdoutChunks = [];
-  var stderrChunks = [];
-
-  function settle(result) {
-    if (settled) {
-      return;
+  var settings = options || {};
+  var child, timer, settled = false, cancelled = false, timedOut = false;
+  var stdout = "", stderr = "";
+  var StringDecoder = require("string_decoder").StringDecoder;
+  var outDecoder = new StringDecoder("utf8"), errDecoder = new StringDecoder("utf8");
+  var outLine = "", errLine = "";
+  function append(text, stream) {
+    if (stream === "stdout") {
+      stdout = (stdout + text).slice(-(settings.maxOutputBytes || 8 * 1024 * 1024));
+      if (settings.onStdout) { settings.onStdout(text); }
+      outLine += text;
+    } else {
+      stderr = (stderr + text).slice(-(settings.maxOutputBytes || 8 * 1024 * 1024));
+      if (settings.onStderr) { settings.onStderr(text); }
+      errLine += text;
     }
-    settled = true;
-    try {
-      child && child.removeAllListeners();
-    } catch (error) {
-      /* ignore */
-    }
-    if (result.error) {
-      settings.onError && settings.onError(result.error);
-    } else if (settings.onExit) {
-      settings.onExit(result);
-    }
+    var buffer = stream === "stdout" ? outLine : errLine;
+    var lines = buffer.split(/\r?\n/);
+    var rest = lines.pop();
+    var callback = stream === "stdout" ? settings.onStdoutLine : settings.onStderrLine;
+    if (callback) { lines.forEach(callback); }
+    if (stream === "stdout") { outLine = rest; } else { errLine = rest; }
   }
-
-  var promise = new Promise(function (resolve, reject) {
-    child = childProcess.spawn(executable, args || [], {
-      cwd: settings.cwd,
-      env: settings.env || process.env
-    });
-
-    child.stdout.on("data", function (chunk) {
-      stdoutChunks.push(chunk);
-      settings.onStdout && settings.onStdout(chunk.toString("utf8"));
-    });
-
-    child.stderr.on("data", function (chunk) {
-      stderrChunks.push(chunk);
-      settings.onStderr && settings.onStderr(chunk.toString("utf8"));
-    });
-
-    child.on("error", function (error) {
-      if (settled) {
-        return;
-      }
-      settled = true;
-      reject({ error: error, stdout: Buffer.concat(stdoutChunks).toString("utf8"), stderr: Buffer.concat(stderrChunks).toString("utf8"), code: null });
-      settings.onError && settings.onError(error);
-    });
-
-    child.on("close", function (code) {
-      if (settled) {
-        return;
-      }
-      settled = true;
-      var result = { code: code, stdout: Buffer.concat(stdoutChunks).toString("utf8"), stderr: Buffer.concat(stderrChunks).toString("utf8") };
-      settings.onExit && settings.onExit(result);
-      resolve(result);
-    });
-  });
-
-  promise.cancel = function (signal) {
-    if (!child || settled) {
-      return;
-    }
+  function stop() {
+    if (!child || settled) { return; }
     try {
-      child.kill(signal || "SIGKILL");
-    } catch (error) {
-      /* ignore */
-    }
-  };
-
+      if (process.platform !== "win32") { process.kill(-child.pid, "SIGKILL"); }
+      else { childProcess.spawn("taskkill", ["/PID", String(child.pid), "/T", "/F"], {windowsHide: true}); }
+    } catch (error) { try { child.kill("SIGKILL"); } catch (ignored) {} }
+  }
+  var promise = new Promise(function (resolve, reject) {
+    try {
+      child = childProcess.spawn(executable, args || [], {
+        cwd: settings.cwd, env: settings.env || process.env,
+        detached: process.platform !== "win32", windowsHide: true
+      });
+    } catch (error) { if (settings.onError) { settings.onError(error); } reject(error); return; }
+    child.stdout.on("data", function (chunk) { append(outDecoder.write(chunk), "stdout"); });
+    child.stderr.on("data", function (chunk) { append(errDecoder.write(chunk), "stderr"); });
+    child.on("error", function (error) {
+      if (settled) { return; } settled = true; clearTimeout(timer);
+      if (settings.onError) { settings.onError(error); } reject(error);
+    });
+    child.on("close", function (code) {
+      if (settled) { return; } settled = true; clearTimeout(timer);
+      append(outDecoder.end(), "stdout"); append(errDecoder.end(), "stderr");
+      if (outLine && settings.onStdoutLine) { settings.onStdoutLine(outLine); }
+      if (errLine && settings.onStderrLine) { settings.onStderrLine(errLine); }
+      var result = {code: code, stdout: stdout, stderr: stderr, cancelled: cancelled, timedOut: timedOut};
+      if (settings.onExit) { settings.onExit(result); } resolve(result);
+    });
+    if (settings.timeoutMs) { timer = setTimeout(function () { timedOut = true; stop(); }, settings.timeoutMs); }
+  });
+  promise.cancel = function () { cancelled = true; stop(); };
   return promise;
 }
 
@@ -376,6 +379,9 @@ function formatSpeed(bytesPerSecond) {
 }
 
 module.exports = {
+  removeDir: removeDir,
+  readJson: readJson,
+  writeJson: writeJson,
   getPlatform: getPlatform,
   getArch: getArch,
   getLayoutKey: getLayoutKey,
