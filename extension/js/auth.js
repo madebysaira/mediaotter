@@ -233,24 +233,13 @@ function fetchUserInfoRequest(token, timeoutMs) {
 
 // Open URL in system browser detached
 function openBrowser(url) {
-  var plat = process.platform;
-  var cmd;
-  if (plat === "darwin") {
-    cmd = 'open "' + url.replace(/"/g, '\\"') + '"';
-  } else if (plat === "win32") {
-    cmd = 'cmd.exe /c start "" "' + url.replace(/"/g, '\\"') + '"';
-  } else {
-    cmd = 'xdg-open "' + url.replace(/"/g, '\\"') + '"';
-  }
-  try {
-    childProcess.exec(cmd, function () {});
-  } catch (error) {
-    // ignore — browser open is best-effort
-  }
+  if (process.platform === "darwin") { childProcess.execFile("open", [url], function () {}); }
+  else if (process.platform === "win32") { childProcess.execFile("rundll32.exe", ["url.dll,FileProtocolHandler", url], function () {}); }
+  else { childProcess.execFile("xdg-open", [url], function () {}); }
 }
 
 // Wait for OAuth redirect on 127.0.0.1:8787
-function waitForCode(expectedState, timeoutMs) {
+function waitForCode(expectedState, timeoutMs, onReady) {
   return new Promise(function (resolve, reject) {
     var server = null;
     var timer = null;
@@ -276,7 +265,7 @@ function waitForCode(expectedState, timeoutMs) {
           res.end("Not found");
           return;
         }
-        if (query.error) {
+        if (query.error && query.state === expectedState) {
           res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
           res.end('<html><body><h1>Sign-in failed</h1><p>' + String(query.error).replace(/</g, "&lt;") + '</p></body></html>');
           if (!finished) {
@@ -319,7 +308,7 @@ function waitForCode(expectedState, timeoutMs) {
       }
     });
 
-    server.listen(8787, "127.0.0.1", function () {});
+    server.listen(8787, "127.0.0.1", function () { if (onReady) { onReady(); } });
 
     timer = setTimeout(function () {
       if (!finished) {
@@ -461,11 +450,9 @@ async function signIn() {
       "&code_challenge_method=S256" +
       "&state=" + encodeURIComponent(state);
 
-    openBrowser(authorizeUrl);
-
     var code;
     try {
-      code = await waitForCode(state, 60000);
+      code = await waitForCode(state, 60000, function () { openBrowser(authorizeUrl); });
     } catch (error) {
       var msg = error && error.message ? error.message : "Sign-in failed";
       if (msg === "access_denied") {

@@ -21,3 +21,8 @@ Thumbs.db
 .cache/
 landing/screenshots/src/
 .pkg/
+
+extension/build-info.json
+*.p12
+*.pfx
+test-artifacts/

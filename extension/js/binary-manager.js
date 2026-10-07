@@ -187,13 +187,13 @@ function getJsRuntimeArgs() {
   if (util.isExecutable(denoPath)) {
     candidates.push("deno:" + denoPath);
   }
-  var nodePath = process.execPath; // CEP embeds Node; modern Node on dev machines
-  if (nodePath && nodePath.indexOf("node") !== -1 && util.isExecutable(nodePath)) {
+  var nodePath = process.execPath;
+  // yt-dlp requires Node 22+; Premiere's embedded Node cannot solve JS challenges.
+  if (Number(process.versions.node.split(".")[0]) >= 22 && nodePath && nodePath.indexOf("node") !== -1 && util.isExecutable(nodePath)) {
     candidates.push("node:" + nodePath);
   }
   if (candidates.length) {
-    args.push("--js-runtimes");
-    args.push(candidates.join(","));
+    candidates.forEach(function (candidate) { args.push("--js-runtimes", candidate); });
   }
   return args;
 }
@@ -304,7 +304,7 @@ function isManagedUsable(state) {
     return false;
   }
   if (util.getPlatform() === "darwin") {
-    return getPythonRuntime().ready;
+    return isStandaloneYtDlp(managedPath) || getPythonRuntime().ready;
   }
   return true;
 }
@@ -343,7 +343,7 @@ function reportSpawnSuccess(binaryPath) {
 }
 
 function downloadFile(url, destPath) {
-  return util.httpGet(url, { timeoutMs: 120000 }).then(function (result) {
+  return util.httpGet(url, { timeoutMs: 120000, maxBytes: 256 * 1024 * 1024 }).then(function (result) {
     fs.mkdirSync(path.dirname(destPath), { recursive: true });
     fs.writeFileSync(destPath, result.buffer, { mode: 493 }); // 0755
     return destPath;
@@ -441,7 +441,7 @@ function maybeAutoUpdateYtDlp(force) {
   }
 
   updateCheckPromise = fetchLatestYtDlpRelease().then(function (releaseInfo) {
-    if (util.compareVersions(releaseInfo.tagName, getBundledVersion()) <= 0 && util.compareVersions(releaseInfo.tagName, state.managedVersion) <= 0) {
+    if (util.compareVersions(releaseInfo.tagName, getActiveVersion()) <= 0) {
       state.lastCheckedAt = new Date().toISOString();
       persistManagedState(state);
       return Object.assign({}, state);
@@ -451,23 +451,18 @@ function maybeAutoUpdateYtDlp(force) {
     state.lastCheckedAt = new Date().toISOString();
     persistManagedState(state);
     logger.warn("binary", "ytdlp_update_failed", { message: error.message });
+    if (force) { throw error; }
     return Object.assign({}, state);
   }).then(function (result) {
     updateCheckPromise = null;
     return result;
-  });
+  }, function (error) { updateCheckPromise = null; throw error; });
 
   return updateCheckPromise;
 }
 
 function getActiveVersion() {
-  var state = readManagedState();
-  var bundled = getBundledVersion();
-  if (state.managedVersion && state.updateSource === "managed" &&
-      util.compareVersions(state.managedVersion, bundled) > 0 && isManagedUsable(state)) {
-    return state.managedVersion;
-  }
-  return bundled;
+  return getYtDlpCommand().version;
 }
 
 /** Force an immediate update check. @returns Promise<{updated, version}> */
@@ -484,7 +479,8 @@ function checkForUpdates() {
 
 /** Respect the check throttle (used at panel boot). @returns Promise<{updated, version}> */
 function autoCheckForUpdates() {
-  return checkForUpdates();
+  var before = getActiveVersion();
+  return maybeAutoUpdateYtDlp(false).then(function () { var after = getActiveVersion(); return {updated:after !== before,version:after}; });
 }
 
 module.exports = {

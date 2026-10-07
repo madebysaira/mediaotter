@@ -31,7 +31,7 @@ console.log("MediaOtter validation\n");
 // 1. Syntax
 console.log("[1/4] JavaScript syntax");
 var jsFiles = [];
-[path.join(ROOT, "extension", "js"), path.join(ROOT, "scripts")].forEach(function (dir) {
+[path.join(ROOT, "extension", "js"), path.join(ROOT, "scripts"), path.join(ROOT, "tests")].forEach(function (dir) {
   if (!fs.existsSync(dir)) { return; }
   fs.readdirSync(dir).forEach(function (name) {
     if (name.endsWith(".js")) { jsFiles.push(path.join(dir, name)); }

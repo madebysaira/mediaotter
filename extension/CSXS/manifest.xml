@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <ExtensionManifest Version="10.0"
                    ExtensionBundleId="com.mediaotter"
-                   ExtensionBundleVersion="1.0.0"
+                   ExtensionBundleVersion="1.1.0"
                    ExtensionBundleName="MediaOtter">
   <ExtensionList>
-    <Extension Id="com.mediaotter.panel" Version="1.0.0"/>
+    <Extension Id="com.mediaotter.panel" Version="1.1.0"/>
   </ExtensionList>
   <ExecutionEnvironment>
     <HostList>
-      <Host Name="PPRO" Version="[14.0,99.9]"/>
+      <Host Name="PPRO" Version="[14.4,99.9]"/>
       <Host Name="AEFT" Version="[18.0,99.9]"/>
     </HostList>
     <LocaleList>

@@ -6,40 +6,25 @@
  */
 
 var fs, path, util, logger, settings, historyStore, downloader, quality, binaryManager, cookieJar, csbridge, auth, playlists;
+var extensionRoot = "";
 try {
+  if (typeof require === "undefined" || typeof process === "undefined") { throw new Error("Adobe CEP's Node runtime is unavailable"); }
+  extensionRoot = decodeURIComponent(window.location.pathname);
+  if (process.platform === "win32" && extensionRoot.charAt(0) === "/") { extensionRoot = extensionRoot.slice(1); }
+  path = require("path"); extensionRoot = path.dirname(extensionRoot);
   fs = require("fs");
-  path = require("path");
-  util = require("./util.js");
-  logger = require("./logger.js");
-  settings = require("./settings.js");
-  historyStore = require("./history.js");
-  downloader = require("./downloader.js");
-  quality = require("./quality.js");
-  binaryManager = require("./binary-manager.js");
-  cookieJar = require("./cookie-jar.js");
-  csbridge = require("./csbridge.js");
-  auth = require("./auth.js");
-  playlists = require("./playlists.js");
-} catch (e) {
-  // Browser preview mode (no Node / plain http) — stub so UI still wires for verification
-  var _noop = function(){};
-  fs = { readFileSync:function(){return "{}";}, writeFileSync:_noop, mkdirSync:_noop, existsSync:function(){return false;}, statSync:function(){return {size:0};}, unlinkSync:_noop, accessSync:function(){throw new Error("no fs");}, chmodSync:_noop, appendFileSync:_noop, readdirSync:function(){return [];}, renameSync:_noop };
-  path = { join:function(){ return Array.prototype.slice.call(arguments).join("/"); }, dirname:function(p){ return p.split("/").slice(0,-1).join("/")||"."; }, basename:function(p){ return p.split("/").pop(); } };
-  util = { getStateDir:function(){return "/tmp";}, getLogsDir:function(){return "/tmp";}, httpGet:function(){return Promise.reject(new Error("no http"));}, spawnProcess:function(){return Promise.reject(new Error("no spawn"));}, parseJsonTolerant:function(){return null;}, decodeCompressedBody:function(b){return b.toString();}, formatCount:function(v){return String(v);}, formatDuration:function(){return "";}, getPlatform:function(){return "darwin";}, getArch:function(){return "x64";}, formatBytes:function(v){return v+" B";}, readJson:function(){return null;}, writeJson:_noop };
-  logger = { info:_noop, warn:_noop, error:_noop, getLogFilePath:function(){return "/tmp/mediaotter.log";} };
-  settings = { read:function(){return { maxQualityHeight:1080, allowEncoding:false, downloadLocation:"project", customPath:"", cookiesBrowser:"", theme:"dark", pausePreviewWhenHidden:false, autoCheckUpdates:false, historyLimit:200 };}, write:function(p){return settings.read();}, DEFAULTS:{} };
-  historyStore = { read:function(){return [];}, add:_noop, remove:_noop, clear:_noop, findByPath:function(){return []; } };
-  downloader = { on:_noop, searchYouTube:function(){return Promise.resolve({items:[], continuationToken:""});}, loadMoreResults:function(){return Promise.resolve({items:[], continuationToken:""});}, fetchSuggestions:function(){return Promise.resolve([]);}, resolveMetadata:function(){return Promise.reject(new Error("no metadata in preview"));}, classifyUrl:function(u){return "generic";}, fetchPlaylistEntries:function(){return Promise.resolve({entries:[]});}, enqueueDownload:function(r){return {id:"preview", stage:"queued", title:r.url};}, cancelDownload:_noop, getActiveDownloads:function(){return [];}, mapYtDlpError:function(m){return m;} };
-  quality = { planVideoCandidates:function(){return [];}, estimateAudioSize:function(){return null;}, getAudioSelector:function(){return "bestaudio";}, getFormatSortArgs:function(){return [];}, QUALITY_CAPS:[] };
-  binaryManager = { getRuntimeStatus:function(){return { ytDlpReady:true, ffmpegReady:true, ytDlpVersion:"preview", ffmpegDir:"", jsRuntimeArgs:[], ffmpegPath:"" };}, getYtDlpCommand:function(){return {executable:"", argsPrefix:[], path:"", pythonKind:"", error:""};}, checkForUpdates:function(){return Promise.resolve({updated:false, version:"preview"});}, autoCheckForUpdates:function(){return Promise.resolve({});}, getFfmpegPath:function(){return "";}, reportSpawnSuccess:_noop, reportSpawnFailure:_noop };
-  cookieJar = { probeBrowser:function(){return Promise.resolve({ok:false});}, getSupportedBrowsers:function(){return []; } };
-  csbridge = { isCEP:function(){return false;}, getHostName:function(){return "dev";}, getHostVersion:function(){return "";}, evalScript:function(){return Promise.resolve({ok:false});}, ensureHostScript:function(){return Promise.resolve({ok:false});}, resolveDownloadRoot:function(){return Promise.resolve({ok:true, path:"/tmp"});}, importIntoHost:function(){return Promise.resolve({ok:false});}, revealInFinder:function(){return Promise.resolve();}, openExternalUrl:function(u){ try{ window.open(u,"_blank"); }catch(e){} return Promise.resolve(); } };
-  auth = { isConfigured:function(){return false;}, isSignedIn:function(){return false;}, getUserInfo:function(){return Promise.resolve(null);}, signIn:function(){return Promise.resolve({ok:false});}, signOut:function(){return Promise.resolve();}, getAccessToken:function(){return Promise.resolve(null);} };
-  playlists = { listMyPlaylists:function(){return Promise.resolve([]);}, getLikedVideos:function(){return Promise.resolve([]);}, getPlaylistItems:function(){return Promise.resolve([]);} };
+  function load(name) { return require(path.join(extensionRoot, "js", name + ".js")); }
+  util = load("util"); logger = load("logger"); settings = load("settings");
+  historyStore = load("history"); downloader = load("downloader"); quality = load("quality");
+  binaryManager = load("binary-manager"); cookieJar = load("cookie-jar"); csbridge = load("csbridge");
+  auth = load("auth"); playlists = load("playlists");
+} catch (error) {
+  document.body.textContent = "MediaOtter could not start: " + error.message + ". Open this panel inside Premiere Pro or After Effects, and check the installed build.";
+  throw error;
 }
 
-var VERSION = "1.0.0";
-var REPO_URL = "https://github.com/mediaotter/mediaotter";
+var VERSION = "1.1.0";
+var REPO_URL = "https://github.com/madebysaira/mediaotter";
 
 var state = {
   screen: "search",
@@ -167,7 +152,7 @@ function updateEngineDot() {
   if (!dot) { return; }
   try {
     var runtime = binaryManager.getRuntimeStatus ? binaryManager.getRuntimeStatus() : {};
-    if (runtime.ytDlpReady === false || runtime.ffmpegReady === false) {
+    if (!runtime.ytDlpReady || !runtime.ffmpegReady || !runtime.ffprobeReady || !runtime.denoReady) {
       dot.className = "engine-dot warn";
       dot.title = runtime.ytDlpError || "Engine not ready";
     } else if (runtime.ytDlpReady) {
@@ -212,7 +197,7 @@ function wireSearch() {
   });
 
   els.searchInput.addEventListener("keydown", function (event) {
-    var items = document.querySelectorAll(".suggest-item");
+    var items = els.suggestBox.classList.contains("hidden") ? [] : document.querySelectorAll(".suggest-item");
     if (items.length) {
       if (event.key === "ArrowDown") {
         event.preventDefault();
@@ -263,9 +248,24 @@ function markSuggestion(items) {
   });
 }
 
+var recentSearchPath = path.join(util.getStateDir(), "searches.json");
+var searchRequest = 0, previewRequest = 0;
+function recentSearches() { var saved = util.readJson(recentSearchPath, []); return (Array.isArray(saved) ? saved : []).filter(function (q) { return typeof q === "string"; }).slice(0, 6); }
+function rememberSearch(query) { util.writeJson(recentSearchPath, [query].concat(recentSearches().filter(function (q) { return q !== query; })).slice(0, 6)); }
+function renderRecommendations() {
+  var box = $("search-recommendations");
+  if (!box) { return; }
+  var recent = recentSearches();
+  var ideas = ["cinematic b roll", "ocean ambience", "film grain overlay", "transition sound effects"];
+  box.innerHTML = (recent.length ? '<div class="recommend-label">Recent searches <button id="clear-searches" class="text-btn">Clear</button></div><div class="recommend-chips">' + recent.map(function (q) { return '<button class="recommend-chip" data-query="' + escapeHtml(q) + '">' + escapeHtml(q) + '</button>'; }).join("") + '</div>' : '') +
+    '<div class="recommend-label">Start exploring</div><div class="recommend-chips">' + ideas.map(function (q) { return '<button class="recommend-chip" data-query="' + escapeHtml(q) + '">' + escapeHtml(q) + '</button>'; }).join("") + '</div>';
+  box.querySelectorAll("[data-query]").forEach(function (button) { button.addEventListener("click", function () { els.searchInput.value = button.dataset.query; runSearch(); }); });
+  if ($("clear-searches")) { $("clear-searches").addEventListener("click", function () { util.writeJson(recentSearchPath, []); renderRecommendations(); }); }
+}
+
 function fetchSuggestions(query) {
   downloader.fetchSuggestions(query).then(function (suggestions) {
-    if (document.activeElement !== els.searchInput) { return; }
+    if (document.activeElement !== els.searchInput || els.searchInput.value.trim() !== query) { return; }
     state.suggestIndex = -1;
     if (!suggestions.length) { hideSuggestions(); return; }
     els.suggestBox.innerHTML = suggestions.map(function (suggestion) {
@@ -291,15 +291,22 @@ function hideSuggestions() {
 function runSearch() {
   var query = els.searchInput.value.trim();
   if (!query) { return; }
+  var request = ++searchRequest;
+  rememberSearch(query); renderRecommendations();
   state.searchQuery = query;
   state.searchFilter = document.querySelector(".filter-chip.active").dataset.filter;
   state.searching = true;
+  state.loadingMore = false;
+  els.btnMore.disabled = false;
+  els.btnMore.innerHTML = '<i class="fa-solid fa-angles-down"></i> Load more';
   state.searchItems = [];
   state.continuationToken = "";
+  els.resultsMore.classList.add("hidden");
   renderResults([]);
   setStatus('Searching for "' + query + '"…');
 
   downloader.searchYouTube(query, state.searchFilter).then(function (result) {
+    if (request !== searchRequest) { return; }
     state.searching = false;
     state.searchItems = result.items;
     state.continuationToken = result.continuationToken || "";
@@ -307,10 +314,11 @@ function runSearch() {
     setStatus(result.items.length ? result.items.length + " results for \"" + query + "\"" : "No results for \"" + query + "\"");
     els.resultsMore.classList.toggle("hidden", !state.continuationToken);
   }).catch(function (error) {
+    if (request !== searchRequest) { return; }
     state.searching = false;
     renderResults([]);
     setStatus("");
-    toast("Search failed: " + error.message, "err");
+    if (request === searchRequest) { toast("Search failed: " + error.message, "err"); }
   });
 }
 
@@ -319,16 +327,20 @@ function loadMore() {
   state.loadingMore = true;
   els.btnMore.disabled = true;
   els.btnMore.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading…';
+  var request = searchRequest;
   downloader.loadMoreResults(state.continuationToken, { query: state.searchQuery, filter: state.searchFilter }).then(function (result) {
+    if (request !== searchRequest) { return; }
     state.loadingMore = false;
     els.btnMore.disabled = false;
     els.btnMore.innerHTML = '<i class="fa-solid fa-angles-down"></i> Load more';
-    state.searchItems = state.searchItems.concat(result.items);
+    var existing = {}; state.searchItems.forEach(function (item) { existing[item.id] = true; });
+    state.searchItems = state.searchItems.concat(result.items.filter(function (item) { return !existing[item.id]; }));
     state.continuationToken = result.continuationToken || "";
     renderResults(state.searchItems);
     els.resultsMore.classList.toggle("hidden", !state.continuationToken);
     setStatus(state.searchItems.length + " results");
   }).catch(function (error) {
+    if (request !== searchRequest) { return; }
     state.loadingMore = false;
     els.btnMore.disabled = false;
     els.btnMore.innerHTML = '<i class="fa-solid fa-angles-down"></i> Load more';
@@ -379,9 +391,9 @@ function fetchPasted() {
   els.pasteGo.disabled = true;
   els.pasteGo.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
-  downloader.classifyUrl(url).then(function (kind) {
-    if (kind === "playlist") {
-      return downloader.fetchPlaylistEntries(url, {}).then(function (result) {
+  Promise.resolve(downloader.classifyUrl(url)).then(function (kind) {
+    if (kind === "youtube_playlist") {
+      return downloader.fetchPlaylistEntries(url, settings.read()).then(function (result) {
         setStatus("");
         els.pasteGo.disabled = false;
         els.pasteGo.innerHTML = "Fetch";
@@ -389,7 +401,7 @@ function fetchPasted() {
         state.pastePlaylist = result;
       });
     }
-    return downloader.resolveMetadata(url, {}).then(function (meta) {
+    return downloader.resolveMetadata(url, settings.read()).then(function (meta) {
       setStatus("");
       els.pasteGo.disabled = false;
       els.pasteGo.innerHTML = "Fetch";
@@ -415,8 +427,10 @@ function normalizeUrl(text) {
 }
 
 function renderPlaylistEntries(result) {
+  searchRequest++; state.continuationToken = ""; state.loadingMore = false;
+  els.resultsMore.classList.add("hidden");
   showScreen("search");
-  setStatus("");
+  setStatus(result.entries.length + " playlist items");
   els.results.innerHTML = result.entries.map(function (item, index) {
     var thumb = item.thumbnail || "";
     return '<div class="result-card" data-idx="' + index + '" data-kind="video">' +
@@ -433,7 +447,7 @@ function renderPlaylistEntries(result) {
   els.results.querySelectorAll(".result-card").forEach(function (card) {
     card.addEventListener("click", function () {
       var entry = result.entries[Number(card.dataset.idx)];
-      if (entry) { downloader.resolveMetadata(entry.url).then(function (meta) { openPreviewById(entry.id, "video", meta); }); }
+      if (entry) { loadEntryPreview(entry); }
     });
   });
 }
@@ -447,12 +461,18 @@ function openPreview(id, kind) {
     openPlaylistById(item.id, item);
     return;
   }
+  loadEntryPreview(item);
+}
+
+function loadEntryPreview(item) {
+  var request = ++previewRequest;
+  toast("Loading media details…", "info");
   var watchUrl = "https://www.youtube.com/watch?v=" + item.id;
   if (item.url) { /* keep */ }
-  downloader.resolveMetadata(item.url || watchUrl, {}).then(function (meta) {
-    openPreviewById(item.id, "video", meta);
+  downloader.resolveMetadata(item.url || watchUrl, settings.read()).then(function (meta) {
+    if (request === previewRequest) { openPreviewById(item.id, "video", meta); }
   }).catch(function (error) {
-    toast("Could not load preview: " + error.message, "err");
+    if (request === previewRequest) { toast("Could not load preview: " + error.message, "err"); }
   });
 }
 
@@ -471,7 +491,10 @@ function openPreviewById(id, kind, meta) {
   els.previewStats.textContent = [duration, views].filter(Boolean).join(" · ");
   els.previewAvatar.textContent = (channel || "?").trim().charAt(0).toUpperCase();
   els.previewDesc.textContent = description.slice(0, 600);
-  els.previewFrame.src = "https://www.youtube.com/embed/" + id + "?autoplay=1&rel=0&modestbranding=1";
+  var isYouTube = downloader.classifyUrl(state.selectedUrl) === "youtube_video" && /^[A-Za-z0-9_-]{11}$/.test(id);
+  els.previewFrame.classList.toggle("hidden", !isYouTube);
+  els.previewFrame.src = isYouTube ? "https://www.youtube.com/embed/" + id + "?autoplay=1&rel=0" : "about:blank";
+  $("external-preview").classList.toggle("hidden", isYouTube);
   // preview-open is now a button; handle click via handler bound once in bindNavigation
   els.previewOpen.dataset.url = state.selectedUrl;
   els.previewOpen.title = state.selectedUrl;
@@ -500,7 +523,7 @@ function openPreviewById(id, kind, meta) {
       html += '<div class="qrow">' +
         '<div class="q-main"><div class="q-name">' + candidate.label + "</div>" +
         '<div class="q-sub">' + sub + badges.join("") + "</div></div>" +
-        '<button class="q-dl" data-dl="video" data-selector="' + escapeHtml(candidate.selector) + '" data-transcode="' + (candidate.requiresTranscode ? "1" : "0") + '" title="Download video"><i class="fa-solid fa-download"></i></button></div>';
+        '<button class="q-dl" data-dl="video" data-height="' + (candidate.height || candidate.capHeight) + '" data-selector="' + escapeHtml(candidate.selector) + '" data-transcode="' + (candidate.requiresTranscode ? "1" : "0") + '" title="Download video"><i class="fa-solid fa-download"></i></button></div>';
     });
   }
 
@@ -509,7 +532,7 @@ function openPreviewById(id, kind, meta) {
     button.addEventListener("click", function () {
       var range = getRange();
       if (range && range.invalid) {
-        toast("Range: use minutes:seconds, e.g. 1:30 – 2:45", "err");
+        toast("Use a valid range within the media duration, e.g. 1:30 – 2:45", "err");
         return;
       }
       startDownload({
@@ -517,6 +540,7 @@ function openPreviewById(id, kind, meta) {
         kind: button.dataset.dl,
         selector: button.dataset.selector,
         transcode: button.dataset.transcode === "1",
+        maxHeight: Number(button.dataset.height) || null,
         range: range && range.ok ? range : null,
         meta: state.selectedMeta
       });
@@ -534,7 +558,7 @@ function getRange() {
   var endSec = end ? parseTimeToSeconds(end) : NaN;
   if (isNaN(startSec) || (end && isNaN(endSec))) { return { invalid: true }; }
   if (!end && start) { return { invalid: true }; }
-  if (endSec <= startSec) { return { invalid: true }; }
+  if (endSec <= startSec || startSec < 0 || (state.selectedMeta && state.selectedMeta.duration && endSec > state.selectedMeta.duration)) { return { invalid: true }; }
   return { ok: true, start: startSec, end: endSec };
 }
 
@@ -548,7 +572,7 @@ function startDownload(options) {
   } else {
     rootPromise = csbridge.resolveDownloadRoot("").then(function (result) {
       if (result.ok && !result.path && csbridge.isCEP()) {
-        return { ok: false, error: "Open a project first — MediaOtter saves downloads into your project folder." };
+        return { ok: true, path: path.join(util.getStateDir(), "downloads") };
       }
       if (result.ok && !result.path && !csbridge.isCEP()) {
         return { ok: true, path: util.getStateDir() + "/downloads" };
@@ -566,7 +590,7 @@ function startDownload(options) {
       transcode: options.transcode,
       range: options.range,
       destDir: root.path,
-      settings: settings.read(),
+      settings: Object.assign({}, settings.read(), options.maxHeight ? { maxQualityHeight: Math.min(current.maxQualityHeight, options.maxHeight) } : {}),
       meta: options.meta
     });
     toast(options.kind === "audio" ? "Downloading audio…" : "Downloading video…", "info");
@@ -608,7 +632,7 @@ function renderActiveDownloads() {
         '<button class="btn sm primary" data-import="' + id + '"><i class="fa-solid fa-box-archive"></i> Import to project</button>' +
         '<button class="btn sm" data-reveal="' + id + '"><i class="fa-solid fa-folder-open"></i> Show in Finder</button>' +
         "</div>";
-    } else if (record.stage === "running" || record.stage === "merging") {
+    } else if (!/^(done|error|cancelled|cancelling)$/.test(record.stage)) {
       actions = '<button class="dl-cancel" data-cancel="' + id + '" title="Cancel"><i class="fa-solid fa-xmark"></i></button>';
     }
     return '<div class="dl-card" data-id="' + id + '">' +
@@ -620,7 +644,7 @@ function renderActiveDownloads() {
       "</div>" +
       (record.stage !== "done" && record.stage !== "error" && record.stage !== "cancelled"
         ? '<div class="progress-track"><div class="progress-fill ' + stageClass + '" style="width:' + percent + '%"></div></div>' : "") +
-      '<div class="dl-metrics">' + metrics + "</div>" +
+      '<div class="dl-metrics">' + '<span>' + escapeHtml(record.stage + (record.importStatus ? ' · ' + record.importStatus : '')) + '</span> ' + metrics + "</div>" +
     "</div>";
   }).join("");
 
@@ -640,6 +664,7 @@ function importRecord(id) {
   var record = state.activeDownloads[id];
   if (!record || !record.finalPath) { return; }
   csbridge.importIntoHost(record.finalPath, { addToTimeline: false }).then(function (result) {
+    record.importStatus = result.ok ? "Imported into project" : "Import failed: " + result.error; renderActiveDownloads();
     if (result.ok) { toast("Imported into your project ✓", "ok"); }
     else { toast("Import failed: " + result.error, "err"); }
   });
@@ -686,7 +711,7 @@ function renderHistory() {
   els.historyList.querySelectorAll(".history-item").forEach(function (item) {
     item.addEventListener("dragstart", function (event) {
       event.dataTransfer.effectAllowed = "copy";
-      event.dataTransfer.setData("text/uri-list", "file://" + item.dataset.file);
+      event.dataTransfer.setData("text/uri-list", require("url").pathToFileURL(item.dataset.file).href);
       event.dataTransfer.setData("text/plain", item.dataset.file);
       item.classList.add("dragging");
     });
@@ -695,6 +720,7 @@ function renderHistory() {
 }
 
 function handleImportResult(result) {
+  if (result.warning) { toast(result.warning, "info"); }
   if (result.ok) { toast("Imported into your project ✓", "ok"); }
   else { toast("Import failed: " + result.error, "err"); }
 }
@@ -753,7 +779,7 @@ function signInFlow() {
 
 function openCredentialsHelp() {
   if (csbridge.isCEP()) {
-    csbridge.openExternalUrl("https://github.com/mediaotter/mediaotter/blob/main/docs/CREDENTIALS.md");
+    csbridge.openExternalUrl("https://github.com/madebysaira/mediaotter/blob/master/docs/CREDENTIALS.md");
   } else {
     toast("See docs/CREDENTIALS.md in the repo.", "info");
   }
@@ -794,35 +820,14 @@ function loadPlaylistTab(tab) {
 }
 
 function openLikedVideo(videoId) {
-  var watchUrl = "https://www.youtube.com/watch?v=" + videoId;
-  downloader.resolveMetadata(watchUrl, {}).then(function (meta) {
-    openPreviewById(videoId, "video", meta);
-  }).catch(function (error) {
-    toast("Could not load video: " + error.message, "err");
-  });
+  loadEntryPreview({id:videoId,url:"https://www.youtube.com/watch?v=" + videoId});
 }
 
 function openPlaylistById(playlistId, item) {
   var playlistUrl = "https://www.youtube.com/playlist?list=" + playlistId;
-  downloader.fetchPlaylistEntries(playlistUrl, {}).then(function (result) {
-    state.playlistItems = result.entries || [];
-    els.playlistGrid.classList.add("hidden");
-    els.btnPlaylistBack.classList.remove("hidden");
-    els.playlistItems.classList.remove("hidden");
-    els.playlistItems.innerHTML = state.playlistItems.map(function (entry, index) {
-      return '<div class="playlist-item-card" data-idx="' + index + '">' +
-        '<div class="thumb"><img src="' + escapeHtml(entry.thumbnail || "") + '" alt="" /></div>' +
-        '<div class="result-info"><div class="result-title">' + (index + 1) + ". " + escapeHtml(entry.title) + "</div>" +
-        '<div class="result-sub"><span>' + escapeHtml(entry.channel || "") + "</span></div></div></div>";
-    }).join("");
-    els.playlistItems.querySelectorAll(".playlist-item-card").forEach(function (card) {
-      card.addEventListener("click", function () {
-        var entry = state.playlistItems[Number(card.dataset.idx)];
-        downloader.resolveMetadata(entry.url).then(function (meta) {
-          openPreviewById(entry.id, "video", meta);
-        });
-      });
-    });
+  downloader.fetchPlaylistEntries(playlistUrl, settings.read()).then(function (result) {
+    state.pastePlaylist = result;
+    renderPlaylistEntries(result);
   }).catch(function (error) {
     toast("Could not open playlist: " + error.message, "err");
   });
@@ -860,7 +865,7 @@ function renderSettings() {
   applyTheme(current.theme);
   els.setPause.checked = Boolean(current.pausePreviewWhenHidden);
   renderCookieStatus("");
-  els.aboutText.textContent = "MediaOtter " + VERSION + " — search & download video/audio straight into Premiere Pro and After Effects. Powered by yt-dlp " + binaryManager.getRuntimeStatus().ytDlpVersion + ". Open source, free, no telemetry.";
+  els.aboutText.textContent = "MediaOtter " + VERSION + " · yt-dlp " + binaryManager.getRuntimeStatus().ytDlpVersion + ". Free, local, no telemetry.";
 }
 
 function renderCookieStatus(message, kind) {
@@ -871,6 +876,7 @@ function renderCookieStatus(message, kind) {
 function wireSettings() {
   els.setQuality.addEventListener("change", function () {
     settings.write({ maxQualityHeight: Number(els.setQuality.value) });
+    if (state.selectedMeta) { openPreviewById(state.selectedMeta.id, "video", state.selectedMeta); }
   });
   els.setEncoding.addEventListener("change", function () {
     settings.write({ allowEncoding: els.setEncoding.checked });
@@ -911,7 +917,8 @@ function wireSettings() {
     if (!browser) { renderCookieStatus("YouTube browser session off."); return; }
     renderCookieStatus("Testing " + browser + " cookies…", "");
     cookieJar.probeBrowser(browser).then(function (result) {
-      if (result.ok) { renderCookieStatus("✓ " + browser + " session ready — private & age-restricted downloads enabled.", "ok"); }
+      if (browser !== settings.read().cookiesBrowser) { return; }
+      if (result.ok) { renderCookieStatus("✓ " + browser + " session ready. Downloads still depend on your account's access and the site's restrictions.", "ok"); }
       else { renderCookieStatus(result.error || "Could not read cookies.", "err"); }
     });
   });
@@ -929,6 +936,10 @@ function wireSettings() {
       toast("Update check failed: " + error.message, "err");
     });
   });
+  $("btn-diagnostics").addEventListener("click", function () {
+    var report = {version:VERSION, build:util.readJson(path.join(extensionRoot,"build-info.json"),null), extensionRoot:extensionRoot, host:csbridge.getHostName(), hostVersion:csbridge.getHostVersion(), node:process.version, architecture:process.arch, runtime:binaryManager.getRuntimeStatus()};
+    var file = path.join(util.getStateDir(), "diagnostics.json"); util.writeJson(file, report); csbridge.revealInFinder(file).catch(function (error) { toast(error.message, "err"); });
+  });
   els.btnOpenRepo.addEventListener("click", function () {
     if (csbridge.isCEP()) { csbridge.openExternalUrl(REPO_URL); }
   });
@@ -937,6 +948,7 @@ function wireSettings() {
 // ─── engine events ─────────────────────────────────────────
 
 function bindEngineEvents() {
+  downloader.on("download:queued", function (record) { state.activeDownloads[record.id] = record; renderActiveDownloads(); });
   downloader.on("download:start", function (record) {
     state.activeDownloads[record.id] = record;
     renderActiveDownloads();
@@ -960,7 +972,9 @@ function bindEngineEvents() {
     renderHistory();
     if (csbridge.isCEP()) {
       csbridge.importIntoHost(record.finalPath, { addToTimeline: false }).then(function (result) {
-        if (!result.ok) { toast("Downloaded ✓ — import failed: " + result.error, "err"); }
+        record.importStatus = result.ok ? "Imported into project" : "Import failed: " + result.error;
+        renderActiveDownloads();
+        if (!result.ok) { toast("Downloaded — import failed: " + result.error, "err"); }
       });
     }
   });
@@ -1030,7 +1044,7 @@ function bindNavigation() {
   });
   els.previewBack.addEventListener("click", function () {
     els.preview.classList.add("hidden");
-    els.previewFrame.src = "about:blank";
+    els.previewFrame.src = "about:blank"; previewRequest++;
   });
   els.btnClearRange.addEventListener("click", function () {
     els.rangeStart.value = "";
@@ -1117,11 +1131,14 @@ function init() {
 
   var host = csbridge.isCEP() ? csbridge.getHostName() : "dev";
   var hostVersion = csbridge.isCEP() ? csbridge.getHostVersion() : "";
-  logger.info("MediaOtter " + VERSION + " started in " + host + " " + hostVersion);
+  logger.info("panel", "started", {version: VERSION, host: host, hostVersion: hostVersion, extensionRoot: extensionRoot});
+  $("ver-chip").textContent = "v" + VERSION;
+  renderRecommendations();
+  updateEngineDot();
 
   if (csbridge.isCEP()) {
     csbridge.ensureHostScript().then(function (result) {
-      if (!result.ok) { logger.warn("hostscript load failed: " + result.error); }
+      if (!result.ok) { logger.warn("host", "load_failed", {error: result.error}); toast(result.error, "err"); }
     });
   }
   if (settings.read().autoCheckUpdates) {

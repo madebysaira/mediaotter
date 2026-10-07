@@ -1,28 +1,28 @@
 #!/usr/bin/env bash
-# MediaOtter — dev install for macOS.
-# Copies extension/ into the CEP extensions folder (no admin needed).
+# Installs this exact build; keeps the previous panel outside Adobe's scan path.
 set -euo pipefail
-
-SRC="$(cd "$(dirname "$0")/.." && pwd)/extension"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SRC="$ROOT/extension"
 DEST="$HOME/Library/Application Support/Adobe/CEP/extensions/MediaOtter"
-
-if [ ! -d "$SRC" ] || [ ! -f "$SRC/CSXS/manifest.xml" ]; then
-  echo "✗ extension/ not found next to this script." >&2
-  exit 1
+BACKUPS="$HOME/Library/Application Support/MediaOtter/install-backups"
+[ -f "$SRC/CSXS/manifest.xml" ] || { echo "Extension source missing" >&2; exit 1; }
+node "$ROOT/scripts/verify-binaries.js"
+mkdir -p "$(dirname "$DEST")" "$BACKUPS"
+STAGE="$(mktemp -d "$(dirname "$DEST")/.mediaotter-install-XXXXXX")"
+trap 'rm -rf "$STAGE"' EXIT
+cp -R "$SRC/." "$STAGE/"
+if [ -e "$DEST" ] || [ -L "$DEST" ]; then
+  PREVIOUS="$BACKUPS/MediaOtter-$(date +%Y%m%d-%H%M%S)-$$"
+  mv "$DEST" "$PREVIOUS"
+  echo "Previous panel preserved: $PREVIOUS"
 fi
-
-echo "Installing MediaOtter → $DEST"
-rm -rf "$DEST"
-mkdir -p "$(dirname "$DEST")"
-cp -R "$SRC" "$DEST"
-echo "✓ Copied."
-
-if ! defaults read com.adobe.CSXS.10 PlayerDebugMode >/dev/null 2>&1; then
-  echo
-  echo "Enable unsigned extensions (one-time):"
-  echo "  defaults write com.adobe.CSXS.10 PlayerDebugMode 1"
-fi
-
-echo
-echo "Next: fully quit and restart Premiere Pro / After Effects, then"
-echo "  Window → Extensions → MediaOtter"
+mv "$STAGE" "$DEST"
+for CEP_VERSION in 10 11 12; do
+  CURRENT="$(defaults read "com.adobe.CSXS.$CEP_VERSION" PlayerDebugMode 2>/dev/null || true)"
+  if [ "$CURRENT" != "1" ]; then
+    echo "Unsigned developer build: enable your host's debug mode yourself if required:"
+    echo "defaults write com.adobe.CSXS.$CEP_VERSION PlayerDebugMode 1"
+  fi
+done
+echo "Installed MediaOtter at $DEST"
+echo "Quit and restart Premiere, then Window > Extensions > MediaOtter."
